@@ -53,6 +53,5 @@ public class TransitionDistance {
 	    br.close();
 	    bfw.flush();
 	    bfw.close();
-
 	}
-	}
+}

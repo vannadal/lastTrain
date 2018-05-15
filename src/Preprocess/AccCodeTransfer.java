@@ -5,45 +5,48 @@ import java.util.HashMap;
 public class AccCodeTransfer {
 
 	public void AccCodeTransfer(String inputFile_transferLinks,String input_Station_name,String inputFile_Adjecent_TransStation) {  
-		Operation[] operation=new Operation[3];
-		operation[0]=new Operation(inputFile_transferLinks);
-		operation[1]=new Operation(input_Station_name);
-		operation[2]=new Operation(inputFile_Adjecent_TransStation);
+		Operation[] operation= new Operation[3];
+		operation[0]=new Operation(inputFile_transferLinks,380,21);
+		operation[1]=new Operation(input_Station_name,380,21);
+		operation[2]=new Operation(inputFile_Adjecent_TransStation,380,21);
 		
 		operation[0].readCsv();
 		operation[1].readCsv();
 		operation[2].readCsv();
-		for(int i=0;i<operation[2].a.length;i++){
-			for(int j=1;j<operation[2].a[i].length;j++){
-				for(int k=0;k<operation[0].a.length;k++){
-					if(operation[2].a[i][j]==null)
+
+		for(int i=0;i<operation[2].table_data.length;i++){
+			for(int j=1;j<operation[2].table_data[i].length;j++){
+				for(int k=0;k<operation[0].table_data.length;k++){
+					if(operation[2].table_data[i][j]==null) {
 						break;
-					if(operation[2].a[i][j].equals(operation[0].a[k][3])){
-						operation[2].a[i][j]=operation[0].a[k][2]+","+operation[0].a[k][4];
+					}
+					if(operation[2].table_data[i][j].equals(operation[0].table_data[k][3])){
+						operation[2].table_data[i][j]=operation[0].table_data[k][2]+","+operation[0].table_data[k][4];
 								
 					}			
 				}
-				for(int k=0;k<operation[0].a.length;k++){
-					if(operation[2].a[i][j]==null)
+				for(int k=0;k<operation[0].table_data.length;k++){
+					if(operation[2].table_data[i][j]==null) {
 						break;
-					if(operation[2].a[i][j].equals(operation[0].a[k][5])){
-						operation[2].a[i][j]=operation[0].a[k][2]+","+operation[0].a[k][6];
+					}
+					if(operation[2].table_data[i][j].equals(operation[0].table_data[k][5])){
+						operation[2].table_data[i][j]=operation[0].table_data[k][2]+","+operation[0].table_data[k][6];
 					}			
 				}
 			}
 		}
+
 		//把8号线转换成80，把13号线转换成130
-		
-		for(int i=0;i<operation[2].a.length;i++){
-			for(int j=1;j<operation[2].a[i].length;j++){
-				if(operation[2].a[i][j]==null){
+		for(int i=0;i<operation[2].table_data.length;i++){
+			for(int j=1;j<operation[2].table_data[i].length;j++){
+				if(operation[2].table_data[i][j]==null){
 					break;
 				}
-				String[] temp=operation[2].a[i][j].split(",");
+				String[] temp=operation[2].table_data[i][j].split(",");
 				if((temp[0]==null)||(temp[1]==null)){
 					break;
 				}
-				for(int k=0;k<operation[1].a.length;k++){
+				for(int k=0;k<operation[1].table_data.length;k++){
 					HashMap<String,String> map=new HashMap<String,String>();
 					map.put("房山线", "L091");
 					map.put("八通线", "L011");
@@ -65,29 +68,29 @@ public class AccCodeTransfer {
 					map.put("14号线", "L140");
 					map.put("15号线", "L150");
 					map.put("16号线", "L160");
-					
+
 					String ab=(String) map.get(temp[1]);
 					if(ab==null){
 						break;
 					}
-					if(temp[0].equals(operation[1].a[k][1])&&ab.equals(operation[1].a[k][2])){
-						operation[2].a[i][j]=operation[1].a[k][4];
-						
-					}	
-				}		
+					if(temp[0].equals(operation[1].table_data[k][1])&&ab.equals(operation[1].table_data[k][2])){
+						operation[2].table_data[i][j]=operation[1].table_data[k][4];
+					}
+				}
 			}
 		}
-		for(int i=0;i<operation[2].a.length;i++){
-			for(int j=0;j<operation[2].a[i].length;j++){
-				if(operation[2].a[i][j]==null){
+
+		for(int i=0;i<operation[2].table_data.length;i++){
+			for(int j=0;j<operation[2].table_data[i].length;j++){
+				if(operation[2].table_data[i][j]==null){
 					break;
 				}
-				System.out.print(operation[2].a[i][j]+"\t");
+				System.out.print(operation[2].table_data[i][j]+"\t");
 			}
 			System.out.println();
 		}
-	
-	}	
+	}
+
 }
 
 
