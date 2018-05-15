@@ -13,9 +13,13 @@ public class StationIDToAccCode {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		// TODO Auto-generated method stub
-		String sameTransStationAdj="D:\\末班车\\Trans_Adj_Trans.csv";//同一站不同线路的换乘站换乘邻接编码
-		String transStationAdjTransStation="D:\\末班车\\Adjecent_TransStation_ID.csv";//同一线上换乘站的邻接站编码
-		String nonTransStation="D:\\末班车\\available\\NonTrans_Adj_Trans.csv";//所有非换乘站邻接换乘站编码
+
+		//同一站不同线路的换乘站换乘邻接编码
+		String sameTransStationAdj="D:\\末班车\\Trans_Adj_Trans.csv";
+		//同一线上换乘站的邻接站编码
+		String transStationAdjTransStation="D:\\末班车\\Adjecent_TransStation_ID.csv";
+		//所有非换乘站邻接换乘站编码
+		String nonTransStation="D:\\末班车\\available\\NonTrans_Adj_Trans.csv";
 		String acccodeFile="D:\\末班车\\available\\StationTransAccCode.csv";
 		Map<String,String> map=new HashMap<>();
 		try {
@@ -71,10 +75,6 @@ public class StationIDToAccCode {
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
-		
-		
-		
-		
 	}
 
 }
