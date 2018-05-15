@@ -3,6 +3,7 @@ package Graph;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Map.Entry;
 
 //http://www.jb51.net/article/64443.htm 
 public class GraphSearchAlgorithm {
@@ -20,7 +21,16 @@ public class GraphSearchAlgorithm {
 	    transPath = stationnametoacccode;
 	    return Dijkstra(g,sourceVertex,dateString,time,end_Vertex,transPath);
 	  }
-
+	  
+	  public boolean perform2(Graph g, String sourceVertex,String end_Vertex,String stationnametoacccode) {
+		//cloneG = g;
+		if (null == visitedVertex) {
+	      visitedVertex = new HashSet<>();
+	    }
+	    transPath = stationnametoacccode;
+	    return Dijkstra2(g,sourceVertex,end_Vertex,transPath);
+	  }
+	  
 		public boolean isWeekend(String dateString)
 		{
 			try{
@@ -133,6 +143,75 @@ public class GraphSearchAlgorithm {
 		return true;
 	  }
 	  
+	  private boolean Dijkstra2(Graph g,String sourceVertex,String end_Vertex,String transPath)
+	  {
+		try 
+		{		
+			if(!InitialMinDisLink(g,sourceVertex))
+		    {
+			   return false;
+		    }					
+		  	String ver=sourceVertex;
+		    visitedVertex.add(sourceVertex);
+		    while(!(FindLatestVertex2(g,g.getMinDisLink()).equals("null")))
+		    {
+		    	ver=FindLatestVertex2(g,g.getMinDisLink());
+		    	g.addReachable(ver);
+		    	visitedVertex.add(ver);
+		    	List<String> toBeVisitedVertex = g.getAdj().get(ver);/*
+		    	int latest_dist=g.UpperLimitDis;
+		    	String latest_Vertex="";
+		    	Map<String, Integer> innermap=new HashMap<>();*/
+		    	for(String v:visitedVertex)
+		    	{
+			    	if(toBeVisitedVertex.contains(v))
+			    		toBeVisitedVertex.remove(v);		    		
+		    	}
+		    	int ver_dist;
+		    	ver_dist=g.getMinDisLink().get(ver);          
+		    	for(String ver_end : toBeVisitedVertex)
+		    	{
+		    	   int trans_dist=g.getStationdistance().get(ver+ver_end);
+		    	   if(g.getMinDisLink().get(ver_end)==null)
+		    		{   
+		    			g.getMinDisLink().put(ver_end,ver_dist+trans_dist);
+		    			g.AddStack2(ver, ver_end,ver_dist+trans_dist);
+		    		}
+		    		else{
+		    			int temp_t=g.getMinDisLink().get(ver_end);
+		    			if(ver_dist+trans_dist<temp_t)
+		    			{
+		    				g.getMinDisLink().put(ver_end,ver_dist+trans_dist);
+		    				g.AddStack2(ver,ver_end, ver_dist+trans_dist);
+		    			}
+		    		}
+                    
+		    	     //innermap.put(ver_end,g.getMinDisLink().get(ver_end));//新建一个innermap,将内层循环可达的所有站点距离存入
+		    	}/*
+		    	//找出距离最小的站点
+		    	Entry<String, Integer> teMap =null;
+		    	int temp =100000;
+		    	for(Map.Entry<String, Integer> map:innermap.entrySet()) {	
+		    		if(map.getValue()<=temp) {
+		    			temp=map.getValue();
+		    			teMap=map;
+		    		}
+		    	}
+		    	latest_dist=teMap.getValue();
+		    	latest_Vertex=teMap.getKey();
+		    	//将距离最小的站点加入到visitedvertex中
+		    	if(latest_dist!=g.UpperLimitDis)
+	    		{
+	    			ver_dist=latest_dist;
+	    			visitedVertex.add(latest_Vertex);//unvisited没用？
+	    		}*/
+		    }
+		} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+		}
+		return true;
+	  }
 	  private String FindLatestVertex(Graph g,Map<String,String> map)
 	  {
 		  String vertex="null";
@@ -151,7 +230,45 @@ public class GraphSearchAlgorithm {
 			  return vertex;
 		  return "null";
 	  }
-	  
+	  private String FindLatestVertex2(Graph g,Map<String,Integer> map)
+	  {
+		  String vertex="null";
+		  int mindis=g.UpperLimitDis;
+		  for (Map.Entry<String, Integer> entry : map.entrySet()) {
+			  if(!visitedVertex.contains(entry.getKey()))
+			  {
+				  if(entry.getValue()-mindis<0)
+				  {
+					vertex=entry.getKey();
+					mindis=entry.getValue();
+					  };				  
+			  }
+		  }
+		  //System.out.println(vertex+":"+mindis);
+		  if(mindis!=g.UpperLimitDis)
+			  return vertex;
+		  return "null";
+	  }
+	  private boolean InitialMinDisLink(Graph g,String vertex)
+	  {
+		  List<String> toBeUpdatedVertex = g.getAdj().get(vertex);
+		  g.getMinDisLink().clear();
+		  for(String adjVertex:toBeUpdatedVertex)
+		  {
+			  int distance=g.UpperLimitDis;
+			  if(g.getStationdistance().get(vertex+adjVertex)==null)
+			     {
+				  g.getMinDisLink().put(adjVertex,g.UpperLimitDis);
+				 }
+			  else {
+				  distance=g.getStationdistance().get(vertex+adjVertex);
+				  g.getMinDisLink().put(adjVertex,distance);
+			  }
+			 g.AddStack2(vertex, adjVertex, distance);//
+		  }
+		  return true;
+		  
+	  }
 	  private boolean InitialMinTimeLink(Graph g,String vertex,String ver_time)
 	  {
 		  List<String> toBeUpdatedVertex = g.getAdj().get(vertex);
