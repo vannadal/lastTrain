@@ -1,4 +1,4 @@
-package Preprocess;
+package gov.bjjtw.lastTrain.Preprocess;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,9 +13,9 @@ public class StationAdjStation {
 		StationAdjStation s=new StationAdjStation();
 		s.AdjStation();
 	}
-	
-	public void AdjStation()//找出所有站的邻接站点acc编码对，不包括同站的换乘站
-	{
+
+	//找出所有站的邻接站点acc编码对，不包括同站的换乘站
+	public void AdjStation() {
 	  	String temp="",str[],line="",acccode="";
 	  	try {
 			BufferedReader br=new BufferedReader(new FileReader(new File("D:\\末班车\\available\\StationTransAccCode_new.csv")));
@@ -24,21 +24,17 @@ public class StationAdjStation {
 			str=temp.split(",");
 			line=str[1];
 			acccode=str[2];
-			while((temp=br.readLine())!=null)
-			{
+			while((temp=br.readLine())!=null) {
 				str=temp.split(",");
-				if(str[1].equals("150995474"))
-				{
+				if(str[1].equals("150995474")) {
 					bw.write("150995474,150995473\n");
 					bw.write("150995473,150995474\n");
 				}
-				if(str[1].equals("151018007"))
-				{
+				if(str[1].equals("151018007")) {
 					bw.write("151018007,151018009\n");
 					bw.write("151018009,151018007\n");
 				}
-				if(str[1].equals(line))
-				{
+				if(str[1].equals(line)) {
 					bw.write(acccode+","+str[2]+"\n");
 					bw.write(str[2]+","+acccode+"\n");
 				}
@@ -47,12 +43,10 @@ public class StationAdjStation {
 			}
 			br.close();
 			bw.close();
-			
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-
 	}
 
 }

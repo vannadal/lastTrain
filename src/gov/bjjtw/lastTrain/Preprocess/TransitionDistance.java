@@ -1,4 +1,4 @@
-package Preprocess;
+package gov.bjjtw.lastTrain.Preprocess;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -53,6 +53,5 @@ public class TransitionDistance {
 	    br.close();
 	    bfw.flush();
 	    bfw.close();
-
 	}
-	}
+}
