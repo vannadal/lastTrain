@@ -1,6 +1,4 @@
-package Preprocess;
-
-import java.util.Stack;
+package gov.bjjtw.lastTrain.Preprocess;
 
 public class MainClass_Process {
 
@@ -17,12 +15,14 @@ public class MainClass_Process {
 //		TransStation transStation=new TransStation();
 //		transStation.Adjecent_Station(inputFile_transferLinks, adjecent_TransStation,outputFile_Adjecent_TransStation_ID);//计算每个地铁站的邻接换乘地铁站并且存储到Adjecent_TransStation.csv中
 //		
-//		AccCodeTransfer accCodeTransfer=new AccCodeTransfer();//已经生成最终版保存在Adjecent_TransStation.csv,无需更改
+// 已经生成最终版保存在Adjecent_TransStation.csv,无需更改
+//		AccCodeTransfer accCodeTransfer=new AccCodeTransfer();
 //		accCodeTransfer.AccCodeTransfer(inputFile_transferLinks,input_Station_name,adjecent_TransStation);
 		
 		DivideTimeTable timeTables=new DivideTimeTable();
-		timeTables.ReadTimeTable(filename);//已经生成两个平日和双休保存在timetables中，无需更改
-		
+		//已经生成两个平日和双休保存在timetables中，无需更改
+		timeTables.ReadTimeTable(filename);
+
 	    }
 	
 
