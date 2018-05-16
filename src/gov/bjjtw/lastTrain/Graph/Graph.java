@@ -1,4 +1,4 @@
-package Graph;
+package gov.bjjtw.lastTrain.Graph;
 import java.io.*;
 import java.util.*;
 
@@ -30,15 +30,6 @@ public final class Graph implements Serializable{
 	public String UpperLimitTime="25:59:59";
 	public int UpperLimitDis =10000000;
 
-	public Object deepClone() throws IOException, OptionalDataException,ClassNotFoundException {
-		ByteArrayOutputStream bo = new ByteArrayOutputStream();
-		ObjectOutputStream oo = new ObjectOutputStream(bo);
-		oo.writeObject(this);
-		ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
-		ObjectInputStream oi = new ObjectInputStream(bi);
-		return (oi.readObject());
-	}
-	  
 	public void InitialSearchStartVertex(String startVertex,String dateString,String time,String end_Vertex) {
 		firstVertax=startVertex;
 		firstTime=time;

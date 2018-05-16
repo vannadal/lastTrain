@@ -1,9 +1,10 @@
-package Graph;
+package gov.bjjtw.lastTrain.Graph;
+
+import gov.bjjtw.lastTrain.CommonTools.CommonTools;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import Graph.common_tools;
 
 
 //http://www.jb51.net/article/64443.htm 
@@ -95,24 +96,24 @@ public class GraphSearchAlgorithm {
 		    			alltime = FindLatestTime(g,ver,ver_end,ver_Time,0);
 		    			str2= alltime.split(",");
 						//str2[0] = departure time, str2[1]= arriving time
-		    			de_t = common_tools.TransferTime(str2[0]);
-		    			de_t_s =  common_tools.TransferTime(str2[2]);
-		    			arr_t = common_tools.TransferTime(str2[1]);
+		    			de_t = CommonTools.TransferTime(str2[0]);
+		    			de_t_s =  CommonTools.TransferTime(str2[2]);
+		    			arr_t = CommonTools.TransferTime(str2[1]);
 		    		} else{
 						// bug: change first part to arriving time
-		    			de_t= common_tools.TransferTime(ver_Time)+Integer.parseInt(g.getTransTime().get(ver+ver_end));
+		    			de_t= CommonTools.TransferTime(ver_Time)+Integer.parseInt(g.getTransTime().get(ver+ver_end));
 		    			arr_t = de_t;
-		    			de_t_s= common_tools.TransferTime(ver_Time);
+		    			de_t_s= CommonTools.TransferTime(ver_Time);
 		    		}
 
 		    		if(g.getMinTimeLink().get(ver_end)==null) {
-		    			g.getMinTimeLink().put(ver_end, common_tools.SecondToTime(de_t));
-		    			g.AddStack(ver, ver_end, common_tools.SecondToTime(de_t), common_tools.SecondToTime(arr_t), common_tools.SecondToTime(de_t_s));
+		    			g.getMinTimeLink().put(ver_end, CommonTools.SecondToTime(de_t));
+		    			g.AddStack(ver, ver_end, CommonTools.SecondToTime(de_t), CommonTools.SecondToTime(arr_t), CommonTools.SecondToTime(de_t_s));
 		    		} else {
-		    			int temp_t= common_tools.TransferTime(g.getMinTimeLink().get(ver_end));
+		    			int temp_t= CommonTools.TransferTime(g.getMinTimeLink().get(ver_end));
 		    			if(de_t<temp_t) {
-		    				g.getMinTimeLink().put(ver_end, common_tools.SecondToTime(de_t));
-		    				g.AddStack(ver,ver_end, common_tools.SecondToTime(de_t), common_tools.SecondToTime(arr_t), common_tools.SecondToTime(de_t_s));
+		    				g.getMinTimeLink().put(ver_end, CommonTools.SecondToTime(de_t));
+		    				g.AddStack(ver,ver_end, CommonTools.SecondToTime(de_t), CommonTools.SecondToTime(arr_t), CommonTools.SecondToTime(de_t_s));
 		    			}
 		    		}
 		    	}
@@ -199,7 +200,7 @@ public class GraphSearchAlgorithm {
 		String minTime=g.UpperLimitTime;
 		for (Map.Entry<String, String> entry : map.entrySet()) {
 			if(!visitedVertex.contains(entry.getKey())) {
-				if(common_tools.TransferTime(entry.getValue())- common_tools.TransferTime(minTime)<0) {
+				if(CommonTools.TransferTime(entry.getValue())- CommonTools.TransferTime(minTime)<0) {
 					vertex = entry.getKey();
 					minTime = entry.getValue();
 				}
@@ -264,17 +265,17 @@ public class GraphSearchAlgorithm {
 					return false;
 				}
 				str = alltime.split(",");
-				adj_time = common_tools.TransferTime(str[0]);
+				adj_time = CommonTools.TransferTime(str[0]);
 				  
-				de_t_s =  common_tools.TransferTime(str[2]);
-				arr_t = common_tools.TransferTime(str[1]);
+				de_t_s =  CommonTools.TransferTime(str[2]);
+				arr_t = CommonTools.TransferTime(str[1]);
 			} else {
-				adj_time= (common_tools.TransferTime(ver_time)+Integer.parseInt(g.getTransTime().get(vertex+adjVertex)));
+				adj_time= (CommonTools.TransferTime(ver_time)+Integer.parseInt(g.getTransTime().get(vertex+adjVertex)));
 				arr_t = adj_time;
-				de_t_s= common_tools.TransferTime(ver_time);
+				de_t_s= CommonTools.TransferTime(ver_time);
 			}
-			g.getMinTimeLink().put(adjVertex, common_tools.SecondToTime(adj_time));
-			g.AddStack(vertex, adjVertex, common_tools.SecondToTime(adj_time), common_tools.SecondToTime(arr_t), common_tools.SecondToTime(de_t_s));
+			g.getMinTimeLink().put(adjVertex, CommonTools.SecondToTime(adj_time));
+			g.AddStack(vertex, adjVertex, CommonTools.SecondToTime(adj_time), CommonTools.SecondToTime(arr_t), CommonTools.SecondToTime(de_t_s));
 		}
 
 		return true;
@@ -317,7 +318,7 @@ public class GraphSearchAlgorithm {
 				arrtime = str[2];
 			}
 
-			int second= common_tools.TransferTime(start_time) - common_tools.TransferTime(ver_start_Time);
+			int second= CommonTools.TransferTime(start_time) - CommonTools.TransferTime(ver_start_Time);
 			//System.out.println(SecondToTime(second));
 
 			//ע����Ա���ʱ������Ƿ����bug���Լ�v_time�п����пո��´���

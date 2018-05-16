@@ -1,7 +1,6 @@
-package Preprocess;
+package gov.bjjtw.lastTrain.Preprocess;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 

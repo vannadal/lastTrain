@@ -1,19 +1,14 @@
-package Graph;
+package gov.bjjtw.lastTrain.Graph;
 
-import java.sql.Time;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 public interface Algorithm {
 	/**
-	 * Ö´ÐÐËã·¨
+	 * Ö´ï¿½ï¿½ï¿½ã·¨
 	 */
 	void perform(Graph g, String sourceVertex,String date,String time,String end_vertex);
 	/**
-	 * µÃµ½Â·¾¶
+	 * ï¿½Ãµï¿½Â·ï¿½ï¿½
 	 */
 	Map<String, String> getPath();
 }

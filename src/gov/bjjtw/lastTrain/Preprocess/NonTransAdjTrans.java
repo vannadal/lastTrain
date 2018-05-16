@@ -1,7 +1,6 @@
-package Preprocess;
+package gov.bjjtw.lastTrain.Preprocess;
 
 import java.io.*;
-import java.util.Properties;
 
 
 //import org.apache.poi.util.SystemOutLogger;
