@@ -9,9 +9,8 @@ import java.io.InputStreamReader;
 import gov.bjjtw.lastTrain.Graph.Graph;
 import gov.bjjtw.lastTrain.Graph.GraphSearchAlgorithm;
 import gov.bjjtw.lastTrain.CommonTools.CommonTools;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Properties;
+
+import java.util.*;
 import java.io.FileInputStream;
 import java.util.stream.Collectors;
 
@@ -30,7 +29,7 @@ public class mainClass {
     private static String acccodeInLine=null;
     private static String stationnametoacccode=null;
     private static String entertime=null;
-    private static Graph initGraph=null;
+    private static Set<String> unVisitedVertex=new HashSet<String>();
 
     //可查询末班车路径从此时刻开始，时间越晚g加载的列车运行时刻表数据越少
     private static String loadTimetableTime=null;
@@ -41,8 +40,22 @@ public class mainClass {
 
     public static void fit(){
         initConf("",true);
-        initGraph = fit(true);
+        graph = fit(true);
+        unVisitedVertex = graph.getUnVisitedVertex();
     }
+
+    private static void resetGraph(){
+        graph.setUnVisitedVertex(unVisitedVertex);
+        graph.cleanMinDisLink();
+        graph.cleanMinTimeLink();
+        graph.cleanReachableSt();
+        graph.cleanWalkTimeString();
+        graph.cleanStack();
+        graph.cleanStack2();
+        graph.cleanStackPath();
+        graph.cleanStackPath2();
+    }
+
 
     private static void initConf(String filename,Boolean isResource) {
         FileInputStream inStream = null;
@@ -381,16 +394,8 @@ public class mainClass {
         }
     }
 
-    public static void setGraph(Graph g){
-        graph = (Graph) CommonTools.deepCopy(g);
-    }
-
-    public static Graph getGraph(){
-        return graph;
-    }
-
     private static LinkedList<String> GetReachable(String datestring, String starttime, String startvertex, String endvertex, Cate type) {
-        setGraph(initGraph);
+        resetGraph();
         //0是00:00:00的秒数，18000是05:00:00的秒数
         LinkedList<String> reachableStation = new LinkedList<>();
         if ((CommonTools.TransferTime(starttime) > 0) && (CommonTools.TransferTime(starttime) < 18000)) {
@@ -417,8 +422,11 @@ public class mainClass {
         String [] line = null;
 
         fit();
-        BufferedReader br = new BufferedReader( new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(acccodeInLine)));
 
+        System.out.println(mainClass.GetReachableStation("2018-04-25","10:00:00","150995457"));
+        System.out.println(mainClass.GetReachablePath("2018-04-25","10:00:00","150995457","151020055"));
+
+        BufferedReader br = new BufferedReader( new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(acccodeInLine)));
         ArrayList<Long> testing = new ArrayList<Long>();
         //本循环为测试车站代码
         while((temp=br.readLine())!=null) {
@@ -436,6 +444,7 @@ public class mainClass {
         }
         br.close();
 
+
         System.out.println("0ms - 100ms:"+testing.stream().filter(x -> x <= 100).count());
         System.out.println("101ms - 150ms:"+testing.stream().filter(x-> x>100 && x<= 150).count());
         System.out.println("151ms - 200ms:"+testing.stream().filter(x-> x>150 && x<=200).count());
@@ -445,6 +454,15 @@ public class mainClass {
         System.out.println("avg:"+ testing.stream().collect(Collectors.averagingInt(x -> x.intValue() ))  );
     }
 
+    /*
+    public static void setGraph(Graph g){
+        graph = (Graph) CommonTools.deepCopy(g);
+    }
+
+    public static Graph getGraph(){
+        return graph;
+    }
+    */
     /*
     public static LinkedList<String> GetReachableStation2(String startvertex,String endvertex) {
         setGraph(initGraph);
