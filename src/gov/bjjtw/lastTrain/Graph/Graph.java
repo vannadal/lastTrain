@@ -1,4 +1,6 @@
 package gov.bjjtw.lastTrain.Graph;
+import gov.bjjtw.lastTrain.CommonTools.CommonTools;
+
 import java.io.*;
 import java.util.*;
 
@@ -30,6 +32,17 @@ public final class Graph implements Serializable{
 	public String UpperLimitTime="25:59:59";
 	public int UpperLimitDis =10000000;
 
+
+	public void setAdj(Map<String,List<String>> inputAdj){
+		adj =new HashMap<>();
+		for(String k: inputAdj.keySet()){
+			List<String> tmpList = new ArrayList<String>();
+			for(String v: inputAdj.get(k)){
+				tmpList.add(v);
+			}
+			adj.put(k,tmpList);
+		}
+	}
 
 	public void InitialSearchStartVertex(String startVertex,String dateString,String time,String end_Vertex) {
 		firstVertax=startVertex;
@@ -131,14 +144,6 @@ public final class Graph implements Serializable{
 	  {
 		  UnVisitedVertex.add(str);
 	  }
-	//minTimeLink clear
-	//minDisLink clear
-	//WalkTimeString clear
-	//stack clear
-	//stackPath clear
-	//stack2 clear
-	//stackPath2 clear
-	//reachableSt clear
 	public void cleanMinTimeLink(){
 		minTimeLink.clear();
 	}
@@ -163,9 +168,17 @@ public final class Graph implements Serializable{
 	public void cleanReachableSt(){
 		reachableSt.clear();
 	}
+	public void resetParams(){
+		firstTime = null;
+		date = null;
+		endVertex = null;
+		distance = null;
+	}
 
 	public Set<String> getUnVisitedVertex() { return UnVisitedVertex; }
-    public void setUnVisitedVertex(Set<String> v) { UnVisitedVertex = v;}
+    public void setUnVisitedVertex(Set<String> v) {
+		UnVisitedVertex = (Set<String>) CommonTools.deepCopy(v);
+	}
 
 	public void Add_weeekend_timetable(String acccode,String departureTime1,String departureTime2,String arrivingTime) {
 	  	if(timetable_weekend.get(acccode)==null) {
