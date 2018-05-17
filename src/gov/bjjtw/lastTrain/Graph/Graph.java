@@ -30,6 +30,7 @@ public final class Graph implements Serializable{
 	public String UpperLimitTime="25:59:59";
 	public int UpperLimitDis =10000000;
 
+
 	public void InitialSearchStartVertex(String startVertex,String dateString,String time,String end_Vertex) {
 		firstVertax=startVertex;
 		firstTime=time;
@@ -130,8 +131,41 @@ public final class Graph implements Serializable{
 	  {
 		  UnVisitedVertex.add(str);
 	  }
+	//minTimeLink clear
+	//minDisLink clear
+	//WalkTimeString clear
+	//stack clear
+	//stackPath clear
+	//stack2 clear
+	//stackPath2 clear
+	//reachableSt clear
+	public void cleanMinTimeLink(){
+		minTimeLink.clear();
+	}
+	public void cleanMinDisLink(){
+		minDisLink.clear();
+	}
+	public void cleanWalkTimeString(){
+		WalkTimeString.clear();
+	}
+	public void cleanStack(){
+		stack.clear();
+	}
+	public void cleanStackPath(){
+		stackPath.clear();
+	}
+	public void cleanStack2(){
+		stack2.clear();
+	}
+	public void cleanStackPath2(){
+		stackPath2.clear();
+	}
+	public void cleanReachableSt(){
+		reachableSt.clear();
+	}
 
 	public Set<String> getUnVisitedVertex() { return UnVisitedVertex; }
+    public void setUnVisitedVertex(Set<String> v) { UnVisitedVertex = v;}
 
 	public void Add_weeekend_timetable(String acccode,String departureTime1,String departureTime2,String arrivingTime) {
 	  	if(timetable_weekend.get(acccode)==null) {
