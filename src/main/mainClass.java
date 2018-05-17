@@ -30,7 +30,7 @@ public class mainClass {
     private static String stationnametoacccode=null;
     private static String entertime=null;
     private static Set<String> unVisitedVertex=new HashSet<String>();
-
+    private static Map<String,List<String>>  adj = null;
     //可查询末班车路径从此时刻开始，时间越晚g加载的列车运行时刻表数据越少
     private static String loadTimetableTime=null;
 
@@ -42,9 +42,11 @@ public class mainClass {
         initConf("",true);
         graph = fit(true);
         unVisitedVertex = graph.getUnVisitedVertex();
+        adj = graph.getAdj();
     }
 
     private static void resetGraph(){
+        graph.setAdj(adj);
         graph.setUnVisitedVertex(unVisitedVertex);
         graph.cleanMinDisLink();
         graph.cleanMinTimeLink();
@@ -54,6 +56,7 @@ public class mainClass {
         graph.cleanStack2();
         graph.cleanStackPath();
         graph.cleanStackPath2();
+        graph.resetParams();
     }
 
 
@@ -444,6 +447,8 @@ public class mainClass {
         }
         br.close();
 
+        System.out.println(mainClass.GetReachableStation("2018-04-25","10:00:00","150995457"));
+        System.out.println(mainClass.GetReachablePath("2018-04-25","10:00:00","150995457","151020055"));
 
         System.out.println("0ms - 100ms:"+testing.stream().filter(x -> x <= 100).count());
         System.out.println("101ms - 150ms:"+testing.stream().filter(x-> x>100 && x<= 150).count());
