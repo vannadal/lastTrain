@@ -1,7 +1,6 @@
 package gov.bjjtw.lastTrain.Graph;
 import gov.bjjtw.lastTrain.CommonTools.CommonTools;
 
-import javax.swing.text.html.parser.Entity;
 import java.io.*;
 import java.util.*;
 
@@ -26,8 +25,7 @@ public final class Graph implements Serializable{
 	private Map<String, List<String>> timetable_weekday = new HashMap<>();
 	private Map<String, List<String>> timetable_weekend = new HashMap<>();
 	private Set<String> UnVisitedVertex=new HashSet<String>();
-    private HashMap<String, String> station_geo = new HashMap<String, String>();
-
+	private HashMap<String, String> station_geo = new HashMap<String, String>();
 	private LinkedList<String> reachableSt = new LinkedList<String>();
 	private int inc_sec;
 	  
