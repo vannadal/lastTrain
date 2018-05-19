@@ -1,6 +1,7 @@
 package gov.bjjtw.lastTrain.Graph;
 import gov.bjjtw.lastTrain.CommonTools.CommonTools;
 
+import javax.swing.text.html.parser.Entity;
 import java.io.*;
 import java.util.*;
 
@@ -19,11 +20,13 @@ public final class Graph implements Serializable{
 	private Stack<String> stackPath=new Stack<>();
 	private Stack<String> stack2=new Stack<>();
 	private Stack<String> stackPath2=new Stack<>();
+	private Stack<String> stack3=new Stack<>();
 	private Map<String, List<String>> adj = new HashMap<>();
 	private Map<String, Integer> stationdistance =new HashMap<>();
 	private Map<String, List<String>> timetable_weekday = new HashMap<>();
 	private Map<String, List<String>> timetable_weekend = new HashMap<>();
 	private Set<String> UnVisitedVertex=new HashSet<String>();
+    private HashMap<String, String> station_geo = new HashMap<String, String>();
 
 	private LinkedList<String> reachableSt = new LinkedList<String>();
 	private int inc_sec;
@@ -32,6 +35,23 @@ public final class Graph implements Serializable{
 	public String UpperLimitTime="25:59:59";
 	public int UpperLimitDis =10000000;
 
+	public void addGeoPosition(String acccode, String geoposition){
+		station_geo.put(acccode,geoposition);
+	}
+
+	public Float [] getGeoPosition(String accode){
+		Float[] positionfloat = new Float[2];
+		positionfloat[0] = null;
+		positionfloat[1] = null;
+		if (station_geo.containsKey(accode) == true) {
+			String[] positionstr = station_geo.get(accode).split(",");
+			if (positionstr.length == 2) {
+				positionfloat[0] = Float.valueOf(positionstr[0]);
+				positionfloat[1] = Float.valueOf(positionstr[1]);
+			}
+		}
+		return positionfloat;
+	}
 
 	public void setAdj(Map<String,List<String>> inputAdj){
 		adj =new HashMap<>();
@@ -106,16 +126,32 @@ public final class Graph implements Serializable{
 	  {
 		  return stack;
 	  }
-	  
+
 	public Stack<String> getPathStack()
 	  {
 		  return stackPath;
 	  }
 	public Stack<String> getStack2()
-	  {
+	{
 		  return stack2;
-	  }
-	  
+	}
+
+	public Stack<String> getStack3() {
+		return stack3;
+	}
+	public void setStack3(){
+		stack3.clear();
+		for(String s:stack){
+			stack3.add(s);
+		}
+	}
+	public void backfillStack3(){
+		stack.clear();
+		for(String s:stack3){
+			stack.add(s);
+		}
+	}
+
 	public Stack<String> getPathStack2()
 	  {
 		  return stackPath2;
@@ -177,7 +213,7 @@ public final class Graph implements Serializable{
 
 	public Set<String> getUnVisitedVertex() { return UnVisitedVertex; }
     public void setUnVisitedVertex(Set<String> v) {
-		UnVisitedVertex = (Set<String>) CommonTools.deepCopy(v);
+		UnVisitedVertex = (Set<String>) CommonTools.DeepCopy(v);
 	}
 
 	public void Add_weeekend_timetable(String acccode,String departureTime1,String departureTime2,String arrivingTime) {
@@ -240,7 +276,7 @@ public final class Graph implements Serializable{
 	public Map<String, String> getAcctoName() {
 		return acctoName;
 	}
-	  
+	public String checkAcctoName(String key) { return acctoName.get(key);}
 	public boolean getIsWeekend(){
 	  return isWeekend;
 	}
