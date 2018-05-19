@@ -14,7 +14,6 @@ import java.util.*;
 import java.io.FileInputStream;
 import java.util.stream.Collectors;
 
-import static javafx.application.Platform.exit;
 
 public class mainClass {
     private static Graph graph;
