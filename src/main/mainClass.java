@@ -406,7 +406,26 @@ public class mainClass {
     }
 
     public static LinkedList<String> GetReachablePath(String datestring, String starttime, String startvertex, String endvertex) {
-        return GetReachable(datestring,starttime,startvertex,endvertex,Cate.REACHABLE_PATH);
+        String [] tmp;
+        LinkedList<String> result = GetReachable(datestring,starttime,startvertex,endvertex,Cate.REACHABLE_PATH);
+        LinkedList<String> output = new LinkedList<String>();
+        if (result.size()>0) {
+            for (String item : result) {
+                tmp = item.split(",");
+                output.add(tmp[0] + "," + tmp[2] + ",1");
+            }
+            tmp = result.getLast().split(",");
+            output.add(tmp[1] + "," + tmp[3] + ",1");
+            startvertex = tmp[1];
+        }
+        if (startvertex.equals(endvertex) == false){
+            resetGraph();
+            result = GraphTraversal2(startvertex, endvertex, stationnametoacccode);
+            for (String item: result){
+                output.add(item.split(",")[1]+",,0");
+            }
+        }
+        return output;
     }
 
     public static LinkedList<String> GetReachableStation(String datestring, String starttime, String startvertex){
@@ -458,7 +477,6 @@ public class mainClass {
                         double minDist = GetGeoDistanceBetweenStations(startvertex,endvertex);
                         for(String line: graph.getStack3()){
                             String [] items = line.split(",");
-                            //if (items[2].equals(graph.UpperLimitTime) && items[0].equals(startvertex) == false && graph.checkAcctoName(startvertex).equals(graph.checkAcctoName(items[0])) == false) {
                             double currentDistance = GetGeoDistanceBetweenStations(items[0],endvertex);
                             if (currentDistance > 0.0000001 && currentDistance < minDist) {
                                 minStation = items[0];
@@ -495,7 +513,13 @@ public class mainClass {
         br.close();
 
         System.out.println("==========Output Demo==========");
+        System.out.println("22:10:00 XiZhiMen Reachable Stations");
+        System.out.println(mainClass.GetReachableStation("2018-04-25","22:10:00","150995457"));
+        System.out.println("22:10:00 XiZhiMen-LiuLiQiao Path");
+        System.out.println(mainClass.GetReachablePath("2018-04-25","22:10:00","150995457","151018037"));
+        System.out.println("23:10:00 XiZhiMen Reachable Stations");
         System.out.println(mainClass.GetReachableStation("2018-04-25","23:10:00","150995457"));
+        System.out.println("23:10:00 XiZhiMen-LiuLiQiao Path");
         System.out.println(mainClass.GetReachablePath("2018-04-25","23:10:00","150995457","151018037"));
 
         ArrayList<Long> testing = new ArrayList<Long>();
@@ -550,8 +574,8 @@ public class mainClass {
     }
     */
 
-    /*public static LinkedList<String> GetReachableStation2(String startvertex,String endvertex) {
-        setGraph(initGraph);
+    public static LinkedList<String> GetReachableStation2(String startvertex,String endvertex) {
+        resetGraph();
         String startVertex1 = startvertex;
         String  endVertex1=endvertex;
         LinkedList<String> reachableStation = GraphTraversal2(startVertex1, endVertex1, stationnametoacccode);
@@ -598,7 +622,7 @@ public class mainClass {
             e.printStackTrace();
         }
         return path;
-    }*/
+    }
 
 
 }
