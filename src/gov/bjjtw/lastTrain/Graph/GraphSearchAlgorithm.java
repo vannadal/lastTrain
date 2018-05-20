@@ -137,23 +137,18 @@ public class GraphSearchAlgorithm {
 			if(!InitialMinDisLink(g,sourceVertex)) {
 				return false;
 			}
-			String ver=sourceVertex;
 		    visitedVertex.add(sourceVertex);
 		    while(!(FindLatestVertex2(g,g.getMinDisLink()).equals("null"))) {
-		    	ver=FindLatestVertex2(g,g.getMinDisLink());
+		    	String ver=FindLatestVertex2(g,g.getMinDisLink());
 		    	g.addReachable(ver);
 		    	visitedVertex.add(ver);
-		    	List<String> toBeVisitedVertex = g.getAdj().get(ver);/*
-		    	int latest_dist=g.UpperLimitDis;
-		    	String latest_Vertex="";
-		    	Map<String, Integer> innermap=new HashMap<>();*/
+		    	List<String> toBeVisitedVertex = g.getAdj().get(ver);
 		    	for(String v:visitedVertex) {
 			    	if (toBeVisitedVertex.contains(v)) {
 			    		toBeVisitedVertex.remove(v);
 			    	}
 		    	}
-		    	int ver_dist;
-		    	ver_dist=g.getMinDisLink().get(ver);          
+		    	int ver_dist=g.getMinDisLink().get(ver);
 		    	for(String ver_end : toBeVisitedVertex) {
 		    	   int trans_dist=g.getStationdistance().get(ver+ver_end);
 		    	   if(g.getMinDisLink().get(ver_end)==null) {
@@ -166,27 +161,7 @@ public class GraphSearchAlgorithm {
 		    				g.AddStack2(ver,ver_end, ver_dist+trans_dist);
 		    			}
 		    		}
-
-		    		//innermap.put(ver_end,g.getMinDisLink().get(ver_end));//新建一个innermap,将内层循环可达的所有站点距离存入
 		    	}
-		    	/*
-		    	//找出距离最小的站点
-		    	Entry<String, Integer> teMap =null;
-		    	int temp =100000;
-		    	for(Map.Entry<String, Integer> map:innermap.entrySet()) {	
-		    		if(map.getValue()<=temp) {
-		    			temp=map.getValue();
-		    			teMap=map;
-		    		}
-		    	}
-		    	latest_dist=teMap.getValue();
-		    	latest_Vertex=teMap.getKey();
-		    	//将距离最小的站点加入到visitedvertex中
-		    	if(latest_dist!=g.UpperLimitDis)
-	    		{
-	    			ver_dist=latest_dist;
-	    			visitedVertex.add(latest_Vertex);//unvisited没用？
-	    		}*/
 		    }
 		} catch (Exception e) {
 			// TODO: handle exception
