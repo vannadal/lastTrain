@@ -3,24 +3,24 @@ package gov.bjjtw.lastTrain.Preprocess;
 public class MainClass_Process {
 
 	public static void main(String[] args) throws Exception { 
-		String inputFile_transferLinks="D:\\Ä©°à³µ\\URTNet_TransferLinks_time.csv";
-		String adjecent_TransStation="D:\\Ä©°à³µ\\Adjecent_TransStation.csv";
-		String input_Station_name="D:\\Ä©°à³µ\\station.csv";
-		String outputFile_Adjecent_TransStation_ID="D:\\Ä©°à³µ\\Adjecent_TransStation_ID.csv";
+		String inputFile_transferLinks="D:\\æœ«ç­è½¦\\URTNet_TransferLinks_time.csv";
+		String adjecent_TransStation="D:\\æœ«ç­è½¦\\Adjecent_TransStation.csv";
+		String input_Station_name="D:\\æœ«ç­è½¦\\station.csv";
+		String outputFile_Adjecent_TransStation_ID="D:\\æœ«ç­è½¦\\Adjecent_TransStation_ID.csv";
 		
-		String input_URTNetStation="D:\\Ä©°à³µ\\URTNet_Station.csv";
-		String output_URTNetStation="D:\\Ä©°à³µ\\NonTrans_Adj_Trans.csv";
-		String filename="D:\\Ä©°à³µ\\available\\TimeTables.csv";
+		String input_URTNetStation="D:\\æœ«ç­è½¦\\URTNet_Station.csv";
+		String output_URTNetStation="D:\\æœ«ç­è½¦\\NonTrans_Adj_Trans.csv";
+		String filename="D:\\æœ«ç­è½¦\\available\\TimeTables.csv";
 		
 //		TransStation transStation=new TransStation();
-//		transStation.Adjecent_Station(inputFile_transferLinks, adjecent_TransStation,outputFile_Adjecent_TransStation_ID);//¼ÆËãÃ¿¸öµØÌúÕ¾µÄÁÚ½Ó»»³ËµØÌúÕ¾²¢ÇÒ´æ´¢µ½Adjecent_TransStation.csvÖĞ
+//		transStation.Adjecent_Station(inputFile_transferLinks, adjecent_TransStation,outputFile_Adjecent_TransStation_ID);//è®¡ç®—æ¯ä¸ªåœ°é“ç«™çš„é‚»æ¥æ¢ä¹˜åœ°é“ç«™å¹¶ä¸”å­˜å‚¨åˆ°Adjecent_TransStation.csvä¸­
 //		
-// ÒÑ¾­Éú³É×îÖÕ°æ±£´æÔÚAdjecent_TransStation.csv,ÎŞĞè¸ü¸Ä
+// å·²ç»ç”Ÿæˆæœ€ç»ˆç‰ˆä¿å­˜åœ¨Adjecent_TransStation.csv,æ— éœ€æ›´æ”¹
 //		AccCodeTransfer accCodeTransfer=new AccCodeTransfer();
 //		accCodeTransfer.AccCodeTransfer(inputFile_transferLinks,input_Station_name,adjecent_TransStation);
 		
 		DivideTimeTable timeTables=new DivideTimeTable();
-		//ÒÑ¾­Éú³ÉÁ½¸öÆ½ÈÕºÍË«Ğİ±£´æÔÚtimetablesÖĞ£¬ÎŞĞè¸ü¸Ä
+		//å·²ç»ç”Ÿæˆä¸¤ä¸ªå¹³æ—¥å’ŒåŒä¼‘ä¿å­˜åœ¨timetablesä¸­ï¼Œæ— éœ€æ›´æ”¹
 		timeTables.ReadTimeTable(filename);
 
 	    }

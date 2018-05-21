@@ -35,6 +35,7 @@ public class mainClass {
     private static Map<String,List<String>>  adj = null;
     //可查询末班车路径从此时刻开始，时间越晚g加载的列车运行时刻表数据越少
     private static String loadTimetableTime=null;
+    private static final double epsilon = 1e-15;
 
     public enum Cate {
         REACHABLE_PATH, REACHABLE_STATION,
@@ -447,7 +448,7 @@ public class mainClass {
     private static double GetGeoDistanceBetweenStations(String station1, String station2){
         Float [] lastStationPosition = graph.getGeoPosition(station1);
         Float [] destStationPosition = graph.getGeoPosition(station2);
-        if (lastStationPosition[0] > 0.0 && lastStationPosition[1] > 0.0 && destStationPosition[0] > 0.0 && destStationPosition[1] > 0.0){
+        if (lastStationPosition[0] - 0.0 > epsilon && lastStationPosition[1] - 0.0 > epsilon && destStationPosition[0] - 0.0 > epsilon && destStationPosition[1] - 0.0 > epsilon){
             return CommonTools.SimpleDist(lastStationPosition[1],lastStationPosition[0],destStationPosition[1],destStationPosition[0]);
         }
         return -1.0;
@@ -478,7 +479,7 @@ public class mainClass {
                         for(String line: graph.getStack3()){
                             String [] items = line.split(",");
                             double currentDistance = GetGeoDistanceBetweenStations(items[0],endvertex);
-                            if (currentDistance > 0.0000001 && currentDistance < minDist) {
+                            if (currentDistance - 0.0000001 > epsilon && minDist - currentDistance > epsilon) {
                                 minStation = items[0];
                                 minDist = currentDistance;
                             }

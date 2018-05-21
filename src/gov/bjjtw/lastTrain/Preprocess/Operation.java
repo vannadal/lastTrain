@@ -25,7 +25,7 @@ public class Operation{
 			//table_data =new String[380][21];
 			int i=0;
 			while((str=br.readLine())!=null) {
-				// ×Ö·û´®Îªµ¥Î»µÄ¶şÎ¬Êı×é
+				// å­—ç¬¦ä¸²ä¸ºå•ä½çš„äºŒç»´æ•°ç»„
 				temp=str.split(",");
 				int j=0;
 				while(j<temp.length){
