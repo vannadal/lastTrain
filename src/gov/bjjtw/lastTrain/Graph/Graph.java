@@ -30,8 +30,8 @@ public final class Graph implements Serializable{
 	private int inc_sec;
 	  
 	private boolean isWeekend;
-	public String UpperLimitTime="25:59:59";
-	public int UpperLimitDis =10000000;
+	public static final String UpperLimitTime="25:59:59";
+	public static final int UpperLimitDis =10000000;
 
 	public void addGeoPosition(String acccode, String geoposition){
 		station_geo.put(acccode,geoposition);

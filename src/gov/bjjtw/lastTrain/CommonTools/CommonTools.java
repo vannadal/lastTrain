@@ -2,6 +2,8 @@ package gov.bjjtw.lastTrain.CommonTools;
 
 
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -25,7 +27,23 @@ public class CommonTools {
         int h=second/3600;
         int m=(second-h*3600)/60;
         int s=(second-h*3600-m*60);
-        return h+":"+m+":"+s;
+        String hours,minutes,seconds;
+        if (h<10) {
+            hours = "0"+h;
+        } else {
+            hours = String.valueOf(h);
+        }
+        if (m<10){
+            minutes = "0"+m;
+        } else{
+            minutes = String.valueOf(m);
+        }
+        if (s<10){
+            seconds = "0"+s;
+        } else {
+            seconds = String.valueOf(s);
+        }
+        return hours+":"+minutes+":"+seconds;
     }
 
     public static Object DeepCopy(Object orig) {

@@ -380,6 +380,7 @@ public class mainClass {
     private static LinkedList<String> ComputeReachablePath(String startvertex,String dateString,String time,String endvertex) {
         String ver=endvertex;
         String content="";
+        Boolean hasValidStation = false;
         LinkedList<String> path = new LinkedList<String>();
         graph.setStack3();
 
@@ -397,12 +398,17 @@ public class mainClass {
                 content=graph.getPathStack().pop();
                 String str[]=content.split(",");
                 context = str[0]+","+str[1]+","+str[4]+","+str[3]+","+str[2];
+                if (str[2].equals(Graph.UpperLimitTime) == false) {
+                    hasValidStation = true;
+                }
                 path.add(context);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        if (hasValidStation == false) {
+            path.clear();
+        }
         return path;
     }
 
@@ -418,6 +424,8 @@ public class mainClass {
             tmp = result.getLast().split(",");
             output.add(tmp[1] + "," + tmp[3] + ",1");
             startvertex = tmp[1];
+        } else {
+            output.add(startvertex+","+starttime+",1");
         }
         if (startvertex.equals(endvertex) == false){
             resetGraph();
@@ -474,7 +482,7 @@ public class mainClass {
                     if (reachableStation != null && reachableStation.size()>0) {
                         return reachableStation;
                     } else {
-                        String minStation = "";
+                        String minStation = startvertex;
                         double minDist = GetGeoDistanceBetweenStations(startvertex,endvertex);
                         for(String line: graph.getStack3()){
                             String [] items = line.split(",");
@@ -484,7 +492,7 @@ public class mainClass {
                                 minDist = currentDistance;
                             }
                         }
-                        if (minStation.length() > 0){
+                        if (minStation.equals(startvertex) == false){
                             resetGraph();
                             return GraphTraversal(startvertex, minStation, starttime, datestring, stationnametoacccode);
                         } else {
@@ -514,6 +522,8 @@ public class mainClass {
         br.close();
 
         System.out.println("==========Output Demo==========");
+        System.out.println("23:10:00 XiZhiMen-XiZhiMen Path");
+        System.out.println(mainClass.GetReachablePath("2018-04-25","23:10:00","150995457","150995474"));
         System.out.println("22:10:00 XiZhiMen Reachable Stations");
         System.out.println(mainClass.GetReachableStation("2018-04-25","22:10:00","150995457"));
         System.out.println("22:10:00 XiZhiMen-LiuLiQiao Path");
