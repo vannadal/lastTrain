@@ -36,7 +36,7 @@ public class AccCodeTransfer {
 			}
 		}
 
-		//°Ñ8ºÅÏß×ª»»³É80£¬°Ñ13ºÅÏß×ª»»³É130
+		//æŠŠ8å·çº¿è½¬æ¢æˆ80ï¼ŒæŠŠ13å·çº¿è½¬æ¢æˆ130
 		for(int i=0;i<operation[2].table_data.length;i++){
 			for(int j=1;j<operation[2].table_data[i].length;j++){
 				if(operation[2].table_data[i][j]==null){
@@ -48,26 +48,26 @@ public class AccCodeTransfer {
 				}
 				for(int k=0;k<operation[1].table_data.length;k++){
 					HashMap<String,String> map=new HashMap<String,String>();
-					map.put("·¿É½Ïß", "L091");
-					map.put("°ËÍ¨Ïß", "L011");
-					map.put("»ú³¡Ïß", "L021");
-					map.put("Òà×¯Ïß", "L051");
-					map.put("²ıÆ½Ïß", "L131");
-					map.put("Ñà·¿Ïß", "L092");
-					map.put("Î÷½¼Ïß", "L101");
-					map.put("1ºÅÏß", "L010");
-					map.put("2ºÅÏß", "L020");
-					map.put("4ºÅÏß", "L040");
-					map.put("5ºÅÏß", "L050");
-					map.put("6ºÅÏß", "L060");
-					map.put("7ºÅÏß", "L070");
-					map.put("8ºÅÏß", "L080");
-					map.put("9ºÅÏß", "L090");
-					map.put("10ºÅÏß", "L100");
-					map.put("13ºÅÏß", "L130");
-					map.put("14ºÅÏß", "L140");
-					map.put("15ºÅÏß", "L150");
-					map.put("16ºÅÏß", "L160");
+					map.put("æˆ¿å±±çº¿", "L091");
+					map.put("å…«é€šçº¿", "L011");
+					map.put("æœºåœºçº¿", "L021");
+					map.put("äº¦åº„çº¿", "L051");
+					map.put("æ˜Œå¹³çº¿", "L131");
+					map.put("ç‡•æˆ¿çº¿", "L092");
+					map.put("è¥¿éƒŠçº¿", "L101");
+					map.put("1å·çº¿", "L010");
+					map.put("2å·çº¿", "L020");
+					map.put("4å·çº¿", "L040");
+					map.put("5å·çº¿", "L050");
+					map.put("6å·çº¿", "L060");
+					map.put("7å·çº¿", "L070");
+					map.put("8å·çº¿", "L080");
+					map.put("9å·çº¿", "L090");
+					map.put("10å·çº¿", "L100");
+					map.put("13å·çº¿", "L130");
+					map.put("14å·çº¿", "L140");
+					map.put("15å·çº¿", "L150");
+					map.put("16å·çº¿", "L160");
 
 					String ab=(String) map.get(temp[1]);
 					if(ab==null){

@@ -8,12 +8,12 @@ import java.io.FileWriter;
 
 public class DivideTimeTable {
 
-	//½«ÁĞ³µÊ±¿Ì±í°´ÕÕ¹¤×÷ÈÕ/ÖÜÄ©ÒÔ¼°ÉÏĞĞ/ÏÂĞĞ²ğ·Ö³ÉËÄ¸ö±í¸ñ
+	//å°†åˆ—è½¦æ—¶åˆ»è¡¨æŒ‰ç…§å·¥ä½œæ—¥/å‘¨æœ«ä»¥åŠä¸Šè¡Œ/ä¸‹è¡Œæ‹†åˆ†æˆå››ä¸ªè¡¨æ ¼
 	public void ReadTimeTable(String filename) {
 		try {
 			BufferedReader br=new BufferedReader(new FileReader(new File(filename)));
-			BufferedWriter bw_weekday=new BufferedWriter(new FileWriter(new File("D:\\Ä©°à³µ\\available\\weekday_timetable_allstation.csv"),true));
-			BufferedWriter bw_weekend=new BufferedWriter(new FileWriter(new File("D:\\Ä©°à³µ\\available\\weekend_timetable_allstation.csv"),true));
+			BufferedWriter bw_weekday=new BufferedWriter(new FileWriter(new File("D:\\æœ«ç­è½¦\\available\\weekday_timetable_allstation.csv"),true));
+			BufferedWriter bw_weekend=new BufferedWriter(new FileWriter(new File("D:\\æœ«ç­è½¦\\available\\weekend_timetable_allstation.csv"),true));
 			br.readLine();
 			String temp,start_acc,start_departuretime,end_acc,end_departuretime,str[],tripNumber,week,end_arrivingtime;
 			str=br.readLine().split(",");
@@ -28,8 +28,8 @@ public class DivideTimeTable {
 					end_departuretime=str[1];
 					end_arrivingtime=str[6];
 					week=str[2];
-					//×îºóÒ»ÁĞÊÇÏÂÒ»Õ¾µÄµ½´ïÊ±¼ä
-					if(week.equals("Ë«Ğİ")) {
+					//æœ€åä¸€åˆ—æ˜¯ä¸‹ä¸€ç«™çš„åˆ°è¾¾æ—¶é—´
+					if(week.equals("åŒä¼‘")) {
 						bw_weekend.write(start_acc+","+end_acc+","+start_departuretime+","+end_departuretime+","+tripNumber+","+end_arrivingtime+"\n");
 					} else{
 						bw_weekday.write(start_acc+","+end_acc+","+start_departuretime+","+end_departuretime+","+tripNumber+","+end_arrivingtime+"\n");

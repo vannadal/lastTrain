@@ -88,7 +88,7 @@ public class TransStation {
 					}
 				}
 
-				//2╨еоъйг╩╥оъё╛╪сиод╘н╡аз╫с╩╩Ёку╬
+				//2Е▐╥Г╨©Ф≤╞Г▌╞Г╨©О╪▄Е┼═Д╦┼Ф°╚Е╟╬И┌╩Ф▌╔Ф█╒Д╧≤Г╚≥
 				if(station_id[position].equals("S02002")) {
 					for(int k=1;k<20;k++) {
 						if(trans_stations[j][k].equals("S02018")) {
@@ -102,7 +102,7 @@ public class TransStation {
 					}
 				}
 
-				//2╨еоъйг╩╥оъё╛╪сиойв╦Жаз╫с╩╩Ёку╬
+				//2Е▐╥Г╨©Ф≤╞Г▌╞Г╨©О╪▄Е┼═Д╦┼И╕√Д╦╙И┌╩Ф▌╔Ф█╒Д╧≤Г╚≥
 				if(station_id[position].equals("S02018")) {
 					for(int k=1;k<20;k++) {
 						if(trans_stations[j][k].equals("S02002")) {
@@ -116,7 +116,7 @@ public class TransStation {
 					}
 				}
 
-				//10╨еоъйг╩╥оъё╛╪сиод╘н╡аз╫с╩╩Ёку╬
+				//10Е▐╥Г╨©Ф≤╞Г▌╞Г╨©О╪▄Е┼═Д╦┼Ф°╚Е╟╬И┌╩Ф▌╔Ф█╒Д╧≤Г╚≥
 				if(station_id[position].equals("S10003")) {
 					for(int k=1;k<20;k++) {
 						if(trans_stations[j][k].equals("S10045")) {
@@ -130,7 +130,7 @@ public class TransStation {
 					}
 				}
 
-				//10╨еоъйг╩╥оъё╛╪сиойв╦Жаз╫с╩╩Ёку╬
+				//10Е▐╥Г╨©Ф≤╞Г▌╞Г╨©О╪▄Е┼═Д╦┼И╕√Д╦╙И┌╩Ф▌╔Ф█╒Д╧≤Г╚≥
 				if(station_id[position].equals("S10045")) {
 					for(int k=1;k<20;k++) {
 						if(trans_stations[j][k].equals("S10003")) {
