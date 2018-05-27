@@ -13,7 +13,7 @@ public final class Graph implements Serializable{
 	private Map<String,Integer> minDisLink=new HashMap<>();
 	private Map<String,String> transTime=new HashMap<>();
 	private Map<String, String> accInLine=new HashMap<>();
-	private Map<String, String> acctoName=new HashMap<>();
+	//private Map<String, String> acctoName=new HashMap<>();
 	private Map<String, String> WalkTimeString=new HashMap<>();
 	private Stack<String> stack=new Stack<>();
 	private Stack<String> stackPath=new Stack<>();
@@ -21,6 +21,7 @@ public final class Graph implements Serializable{
 	private Stack<String> stackPath2=new Stack<>();
 	private Stack<String> stack3=new Stack<>();
 	private Map<String, List<String>> adj = new HashMap<>();
+	private Map<String, List<String>> adj3 = new HashMap<>();
 	private Map<String, Integer> stationdistance =new HashMap<>();
 	private Map<String, List<String>> timetable_weekday = new HashMap<>();
 	private Map<String, List<String>> timetable_weekend = new HashMap<>();
@@ -93,6 +94,12 @@ public final class Graph implements Serializable{
 		} else {
 			adj.get(fromVertex).add(toVertex);
 		}
+		if (adj3.get(toVertex) == null){
+			adj3.put(toVertex, new ArrayList<String>());
+			adj3.get(toVertex).add(fromVertex);
+		} else {
+			adj3.get(toVertex).add(fromVertex);
+		}
 	}
 
 	public void RemoveEdge(String fromVertex, String toVertex) {
@@ -143,12 +150,6 @@ public final class Graph implements Serializable{
 			stack3.add(s);
 		}
 	}
-	public void backfillStack3(){
-		stack.clear();
-		for(String s:stack3){
-			stack.add(s);
-		}
-	}
 
 	public Stack<String> getPathStack2()
 	  {
@@ -172,7 +173,6 @@ public final class Graph implements Serializable{
 		}
 		stationdistance.put(acccode,distance);
 	}
-
 
 	public void Add_UnVisitedVertex(String str)
 	  {
@@ -224,12 +224,17 @@ public final class Graph implements Serializable{
 	public void Add_AccInLine(String accCode,String line) {
 		accInLine.put(accCode,line);
 	}
-	  
-	public void Add_acctoName(String accCode,String name)
-	  {
+
+	/*
+	public void Add_acctoName(String accCode,String name) {
 		  acctoName.put(accCode,name);
-	  }
-	  
+	}
+	public Map<String, String> getAcctoName() {
+		return acctoName;
+	}
+	public String checkAcctoName(String key) { return acctoName.get(key);}
+	*/
+
 	public void addVertex(String vertex) {
 	  	if (adj.get(vertex)==null) {
 	  		adj.put(vertex, new ArrayList<>());
@@ -238,8 +243,12 @@ public final class Graph implements Serializable{
 
 	public Map<String, List<String>> getAdj() {
 	    return adj;
-	  }
-	  
+	}
+
+	public Map<String, List<String>> getAdj3() {
+		return adj3;
+	}
+
 	public void Add_WalkTime(String acccode,String time) {
 		if (WalkTimeString.get(acccode)==null) {
 			WalkTimeString.put(acccode, new String());
@@ -270,11 +279,7 @@ public final class Graph implements Serializable{
 		  }
 	  
 	public Map<String, String> getAccInLine() { return accInLine; }
-	  
-	public Map<String, String> getAcctoName() {
-		return acctoName;
-	}
-	public String checkAcctoName(String key) { return acctoName.get(key);}
+
 	public boolean getIsWeekend(){
 	  return isWeekend;
 	}

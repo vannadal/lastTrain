@@ -2,7 +2,9 @@ package gov.bjjtw.lastTrain.CommonTools;
 
 
 import java.io.*;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -83,4 +85,21 @@ public class CommonTools {
         return Math.sqrt(Lx * Lx + Ly * Ly);
     }
 
+    public static boolean isWeekend(String dateString) {
+        try{
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = format.parse(dateString);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            if(cal.get(Calendar.DAY_OF_WEEK)==Calendar.SATURDAY||cal.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
