@@ -552,9 +552,11 @@ public class mainClass {
         System.out.println("==========Output Demo==========");
         System.out.println("23:10:00 XiZhiMen-LiuLiQiao Path");
         System.out.println(mainClass.GetReachableStationLatestPath("2018-04-25","23:45:00","150995457","151018037"));
+        System.out.println("23:10:00 XiZhiMen-LianHuaQiao Path");
+        System.out.println(mainClass.GetReachableStationLatestPath("2018-04-25","23:45:00","150995457","150997279"));
         System.out.println("23:10:00 XiZhiMen-LiuLiQiao Path");
         System.out.println(mainClass.GetReachablePath("2018-04-25","23:10:00","150995457","151018037"));
-        System.out.println("22:10:00 XiZhiMen-LiuLiQiao Path");
+        System.out.println("23:10:00 XiZhiMen-LiuLiQiao Path");
         System.out.println(mainClass.GetReachablePath("2018-04-25","22:10:00","150995457","151018037"));
         System.out.println("23:10:00 XiZhiMen-XiZhiMen Path");
         System.out.println(mainClass.GetReachablePath("2018-04-25","23:10:00","150995457","150995474"));

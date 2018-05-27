@@ -147,7 +147,7 @@ public class GraphSearchAlgorithm {
 		    UnVisitedVertex=g.getUnVisitedVertex();
 
 		    UnVisitedVertex.remove(ver);
-		    String ver_Time=null,ver_before=null;
+		    String ver_Time=null,ver_before=ver;
 		    
 		    while(!(FindLatestVertex3(g,g.getMinTimeLink()).equals("null"))) {
 		    	ver=FindLatestVertex3(g,g.getMinTimeLink());
@@ -187,18 +187,20 @@ public class GraphSearchAlgorithm {
 						de_t_s =  CommonTools.TransferTime(str2[2]);
 		    		} else{
 						// bug: change first part to arriving time
-		    			de_t= CommonTools.TransferTime(ver_Time)+Integer.parseInt(g.getTransTime().get(ver+ver_start));
-		    			arr_t = de_t;
-		    			de_t_s= CommonTools.TransferTime(ver_Time);
+						de_t = CommonTools.TransferTime(ver_Time);
+						arr_t = de_t;
+						de_t_s =  de_t - Integer.parseInt(g.getTransTime().get(ver+ver_start));
 		    		}
 
 		    		if(g.getMinTimeLink().get(ver_start)==null) {
-		    			g.getMinTimeLink().put(ver_start, CommonTools.SecondToTime(de_t));
+		    			//g.getMinTimeLink().put(ver_start, CommonTools.SecondToTime(de_t));
+						g.getMinTimeLink().put(ver_start, CommonTools.SecondToTime(de_t_s));
 		    			g.AddStack(ver_start, ver, CommonTools.SecondToTime(de_t), CommonTools.SecondToTime(arr_t), CommonTools.SecondToTime(de_t_s));
 		    		} else {
 		    			int temp_t= CommonTools.TransferTime(g.getMinTimeLink().get(ver_start));
 		    			if(de_t<temp_t) {
-		    				g.getMinTimeLink().put(ver_start, CommonTools.SecondToTime(de_t));
+		    				//g.getMinTimeLink().put(ver_start, CommonTools.SecondToTime(de_t));
+							g.getMinTimeLink().put(ver_start, CommonTools.SecondToTime(de_t_s));
 		    				g.AddStack(ver_start,ver, CommonTools.SecondToTime(de_t), CommonTools.SecondToTime(arr_t), CommonTools.SecondToTime(de_t_s));
 		    			}
 		    		}
@@ -363,9 +365,9 @@ public class GraphSearchAlgorithm {
 				g.getMinTimeLink().put(adjVertex, new String());
 			}
 			String alltime;
-			int adj_time;
-			int arr_t;
-			int de_t_s;
+			int adj_time = 0;
+			int arr_t = 0;
+			int de_t_s = 0;
 			String str[];
 			if (g.getAccInLine().get(vertex).equals(g.getAccInLine().get(adjVertex))) {
 				alltime = FindLatestTime3(g, vertex, adjVertex, ver_time, 0);
@@ -377,11 +379,12 @@ public class GraphSearchAlgorithm {
 				arr_t = CommonTools.TransferTime(str[1]);
 				de_t_s = CommonTools.TransferTime(str[2]);
 			} else {
-				adj_time = (CommonTools.TransferTime(ver_time) + Integer.parseInt(g.getTransTime().get(adjVertex + vertex)));
+				adj_time = CommonTools.TransferTime(ver_time);
 				arr_t = adj_time;
-				de_t_s = CommonTools.TransferTime(ver_time);
+				de_t_s = adj_time - Integer.parseInt(g.getTransTime().get(adjVertex + vertex));
 			}
-			g.getMinTimeLink().put(adjVertex, CommonTools.SecondToTime(adj_time));
+			//g.getMinTimeLink().put(adjVertex, CommonTools.SecondToTime(adj_time));
+			g.getMinTimeLink().put(adjVertex, CommonTools.SecondToTime(de_t_s));
 			g.AddStack(adjVertex, vertex, CommonTools.SecondToTime(adj_time), CommonTools.SecondToTime(arr_t), CommonTools.SecondToTime(de_t_s));
 		}
 
