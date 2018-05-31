@@ -50,11 +50,13 @@ public class mainClass {
 
     private static void resetGraph(){
         graph.setAdj(adj);
+        graph.setAdj3(adj);
         graph.setUnVisitedVertex(unVisitedVertex);
         graph.cleanMinDisLink();
         graph.cleanMinTimeLink();
         graph.cleanReachableSt();
         graph.cleanWalkTimeString();
+        graph.cleanStack3();
         graph.cleanStack();
         graph.cleanStack2();
         graph.cleanStackPath();
@@ -552,6 +554,7 @@ public class mainClass {
         System.out.println("==========Output Demo==========");
         System.out.println("23:10:00 XiZhiMen-LiuLiQiao Path");
         System.out.println(mainClass.GetReachableStationLatestPath("2018-04-25","23:45:00","150995457","151018037"));
+        System.out.println(mainClass.GetReachableStationLatestPath("2018-04-25","23:45:00","151018037","150995457"));
         System.out.println("23:10:00 XiZhiMen-LianHuaQiao Path");
         System.out.println(mainClass.GetReachableStationLatestPath("2018-04-25","23:45:00","150995457","150997279"));
         System.out.println("23:10:00 XiZhiMen-LiuLiQiao Path");
