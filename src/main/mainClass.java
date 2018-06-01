@@ -50,11 +50,13 @@ public class mainClass {
 
     private static void resetGraph(){
         graph.setAdj(adj);
+        graph.setAdj3(adj);
         graph.setUnVisitedVertex(unVisitedVertex);
         graph.cleanMinDisLink();
         graph.cleanMinTimeLink();
         graph.cleanReachableSt();
         graph.cleanWalkTimeString();
+        graph.cleanStack3();
         graph.cleanStack();
         graph.cleanStack2();
         graph.cleanStackPath();
@@ -550,8 +552,14 @@ public class mainClass {
         br.close();
 
         System.out.println("==========Output Demo==========");
+        System.out.println("17:17:00 ShiQiao-LiuLiQiao Reachable Station");
+        System.out.println(mainClass.GetReachablePath("2018-04-25","21:38:00","151018261","151018273"));
+        System.out.println(mainClass.GetReachableStation("2018-04-25","17:17:00","151018261"));
+        System.out.println(mainClass.GetReachablePath("2018-04-25","17:17:00","151018261","151018273"));
+        System.out.println(mainClass.GetReachableStationLatestPath("2018-04-25","17:17:00","151018261","151018273"));
         System.out.println("23:10:00 XiZhiMen-LiuLiQiao Path");
         System.out.println(mainClass.GetReachableStationLatestPath("2018-04-25","23:45:00","150995457","151018037"));
+        System.out.println(mainClass.GetReachableStationLatestPath("2018-04-25","23:45:00","151018037","150995457"));
         System.out.println("23:10:00 XiZhiMen-LianHuaQiao Path");
         System.out.println(mainClass.GetReachableStationLatestPath("2018-04-25","23:45:00","150995457","150997279"));
         System.out.println("23:10:00 XiZhiMen-LiuLiQiao Path");

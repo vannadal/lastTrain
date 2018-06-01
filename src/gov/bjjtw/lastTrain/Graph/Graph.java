@@ -63,6 +63,17 @@ public final class Graph implements Serializable{
 		}
 	}
 
+	public void setAdj3(Map<String,List<String>> inputAdj){
+		adj3 =new HashMap<>();
+		for(String k: inputAdj.keySet()){
+			List<String> tmpList = new ArrayList<String>();
+			for(String v: inputAdj.get(k)){
+				tmpList.add(v);
+			}
+			adj3.put(k,tmpList);
+		}
+	}
+
 	public void InitialSearchStartVertex(String startVertex,String dateString,String time,String end_Vertex) {
 		firstVertax=startVertex;
 		firstTime=time;
@@ -105,6 +116,9 @@ public final class Graph implements Serializable{
 	public void RemoveEdge(String fromVertex, String toVertex) {
 		if(adj.get(fromVertex).contains(toVertex)) {
 			adj.get(fromVertex).remove((toVertex));
+		}
+		if(adj3.get(toVertex).contains(fromVertex)){
+			adj3.get(toVertex).remove((fromVertex));
 		}
 	}
 
@@ -196,6 +210,9 @@ public final class Graph implements Serializable{
 	public void cleanStack2(){
 		stack2.clear();
 	}
+	public void cleanStack3(){
+		stack3.clear();
+	}
 	public void cleanStackPath2(){
 		stackPath2.clear();
 	}
@@ -238,6 +255,9 @@ public final class Graph implements Serializable{
 	public void addVertex(String vertex) {
 	  	if (adj.get(vertex)==null) {
 	  		adj.put(vertex, new ArrayList<>());
+		}
+		if (adj3.get(vertex)==null){
+	  		adj3.put(vertex, new ArrayList<>());
 		}
 	}
 

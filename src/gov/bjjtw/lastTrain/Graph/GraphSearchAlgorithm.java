@@ -359,7 +359,6 @@ public class GraphSearchAlgorithm {
 	private boolean InitialMinTimeLink3(Graph g,String vertex,String ver_time) {
 		List<String> toBeUpdatedVertex = g.getAdj3().get(vertex);
 		g.getMinTimeLink().clear();
-		toBeUpdatedVertex.sort(Comparator.naturalOrder());
 		for (String adjVertex : toBeUpdatedVertex) {
 			if (g.getMinTimeLink().get(adjVertex) == null) {
 				g.getMinTimeLink().put(adjVertex, new String());
@@ -468,7 +467,7 @@ public class GraphSearchAlgorithm {
 		String latestArrTime = Graph.UpperLimitTime;
 		String str[],start_time,end_time,allTime;
 
-		toBeVisitedTime.sort(Comparator.naturalOrder());
+		//toBeVisitedTime.sort(Comparator.naturalOrder());
 
 		for(String v_time:toBeVisitedTime) {
 			str=v_time.split(",");
