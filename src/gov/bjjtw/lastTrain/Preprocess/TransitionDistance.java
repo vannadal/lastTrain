@@ -38,7 +38,7 @@ public class TransitionDistance {
 	    	nametoacc.put(stationnames2+line, acc);			
 		}
 
-	    br_new.close();bfw.append("初始acc,换乘acc,花费时间,距离").append("\n");
+	    br_new.close();bfw.append("鍒濆acc,鎹箻acc,鑺辫垂鏃堕棿,璺濈").append("\n");
 		while((temp=br.readLine())!=null) {
 	    	str=temp.split(",");
 			stationnames1 = str[0];

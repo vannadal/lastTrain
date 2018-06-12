@@ -10,19 +10,19 @@ public class NonTransAdjTrans {
 	static String transAdjTrans = "";
 
 	public static void main(String args[])throws IOException{
-		//ÌáÈ¡ÈÎÒâÒ»¸ö·Ç»»³ËÕ¾¶ÔÓ¦µÄ×î½ü»»³ËÕ¾±àÂë¼°»»³ËÕ¾¶ÔÓ¦µÄÆäËûÏßÂ·»»³ËÕ¾±àÂë
-		//½«½á¹û±£´æÔÚNonTrans_Adj_Trans.csv
+		//æå–ä»»æ„ä¸€ä¸ªéæ¢ä¹˜ç«™å¯¹åº”çš„æœ€è¿‘æ¢ä¹˜ç«™ç¼–ç åŠæ¢ä¹˜ç«™å¯¹åº”çš„å…¶ä»–çº¿è·¯æ¢ä¹˜ç«™ç¼–ç 
+		//å°†ç»“æœä¿å­˜åœ¨NonTrans_Adj_Trans.csv
 		NonTransAdjTrans adjoin=new NonTransAdjTrans();
 		adjoin.NonTransAdjTrans1();
 	}
 
 	public void NonTransAdjTrans1() throws IOException {
 		// TODO Auto-generated method stub
-		String output_NonTransstationAdjStation="D:\\Ä©°à³µ\\available\\NonTrans_Adj_Trans.csv";
-		String output_TransStationAdjStation="D:\\Ä©°à³µ\\available\\Trans_Adj_Trans.csv";
-		Operation op=new Operation("D:\\Ä©°à³µ\\URTNet_Station.csv",380,6);
+		String output_NonTransstationAdjStation="D:\\æœ«ç­è½¦\\available\\NonTrans_Adj_Trans.csv";
+		String output_TransStationAdjStation="D:\\æœ«ç­è½¦\\available\\Trans_Adj_Trans.csv";
+		Operation op=new Operation("D:\\æœ«ç­è½¦\\URTNet_Station.csv",380,6);
 		op.readCsv();
-		Operation op2=new Operation("D:\\Ä©°à³µ\\URTNet_TransferLinks_time.csv",129,8);
+		Operation op2=new Operation("D:\\æœ«ç­è½¦\\URTNet_TransferLinks_time.csv",129,8);
 		op2.readCsv();
 		int row_length=op.table_data.length;
 		int column_length=6;
@@ -30,19 +30,19 @@ public class NonTransAdjTrans {
 		int row2_length=op2.table_data.length;
 		
 		for(int i=1;i<row2_length;i++) {
-			//true±êÊ¶¿É»»³ËÏßÂ·Â·¾¶
+			//trueæ ‡è¯†å¯æ¢ä¹˜çº¿è·¯è·¯å¾„
 			if(op2.table_data[i][1]!=null&&op2.table_data[i][1].equals("TRUE")) {
-				//ÕÒ»»³ËÕ¾µÄ»»³ËÕ¾µã,1±êÊ¶»»³ËÕ¾
+				//æ‰¾æ¢ä¹˜ç«™çš„æ¢ä¹˜ç«™ç‚¹,1æ ‡è¯†æ¢ä¹˜ç«™
 				str1+=op2.table_data[i][3]+","+op2.table_data[i][5]+","+op2.table_data[i][7]+"\n";
 			}	
 		}
 			
 		for(int i=0;i<row_length;i++){
-			if(op.table_data[i][3]!=null&&op.table_data[i][3].equals("ÖĞ¼äÕ¾")){
+			if(op.table_data[i][3]!=null&&op.table_data[i][3].equals("ä¸­é—´ç«™")){
 				int j=i;
-				//±È½ÏÏßÂ·ÊıÊÇ·ñÏàÍ¬£¬Èç¹ûÏàÍ¬£¬¾Í¿´ÊÇ²»ÊÇ»»³ËÕ¾£»
+				//æ¯”è¾ƒçº¿è·¯æ•°æ˜¯å¦ç›¸åŒï¼Œå¦‚æœç›¸åŒï¼Œå°±çœ‹æ˜¯ä¸æ˜¯æ¢ä¹˜ç«™ï¼›
 				while(op.table_data[j][2]!=null&&op.table_data[j][2].equals(op.table_data[i][2])){
-					if(op.table_data[j][3].equals("»»³ËÕ¾")){
+					if(op.table_data[j][3].equals("æ¢ä¹˜ç«™")){
 						op.table_data[i][4]=op.table_data[j][0];
 						break;
 					}
@@ -55,17 +55,17 @@ public class NonTransAdjTrans {
 				}
 				j=i;
 				while(op.table_data[j][2]!=null&&op.table_data[j][2].equals(op.table_data[i][2])){
-					if(op.table_data[j][3]!=null&&op.table_data[j][3].equals("»»³ËÕ¾")){
+					if(op.table_data[j][3]!=null&&op.table_data[j][3].equals("æ¢ä¹˜ç«™")){
 						op.table_data[i][5]=op.table_data[j][0];
 						break;
 					}
 					j++;		
 				}
-			} else if(op.table_data[i][3]!=null&&op.table_data[i][3].equals("Ê¼·¢ÖÕµ½Õ¾")) {
+			} else if(op.table_data[i][3]!=null&&op.table_data[i][3].equals("å§‹å‘ç»ˆåˆ°ç«™")) {
 				int j=i;
-				//±È½ÏÏßÂ·ÊıÊÇ·ñÏàÍ¬£¬Èç¹ûÏàÍ¬£¬¾Í¿´ÊÇ²»ÊÇ»»³ËÕ¾£»
+				//æ¯”è¾ƒçº¿è·¯æ•°æ˜¯å¦ç›¸åŒï¼Œå¦‚æœç›¸åŒï¼Œå°±çœ‹æ˜¯ä¸æ˜¯æ¢ä¹˜ç«™ï¼›
 				while(op.table_data[j][2]!=null&&op.table_data[j][2].equals(op.table_data[i][2])) {
-					if(op.table_data[j][3].equals("»»³ËÕ¾")){
+					if(op.table_data[j][3].equals("æ¢ä¹˜ç«™")){
 						op.table_data[i][4]=op.table_data[j][0];
 						break;
 					}
@@ -78,14 +78,14 @@ public class NonTransAdjTrans {
 				}
 				j=i;
 				while(op.table_data[j][2]!=null&&op.table_data[j][2].equals(op.table_data[i][2])){
-					if(op.table_data[j][3]!=null&&op.table_data[j][3].equals("»»³ËÕ¾")){
+					if(op.table_data[j][3]!=null&&op.table_data[j][3].equals("æ¢ä¹˜ç«™")){
 						op.table_data[i][5]=op.table_data[j][0];
 						break;
 					}
 					j++;		
 				}
 			} else{
-				op.table_data[i][4]="»»³ËÕ¾";
+				op.table_data[i][4]="æ¢ä¹˜ç«™";
 			}		
 		}
 		
@@ -93,7 +93,7 @@ public class NonTransAdjTrans {
 			BufferedWriter bw=new BufferedWriter(new FileWriter(new File(output_NonTransstationAdjStation)));
 			BufferedWriter bw1=new BufferedWriter(new FileWriter(new File(output_TransStationAdjStation)));
 			for(int i=0;i<row_length;i++){
-				if(op.table_data[i][3]!=null&&!op.table_data[i][3].equals("»»³ËÕ¾")) {
+				if(op.table_data[i][3]!=null&&!op.table_data[i][3].equals("æ¢ä¹˜ç«™")) {
 					for(int j=0;j<column_length;j++){ 
 						if(op.table_data[i][j]!=null&&op.table_data[i][j].contains("S")) { 
 							str2+=op.table_data[i][j]+",";

@@ -9,13 +9,13 @@ public class StationIDToAccCode {
 		// TODO Auto-generated method stub
 		// TODO Auto-generated method stub
 
-		//Í¬Ò»Õ¾²»Í¬ÏßÂ·µÄ»»³ËÕ¾»»³ËÁÚ½Ó±àÂë
-		String sameTransStationAdj="D:\\Ä©°à³µ\\Trans_Adj_Trans.csv";
-		//Í¬Ò»ÏßÉÏ»»³ËÕ¾µÄÁÚ½ÓÕ¾±àÂë
-		String transStationAdjTransStation="D:\\Ä©°à³µ\\Adjecent_TransStation_ID.csv";
-		//ËùÓĞ·Ç»»³ËÕ¾ÁÚ½Ó»»³ËÕ¾±àÂë
-		String nonTransStation="D:\\Ä©°à³µ\\available\\NonTrans_Adj_Trans.csv";
-		String acccodeFile="D:\\Ä©°à³µ\\available\\StationTransAccCode.csv";
+		//åŒä¸€ç«™ä¸åŒçº¿è·¯çš„æ¢ä¹˜ç«™æ¢ä¹˜é‚»æ¥ç¼–ç 
+		String sameTransStationAdj="D:\\æœ«ç­è½¦\\Trans_Adj_Trans.csv";
+		//åŒä¸€çº¿ä¸Šæ¢ä¹˜ç«™çš„é‚»æ¥ç«™ç¼–ç 
+		String transStationAdjTransStation="D:\\æœ«ç­è½¦\\Adjecent_TransStation_ID.csv";
+		//æ‰€æœ‰éæ¢ä¹˜ç«™é‚»æ¥æ¢ä¹˜ç«™ç¼–ç 
+		String nonTransStation="D:\\æœ«ç­è½¦\\available\\NonTrans_Adj_Trans.csv";
+		String acccodeFile="D:\\æœ«ç­è½¦\\available\\StationTransAccCode.csv";
 		Map<String,String> map=new HashMap<>();
 		try {
 //			String str[],temp;
@@ -28,7 +28,7 @@ public class StationIDToAccCode {
 //			br_acccode.close();
 //			
 //			BufferedReader br_1=new BufferedReader(new FileReader(new File(sameTransStationAdj)));
-//			BufferedWriter bw_1=new BufferedWriter(new FileWriter(new File("D:\\Ä©°à³µ\\Trans_Adj_Trans_acc.csv"),true));
+//			BufferedWriter bw_1=new BufferedWriter(new FileWriter(new File("D:\\æœ«ç­è½¦\\Trans_Adj_Trans_acc.csv"),true));
 //			while((temp=br_1.readLine())!=null)
 //			{
 //				str=temp.split(",");
@@ -38,7 +38,7 @@ public class StationIDToAccCode {
 //			br_1.close();
 //			
 //			BufferedReader br_2=new BufferedReader(new FileReader(new File(transStationAdjTransStation)));
-//			BufferedWriter bw_2=new BufferedWriter(new FileWriter(new File("D:\\Ä©°à³µ\\Adjecent_TransStation_ID_acc.csv"),true));
+//			BufferedWriter bw_2=new BufferedWriter(new FileWriter(new File("D:\\æœ«ç­è½¦\\Adjecent_TransStation_ID_acc.csv"),true));
 //			while((temp=br_2.readLine())!=null)
 //			{
 //				str=temp.split(",");
@@ -49,7 +49,7 @@ public class StationIDToAccCode {
 //			br_2.close();
 //			
 //			BufferedReader br_3=new BufferedReader(new FileReader(new File(nonTransStation)));
-//			BufferedWriter bw_3=new BufferedWriter(new FileWriter(new File("D:\\Ä©°à³µ\\NonTrans_Adj_Trans_acc.csv"),true));
+//			BufferedWriter bw_3=new BufferedWriter(new FileWriter(new File("D:\\æœ«ç­è½¦\\NonTrans_Adj_Trans_acc.csv"),true));
 //			while((temp=br_3.readLine())!=null)
 //			{
 //				str=temp.split(",");

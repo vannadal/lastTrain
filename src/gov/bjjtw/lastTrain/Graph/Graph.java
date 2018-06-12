@@ -13,7 +13,7 @@ public final class Graph implements Serializable{
 	private Map<String,Integer> minDisLink=new HashMap<>();
 	private Map<String,String> transTime=new HashMap<>();
 	private Map<String, String> accInLine=new HashMap<>();
-	private Map<String, String> acctoName=new HashMap<>();
+	//private Map<String, String> acctoName=new HashMap<>();
 	private Map<String, String> WalkTimeString=new HashMap<>();
 	private Stack<String> stack=new Stack<>();
 	private Stack<String> stackPath=new Stack<>();
@@ -21,8 +21,11 @@ public final class Graph implements Serializable{
 	private Stack<String> stackPath2=new Stack<>();
 	private Stack<String> stack3=new Stack<>();
 	private Map<String, List<String>> adj = new HashMap<>();
+	private Map<String, List<String>> adj3 = new HashMap<>();
 	private Map<String, Integer> stationdistance =new HashMap<>();
 	private Map<String, List<String>> timetable_weekday = new HashMap<>();
+	private Map<String, List<String>> timetable_noair_weekday = new HashMap<>();
+	private Map<String, List<String>> timetable_noair_weekend = new HashMap<>();
 	private Map<String, List<String>> timetable_weekend = new HashMap<>();
 	private Set<String> UnVisitedVertex=new HashSet<String>();
 	private HashMap<String, String> station_geo = new HashMap<String, String>();
@@ -30,8 +33,8 @@ public final class Graph implements Serializable{
 	private int inc_sec;
 	  
 	private boolean isWeekend;
-	public String UpperLimitTime="25:59:59";
-	public int UpperLimitDis =10000000;
+	public static final String UpperLimitTime="25:59:59";
+	public static final int UpperLimitDis =10000000;
 
 	public void addGeoPosition(String acccode, String geoposition){
 		station_geo.put(acccode,geoposition);
@@ -59,6 +62,17 @@ public final class Graph implements Serializable{
 				tmpList.add(v);
 			}
 			adj.put(k,tmpList);
+		}
+	}
+
+	public void setAdj3(Map<String,List<String>> inputAdj){
+		adj3 =new HashMap<>();
+		for(String k: inputAdj.keySet()){
+			List<String> tmpList = new ArrayList<String>();
+			for(String v: inputAdj.get(k)){
+				tmpList.add(v);
+			}
+			adj3.put(k,tmpList);
 		}
 	}
 
@@ -93,11 +107,20 @@ public final class Graph implements Serializable{
 		} else {
 			adj.get(fromVertex).add(toVertex);
 		}
+		if (adj3.get(toVertex) == null){
+			adj3.put(toVertex, new ArrayList<String>());
+			adj3.get(toVertex).add(fromVertex);
+		} else {
+			adj3.get(toVertex).add(fromVertex);
+		}
 	}
 
 	public void RemoveEdge(String fromVertex, String toVertex) {
 		if(adj.get(fromVertex).contains(toVertex)) {
 			adj.get(fromVertex).remove((toVertex));
+		}
+		if(adj3.get(toVertex).contains(fromVertex)){
+			adj3.get(toVertex).remove((fromVertex));
 		}
 	}
 
@@ -143,12 +166,6 @@ public final class Graph implements Serializable{
 			stack3.add(s);
 		}
 	}
-	public void backfillStack3(){
-		stack.clear();
-		for(String s:stack3){
-			stack.add(s);
-		}
-	}
 
 	public Stack<String> getPathStack2()
 	  {
@@ -165,6 +182,18 @@ public final class Graph implements Serializable{
 		}
 		timetable_weekday.get(acccode).add(departureTime1+","+departureTime2+","+arrivingTime);
 	}
+	public void Add_weeekday_noair_timetable(String acccode,String departureTime1,String departureTime2,String arrivingTime) {
+		if(timetable_noair_weekday.get(acccode)==null) {
+			timetable_noair_weekday.put(acccode, new ArrayList<String>());
+		}
+		timetable_noair_weekday.get(acccode).add(departureTime1+","+departureTime2+","+arrivingTime);
+	}
+	public void Add_weeekend_noair_timetable(String acccode,String departureTime1,String departureTime2,String arrivingTime) {
+		if(timetable_noair_weekend.get(acccode)==null) {
+			timetable_noair_weekend.put(acccode, new ArrayList<String>());
+		}
+		timetable_noair_weekend.get(acccode).add(departureTime1+","+departureTime2+","+arrivingTime);
+	}
 
 	public void Add_stationdistance(String acccode,int distance) {
 		if(stationdistance.get(acccode)==null) {
@@ -172,7 +201,6 @@ public final class Graph implements Serializable{
 		}
 		stationdistance.put(acccode,distance);
 	}
-
 
 	public void Add_UnVisitedVertex(String str)
 	  {
@@ -195,6 +223,9 @@ public final class Graph implements Serializable{
 	}
 	public void cleanStack2(){
 		stack2.clear();
+	}
+	public void cleanStack3(){
+		stack3.clear();
 	}
 	public void cleanStackPath2(){
 		stackPath2.clear();
@@ -224,22 +255,34 @@ public final class Graph implements Serializable{
 	public void Add_AccInLine(String accCode,String line) {
 		accInLine.put(accCode,line);
 	}
-	  
-	public void Add_acctoName(String accCode,String name)
-	  {
+
+	/*
+	public void Add_acctoName(String accCode,String name) {
 		  acctoName.put(accCode,name);
-	  }
-	  
+	}
+	public Map<String, String> getAcctoName() {
+		return acctoName;
+	}
+	public String checkAcctoName(String key) { return acctoName.get(key);}
+	*/
+
 	public void addVertex(String vertex) {
 	  	if (adj.get(vertex)==null) {
 	  		adj.put(vertex, new ArrayList<>());
+		}
+		if (adj3.get(vertex)==null){
+	  		adj3.put(vertex, new ArrayList<>());
 		}
 	}
 
 	public Map<String, List<String>> getAdj() {
 	    return adj;
-	  }
-	  
+	}
+
+	public Map<String, List<String>> getAdj3() {
+		return adj3;
+	}
+
 	public void Add_WalkTime(String acccode,String time) {
 		if (WalkTimeString.get(acccode)==null) {
 			WalkTimeString.put(acccode, new String());
@@ -261,6 +304,12 @@ public final class Graph implements Serializable{
 	public Map<String, List<String>> getTimetable_weekend() {
 		    return timetable_weekend;
 		  }
+	public Map<String, List<String>> getnoair_Timetable_weekend() {
+	    return timetable_noair_weekend;
+	  }
+	public Map<String, List<String>> getnoair_Timetable_weekday() {
+	    return timetable_noair_weekday;
+	  }
 	public Map<String, Integer> getStationdistance() {
 		return stationdistance;
 	}
@@ -270,11 +319,7 @@ public final class Graph implements Serializable{
 		  }
 	  
 	public Map<String, String> getAccInLine() { return accInLine; }
-	  
-	public Map<String, String> getAcctoName() {
-		return acctoName;
-	}
-	public String checkAcctoName(String key) { return acctoName.get(key);}
+
 	public boolean getIsWeekend(){
 	  return isWeekend;
 	}

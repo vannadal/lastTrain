@@ -14,12 +14,12 @@ public class StationAdjStation {
 		s.AdjStation();
 	}
 
-	//ÕÒ³öËùÓĞÕ¾µÄÁÚ½ÓÕ¾µãacc±àÂë¶Ô£¬²»°üÀ¨Í¬Õ¾µÄ»»³ËÕ¾
+	//æ‰¾å‡ºæ‰€æœ‰ç«™çš„é‚»æ¥ç«™ç‚¹accç¼–ç å¯¹ï¼Œä¸åŒ…æ‹¬åŒç«™çš„æ¢ä¹˜ç«™
 	public void AdjStation() {
 	  	String temp="",str[],line="",acccode="";
 	  	try {
-			BufferedReader br=new BufferedReader(new FileReader(new File("D:\\Ä©°à³µ\\available\\StationTransAccCode_new.csv")));
-			BufferedWriter bw=new BufferedWriter(new FileWriter(new File("D:\\Ä©°à³µ\\available\\StationAdjStation.csv"),true));
+			BufferedReader br=new BufferedReader(new FileReader(new File("D:\\æœ«ç­è½¦\\available\\StationTransAccCode_new.csv")));
+			BufferedWriter bw=new BufferedWriter(new FileWriter(new File("D:\\æœ«ç­è½¦\\available\\StationAdjStation.csv"),true));
 			temp=br.readLine();
 			str=temp.split(",");
 			line=str[1];

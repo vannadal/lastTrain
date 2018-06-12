@@ -11,8 +11,11 @@ import gov.bjjtw.lastTrain.Graph.GraphSearchAlgorithm;
 import gov.bjjtw.lastTrain.CommonTools.CommonTools;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.io.FileInputStream;
 import java.util.stream.Collectors;
+
+import javax.xml.transform.Templates;
 
 
 public class mainClass {
@@ -35,9 +38,10 @@ public class mainClass {
     private static Map<String,List<String>>  adj = null;
     //可查询末班车路径从此时刻开始，时间越晚g加载的列车运行时刻表数据越少
     private static String loadTimetableTime=null;
+    private static final double epsilon = 1e-15;
 
     public enum Cate {
-        REACHABLE_PATH, REACHABLE_STATION,
+        REACHABLE_PATH, REACHABLE_STATION, REACHABLE_REVERSE_PATH
     }
 
     public static void fit(){
@@ -49,11 +53,13 @@ public class mainClass {
 
     private static void resetGraph(){
         graph.setAdj(adj);
+        graph.setAdj3(adj);
         graph.setUnVisitedVertex(unVisitedVertex);
         graph.cleanMinDisLink();
         graph.cleanMinTimeLink();
         graph.cleanReachableSt();
         graph.cleanWalkTimeString();
+        graph.cleanStack3();
         graph.cleanStack();
         graph.cleanStack2();
         graph.cleanStackPath();
@@ -187,34 +193,6 @@ public class mainClass {
             while ((temp1 = br.readLine()) != null) {
                 str1 = temp1.split(",");
                 g.addVertex(str1[2]);
-/*
-                    switch (str1[2]) {
-                        case "151020053":没用
-                            g.addEdge("151020053", "151020055");
-                            g.addEdge("151020055", "151020053");
-                            break;
-                        case "151020055":没用
-                            g.addEdge("151020055", "151020059");
-                            g.addEdge("151020055", "151020053");
-                            break;
-                        case "151020057":
-                            g.addEdge("151020057", "151020055");
-                            break;
-                        case "151020059":
-                            g.addEdge("151020059", "151020057");
-                            g.addEdge("151020055", "151020059");
-                            break;
-                        case "150995474":
-                            g.addEdge("150995474", "150995473");
-                            g.addEdge("150995473", "150995474");
-                            break;
-                        case "151018007":
-                            g.addEdge("151018007", "151018009");
-                            g.addEdge("151018009", "151018007");
-                            break;
-                        default:
-                    }
-*/
                 if (str1[1].equals(line)) {
                     g.addEdge(acccode, str1[2]);
                     g.addEdge(str1[2], acccode);
@@ -264,18 +242,15 @@ public class mainClass {
     private static void ReadTimeTable(Graph g,String stationdistance,String timetable_weekday,String timetable_weekend,String acccodeInLine,String stationnametoacccode,int startTimeToSec,boolean isResource) {
         try {
             String str[] = null, temp = "";
-
             BufferedReader br_weekday = null;
             BufferedReader br_weekend = null;
             BufferedReader br_acc_line = null;
-            BufferedReader br_acc_name = null;
             BufferedReader br_dist = null;
             if (isResource == false) {
                 br_weekday = new BufferedReader(new FileReader(new File(dir + timetable_weekday)));
                 br_dist = new BufferedReader(new FileReader(new File(dir + stationdistance)));
                 br_weekend = new BufferedReader(new FileReader(new File(dir + timetable_weekend)));
                 br_acc_line = new BufferedReader(new FileReader(new File(dir + acccodeInLine)));
-                br_acc_name = new BufferedReader(new InputStreamReader(new FileInputStream(dir + stationnametoacccode),"GBK"));
             } else {
                 InputStream is1 = Thread.currentThread().getContextClassLoader().getResourceAsStream(timetable_weekday);
                 br_weekday = new BufferedReader(new InputStreamReader(is1));
@@ -284,7 +259,6 @@ public class mainClass {
                 InputStream is3 = Thread.currentThread().getContextClassLoader().getResourceAsStream(acccodeInLine);
                 br_acc_line = new BufferedReader(new InputStreamReader(is3));
                 InputStream is4 = Thread.currentThread().getContextClassLoader().getResourceAsStream(stationnametoacccode);
-                br_acc_name = new BufferedReader(new InputStreamReader(is4,"GBK"));
                 InputStream is5 = Thread.currentThread().getContextClassLoader().getResourceAsStream(stationdistance);
                 br_dist = new BufferedReader(new InputStreamReader(is5));
             }
@@ -293,6 +267,11 @@ public class mainClass {
             while ((temp = br_weekday.readLine()) != null) {
                 str = temp.split(",");
                 String acccode1 = str[0] + str[1];
+                boolean judge1 =  str[0].equals("151020057") || str[0].equals("151020059");
+                boolean judge2 =  str[1].equals("151020055") || str[1].equals("151020057") || str[1].equals("151020059");
+                if((!(judge1 || judge2)) && startTimeToSec <= CommonTools.TransferTime(str[2]) ) {
+                	g.Add_weeekday_noair_timetable(acccode1, str[2], str[3], str[5]);
+                }
                 //每次加载列车运行时刻表时，只加载计算时间之后的数据
                 if (startTimeToSec <= CommonTools.TransferTime(str[2])) {
                     g.Add_weeekday_timetable(acccode1, str[2], str[3], str[5]);
@@ -310,10 +289,15 @@ public class mainClass {
             }
 
             br_dist.close();
-
+//按终点站或起始站有无机场线，间数据加载入两个map中
             while ((temp = br_weekend.readLine()) != null) {
                 str = temp.split(",");
                 String acccode1 = str[0] + str[1];
+                boolean judge1 =  str[0].equals("151020057") || str[0].equals("151020059");
+                boolean judge2 =  str[1].equals("151020057") || str[1].equals("151020059");
+                if((!(judge1 || judge2)) && startTimeToSec <= CommonTools.TransferTime(str[2]) ) {
+                	g.Add_weeekend_noair_timetable(acccode1, str[2], str[3], str[5]);
+                }
                 //每次加载列车运行时刻表时，只加载计算时间之后的数据
                 if (startTimeToSec <= CommonTools.TransferTime(str[2])) {
                     g.Add_weeekend_timetable(acccode1, str[2], str[3], str[5]);
@@ -328,11 +312,16 @@ public class mainClass {
 
             br_acc_line.close();
 
+            /*
+            BufferedReader br_acc_name = null;
+            //br_acc_name = new BufferedReader(new InputStreamReader(new FileInputStream(dir + stationnametoacccode),"GBK"));
+            //br_acc_name = new BufferedReader(new InputStreamReader(is4,"GBK"));
             while ((temp = br_acc_name.readLine()) != null) {
                 str = temp.split(",");
                 g.Add_acctoName(str[2], str[1]);
             }
             br_acc_name.close();
+            */
         } catch (Exception e) {
             // TODO: handle exception
             e.printStackTrace();
@@ -376,18 +365,29 @@ public class mainClass {
         }
     }
 
-    private static LinkedList<String> ComputeReachablePath(String startvertex,String dateString,String time,String endvertex) {
+    private static LinkedList<String> ComputeReachablePath(String startvertex,String dateString,String time,String endvertex,Boolean isReverse) {
         String ver=endvertex;
         String content="";
+        Boolean hasValidStation = false;
         LinkedList<String> path = new LinkedList<String>();
         graph.setStack3();
+
+        if (isReverse) {
+            ver=startvertex;
+        }
 
         while(!graph.getStack().empty()) {
             content=graph.getStack().pop();
             String str[]=content.split(",");
-            if(str[1].equals(ver)) {
+            String station1 = str[1];
+            String station0 = str[0];
+            if (isReverse){
+                station1 = str[0];
+                station0 = str[1];
+            }
+            if(station1.equals(ver)) {
                 graph.AddStackPath(content);
-                ver=str[0];
+                ver=station0;
             }
         }
         try {
@@ -396,12 +396,22 @@ public class mainClass {
                 content=graph.getPathStack().pop();
                 String str[]=content.split(",");
                 context = str[0]+","+str[1]+","+str[4]+","+str[3]+","+str[2];
+                if (str[2].equals(Graph.UpperLimitTime) == false) {
+                    hasValidStation = true;
+                }
                 path.add(context);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        if (hasValidStation == false) {
+            path.clear();
+        }
+//        for (Entry<String, String> entry : graph.getMinTimeLink().entrySet()) {  
+//        	   String key = entry.getKey().toString();  
+//        	   String value = entry.getValue().toString();  
+//        	   System.out.println("key=" + key + " value=" + value);  
+//        	  }  
         return path;
     }
 
@@ -412,11 +422,14 @@ public class mainClass {
         if (result.size()>0) {
             for (String item : result) {
                 tmp = item.split(",");
+                //output.add(tmp[0] + "," + tmp[1]+"," +tmp[2] +","+tmp[3] +","+tmp[4] +",1");
                 output.add(tmp[0] + "," + tmp[2] + ",1");
             }
             tmp = result.getLast().split(",");
             output.add(tmp[1] + "," + tmp[3] + ",1");
             startvertex = tmp[1];
+        } else {
+            output.add(startvertex+","+starttime+",1");
         }
         if (startvertex.equals(endvertex) == false){
             resetGraph();
@@ -432,13 +445,23 @@ public class mainClass {
         return GetReachable(datestring,starttime,startvertex,"",Cate.REACHABLE_STATION);
     }
 
+    public static LinkedList<String> GetReachableStationLatestPath(String datestring, String endtime, String startvertex, String endvertex){
+        LinkedList<String> result = GetReachable(datestring,endtime,startvertex,endvertex,Cate.REACHABLE_REVERSE_PATH);
+        if (result != null){
+            Collections.reverse(result);
+        } else {
+            result = new LinkedList<String>();
+        }
+        return result;
+    }
 
-    private static LinkedList<String> GraphTraversal(String startVertex, String endVertex, String startTime, String dateString,String stationnametoacccode) {
+    private static LinkedList<String> GraphTraversal(String startVertex, String endVertex, String startTime, String dateString,String stationnametoacccode,Boolean isReverse) {
         graph.InitialSearchStartVertex(startVertex,dateString,startTime,endVertex);
         GraphSearchAlgorithm graphSearchAlgorithm =new GraphSearchAlgorithm();
-        if(graphSearchAlgorithm.perform(graph, startVertex, dateString, startTime, endVertex,stationnametoacccode)) {
-            //将可达路径返回至sh输出
-            return ComputeReachablePath(startVertex,dateString,startTime,endVertex);
+        if(graphSearchAlgorithm.perform(graph, startVertex, dateString, startTime, endVertex,stationnametoacccode, isReverse)) {
+        //if(graphSearchAlgorithm.perform(graph, startVertex, dateString, startTime, endVertex,stationnametoacccode,false)) {
+            //将可达路径返回至sh输出 150995457,151018037
+            return ComputeReachablePath(startVertex,dateString,startTime,endVertex,isReverse);
         } else {
             return null;
         }
@@ -447,7 +470,7 @@ public class mainClass {
     private static double GetGeoDistanceBetweenStations(String station1, String station2){
         Float [] lastStationPosition = graph.getGeoPosition(station1);
         Float [] destStationPosition = graph.getGeoPosition(station2);
-        if (lastStationPosition[0] > 0.0 && lastStationPosition[1] > 0.0 && destStationPosition[0] > 0.0 && destStationPosition[1] > 0.0){
+        if (lastStationPosition[0] - 0.0 > epsilon && lastStationPosition[1] - 0.0 > epsilon && destStationPosition[0] - 0.0 > epsilon && destStationPosition[1] - 0.0 > epsilon){
             return CommonTools.SimpleDist(lastStationPosition[1],lastStationPosition[0],destStationPosition[1],destStationPosition[0]);
         }
         return -1.0;
@@ -455,37 +478,45 @@ public class mainClass {
 
     public static LinkedList<String> GetReachable(String datestring, String starttime, String startvertex, String endvertex, Cate type) {
         resetGraph();
+        graph.setIsWeekend(CommonTools.isWeekend(datestring));
         //0是00:00:00的秒数，18000是05:00:00的秒数
         LinkedList<String> reachableStation = new LinkedList<>();
-        if ((CommonTools.TransferTime(starttime) > 0) && (CommonTools.TransferTime(starttime) < 18000)) {
-            return reachableStation;
-        } else {
+//        if ((CommonTools.TransferTime(starttime) > 0) && (CommonTools.TransferTime(starttime) < 18000)) {
+//            return reachableStation;
+//        } else {
             switch (type) {
                 case REACHABLE_STATION:
-                    reachableStation = GraphTraversal(startvertex, endvertex, starttime, datestring, stationnametoacccode);
+                    reachableStation = GraphTraversal(startvertex, endvertex, starttime, datestring, stationnametoacccode,false);
                     if (reachableStation != null) {
                         return graph.getReachable();
                     } else {
                         return null;
                     }
-                case REACHABLE_PATH:
-                    reachableStation = GraphTraversal(startvertex, endvertex, starttime, datestring, stationnametoacccode);
+                case REACHABLE_REVERSE_PATH:
+                    reachableStation = GraphTraversal(startvertex, endvertex, starttime, datestring, stationnametoacccode,true);
                     if (reachableStation != null && reachableStation.size()>0) {
                         return reachableStation;
                     } else {
-                        String minStation = "";
+                        return null;
+                    }
+                case REACHABLE_PATH:
+                    reachableStation = GraphTraversal(startvertex, endvertex, starttime, datestring, stationnametoacccode,false);
+                    if (reachableStation != null && reachableStation.size()>0) {
+                        return reachableStation;
+                    } else {
+                        String minStation = startvertex;
                         double minDist = GetGeoDistanceBetweenStations(startvertex,endvertex);
                         for(String line: graph.getStack3()){
                             String [] items = line.split(",");
                             double currentDistance = GetGeoDistanceBetweenStations(items[0],endvertex);
-                            if (currentDistance > 0.0000001 && currentDistance < minDist) {
+                            if (currentDistance - 0.0000001 > epsilon && minDist - currentDistance > epsilon) {
                                 minStation = items[0];
                                 minDist = currentDistance;
                             }
                         }
-                        if (minStation.length() > 0){
+                        if (minStation.equals(startvertex) == false){
                             resetGraph();
-                            return GraphTraversal(startvertex, minStation, starttime, datestring, stationnametoacccode);
+                            return GraphTraversal(startvertex, minStation, starttime, datestring, stationnametoacccode, false);
                         } else {
                             return reachableStation;
                         }
@@ -493,9 +524,8 @@ public class mainClass {
                 default:
                     return null;
             }
-        }
+        //}
     }
-
 
     // 三元桥机场线bug
     public static void main(String[] args) throws IOException {
@@ -504,52 +534,90 @@ public class mainClass {
 
         fit();
 
-        BufferedReader br = new BufferedReader( new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(acccodeInLine)));
-        HashSet<String> accodes = new HashSet<String>();
-        while((temp=br.readLine())!=null) {
-            line=temp.split(",");
-            accodes.add(line[2]);
+//        BufferedReader br = new BufferedReader( new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(acccodeInLine)));
+//        HashSet<String> accodes = new HashSet<String>();
+//        while((temp=br.readLine())!=null) {
+//            line=temp.split(",");
+//            accodes.add(line[2]);
+//        }
+//        br.close();
+//
+//        System.out.println("==========Output Demo==========");
+//        System.out.println("17:17:00 ShiQiao-LiuLiQiao Reachable Station");
+//        LinkedList<String> latested1 = mainClass.GetReachablePath("2018-04-25","24:10:00","151020053" ,"151020055");
+//        LinkedList<String> latested = mainClass.GetReachablePath("2018-04-28","24:10:00","151020053" , "151020057");
+//        LinkedList<String> latested = mainClass.GetReachablePath("2018-04-25","23:00:00","150998557","150998605");
+          LinkedList<String> latested1 = mainClass.GetReachablePath("2018-04-25","5:10:00","150995203","150995225");
+//        for(String item :latested) {
+//        	System.out.println(item);
+//        }
+        System.out.println("------------------------------");
+        for(String item :latested1) {
+        	System.out.println(item);
         }
-        br.close();
-
-        System.out.println("==========Output Demo==========");
-        System.out.println("22:10:00 XiZhiMen Reachable Stations");
-        System.out.println(mainClass.GetReachableStation("2018-04-25","22:10:00","150995457"));
-        System.out.println("22:10:00 XiZhiMen-LiuLiQiao Path");
-        System.out.println(mainClass.GetReachablePath("2018-04-25","22:10:00","150995457","151018037"));
-        System.out.println("23:10:00 XiZhiMen Reachable Stations");
-        System.out.println(mainClass.GetReachableStation("2018-04-25","23:10:00","150995457"));
-        System.out.println("23:10:00 XiZhiMen-LiuLiQiao Path");
-        System.out.println(mainClass.GetReachablePath("2018-04-25","23:10:00","150995457","151018037"));
-
-        ArrayList<Long> testing = new ArrayList<Long>();
-        //本循环为测试车站代码
-        for(String ac: accodes){
-            long time=System.currentTimeMillis();
-            LinkedList<String> reachableStations=GetReachableStation(dateString,startTime,ac);
-            long consume = System.currentTimeMillis()-time;
-            if (reachableStations==null) {
-                System.out.println(line[2] + "," + (consume) + "ms," + 0);
-            } else {
-                System.out.println(line[2] + "," + (consume) + "ms," + reachableStations.size());
-            }
-            testing.add(consume);
-        }
-        outputTestResult("ReachableStationTest",testing);
-        testing.clear();
-        //本循环为测试车站代码
-        for(String ac: accodes){
-            long time=System.currentTimeMillis();
-            LinkedList<String> reachableStations=GetReachablePath(dateString,startTime,ac,"151018037");
-            long consume = System.currentTimeMillis()-time;
-            if (reachableStations==null) {
-                System.out.println(line[2] + "," + (consume) + "ms," + 0);
-            } else {
-                System.out.println(line[2] + "," + (consume) + "ms," + reachableStations.size());
-            }
-            testing.add(consume);
-        }
-        outputTestResult("ReachablePathTest",testing);
+        
+//        System.out.println(mainClass.GetReachablePath("2018-04-25","21:38:00","151018261","151018273"));
+//        System.out.println(mainClass.GetReachableStation("2018-04-25","17:17:00","151018261"));
+//        System.out.println(mainClass.GetReachablePath("2018-04-25","17:17:00","151018261","151018273"));
+//        System.out.println(mainClass.GetReachableStationLatestPath("2018-04-25","17:17:00","151018261","151018273"));
+//        System.out.println("23:10:00 XiZhiMen-LiuLiQiao Path");
+//        System.out.println(mainClass.GetReachableStationLatestPath("2018-04-25","23:45:00","150995457","151018037"));
+//        System.out.println(mainClass.GetReachableStationLatestPath("2018-04-25","23:45:00","151018037","150995457"));
+//        System.out.println("23:10:00 XiZhiMen-LianHuaQiao Path");
+//        System.out.println(mainClass.GetReachableStationLatestPath("2018-04-25","23:45:00","150995457","150997279"));
+//        System.out.println("23:10:00 XiZhiMen-LiuLiQiao Path");
+//        System.out.println(mainClass.GetReachablePath("2018-04-25","23:10:00","150995457","151018037"));
+//        System.out.println("23:10:00 XiZhiMen-LiuLiQiao Path");
+//        System.out.println(mainClass.GetReachablePath("2018-04-25","22:10:00","150995457","151018037"));
+//        System.out.println("23:10:00 XiZhiMen-XiZhiMen Path");
+//        System.out.println(mainClass.GetReachablePath("2018-04-25","23:10:00","150995457","150995474"));
+//        System.out.println("22:10:00 XiZhiMen Reachable Stations");
+//        System.out.println(mainClass.GetReachableStation("2018-04-25","22:10:00","150995457"));
+//        System.out.println("23:10:00 XiZhiMen Reachable Stations");
+//        System.out.println(mainClass.GetReachableStation("2018-04-25","23:10:00","150995457"));
+//
+//        ArrayList<Long> testing = new ArrayList<Long>();
+//        //本循环为测试车站代码
+//        for(String ac: accodes){
+//            long time=System.currentTimeMillis();
+//            LinkedList<String> reachableStations=GetReachableStation(dateString,startTime,ac);
+//            long consume = System.currentTimeMillis()-time;
+//            if (reachableStations==null) {
+//                System.out.println(ac + "," + (consume) + "ms," + 0);
+//            } else {
+//                System.out.println(ac + "," + (consume) + "ms," + reachableStations.size());
+//            }
+//            testing.add(consume);
+//        }
+//        outputTestResult("ReachableStationTest",testing);
+//        testing.clear();
+//        //本循环为测试车站代码
+//        for(String ac: accodes){
+//            long time=System.currentTimeMillis();
+//            LinkedList<String> reachableStations=GetReachablePath(dateString,startTime,ac,"151018037");
+//            long consume = System.currentTimeMillis()-time;
+//            if (reachableStations==null) {
+//                System.out.println(ac + "," + (consume) + "ms," + 0);
+//            } else {
+//                System.out.println(ac + "," + (consume) + "ms," + reachableStations.size());
+//            }
+//            testing.add(consume);
+//        }
+//        outputTestResult("ReachablePathTest",testing);
+//
+//        //本循环为测试车站代码
+//        for(String ac: accodes){
+//            long time=System.currentTimeMillis();
+//            LinkedList<String> reachableStations=GetReachableStationLatestPath(dateString,startTime,ac,"151018037");
+//            long consume = System.currentTimeMillis()-time;
+//            if (reachableStations==null) {
+//                System.out.println(ac + "," + (consume) + "ms," + 0);
+//            } else {
+//                System.out.println(ac + "," + (consume) + "ms," + reachableStations.size());
+//            }
+//            testing.add(consume);
+//        }
+//        outputTestResult("ReachableStationLatestPathTest",testing);
 
     }
 
