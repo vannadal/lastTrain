@@ -4,8 +4,10 @@ package gov.bjjtw.lastTrain.CommonTools;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -87,11 +89,18 @@ public class CommonTools {
 
     public static boolean isWeekend(String dateString) {
         try{
+        	ArrayList<String> holidays = new ArrayList<String>();
+        	holidays.add("2018-09-24");
+        	holidays.add("2018-10-01");
+        	holidays.add("2018-10-02");
+        	holidays.add("2018-10-03");
+        	holidays.add("2018-10-04");
+        	holidays.add("2018-10-05");
             DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             Date date = format.parse(dateString);
             Calendar cal = Calendar.getInstance();
             cal.setTime(date);
-            if(cal.get(Calendar.DAY_OF_WEEK)==Calendar.SATURDAY||cal.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY) {
+            if(holidays.contains(dateString)||cal.get(Calendar.DAY_OF_WEEK)==Calendar.SATURDAY||cal.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY) {
                 return true;
             } else {
                 return false;

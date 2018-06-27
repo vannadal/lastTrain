@@ -7,7 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 
-//http://www.jb51.net/article/64443.htm 
 public class GraphSearchAlgorithm {
 	private Set<String> visitedVertex;
 	public String date;
@@ -57,8 +56,6 @@ public class GraphSearchAlgorithm {
 		try {
 			boolean air ;
 			ArrayList<String> airlines = new ArrayList<String>();
-//			airlines.add("151020053");
-//			airlines.add("151020055");
 			airlines.add("151020057");
 			airlines.add("151020059");
 			if (airlines.contains(sourceVertex)||airlines.contains(end_Vertex)) {
@@ -148,13 +145,6 @@ public class GraphSearchAlgorithm {
 						}
 					}
 				}
-
-//				if (latest_time.equals(Graph.UpperLimitTime) == false) {
-//					ver_before = ver;
-//					ver = latest_Vertex;
-//					ver_Time = latest_time;
-//					UnVisitedVertex.remove(latest_Vertex);
-//				}
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -224,14 +214,13 @@ public class GraphSearchAlgorithm {
 		    		}
 
 		    		if(g.getMinTimeLink().get(ver_start)==null) {
-		    			//g.getMinTimeLink().put(ver_start, CommonTools.SecondToTime(de_t));
+		    			
 						g.getMinTimeLink().put(ver_start, CommonTools.SecondToTime(de_t_s));
 		    			g.AddStack(ver_start, ver, CommonTools.SecondToTime(de_t), CommonTools.SecondToTime(arr_t), CommonTools.SecondToTime(de_t_s));
 		    		} else {
 		    			
 		    			int temp_t= CommonTools.TransferTime(g.getMinTimeLink().get(ver_start));
 		    			if(de_t<temp_t ) {
-		    				//g.getMinTimeLink().put(ver_start, CommonTools.SecondToTime(de_t));
 							g.getMinTimeLink().put(ver_start, CommonTools.SecondToTime(de_t_s));
 		    				g.AddStack(ver_start,ver, CommonTools.SecondToTime(de_t), CommonTools.SecondToTime(arr_t), CommonTools.SecondToTime(de_t_s));
 		    			}
@@ -476,13 +465,9 @@ public class GraphSearchAlgorithm {
 				end_time=str[1];
 				arrtime = str[2];
 			}
-
 			int second= CommonTools.TransferTime(start_time) - CommonTools.TransferTime(ver_start_Time);
-			//System.out.println(SecondToTime(second));
-
 			if(second>=0&&second<minSecond) {
 				minSecond=second;
-				//System.out.println(SecondToTime(minSecond));
 				latestTime=end_time;
 				latestArrTime = arrtime;
 				latestTime1 = start_time;
@@ -492,7 +477,6 @@ public class GraphSearchAlgorithm {
 
           //System.out.println(ver_start+","+ver_end+","+minSecond+","+latestTime);
 		  allTime = latestTime+ ","+ latestArrTime+","+ latestTime1;
-		  //System.out.println(allTime);
 		  return allTime;
 	}
 
@@ -531,21 +515,16 @@ public class GraphSearchAlgorithm {
 			}
 
 			int second= CommonTools.TransferTime(start_time) - CommonTools.TransferTime(ver_start_Time);
-			//System.out.println(SecondToTime(second));
 
 			if(second>=0&&second<minSecond) {
 				minSecond=second;
-				//System.out.println(SecondToTime(minSecond));
 				latestTime=end_time;
 				latestArrTime = arrtime;
 				latestTime1 = start_time;
-				//System.out.println(latestTime);
 			}
 		  }
 
-          //System.out.println(ver_start+","+ver_end+","+minSecond+","+latestTime);
 		  allTime = latestTime+ ","+ latestArrTime+","+ latestTime1;
-		  //System.out.println(allTime);
 		  return allTime;
 	}
 	
@@ -572,7 +551,6 @@ public class GraphSearchAlgorithm {
 		String latestArrTime = Graph.UpperLimitTime;
 		String str[],start_time,end_time,allTime;
 
-		//toBeVisitedTime.sort(Comparator.naturalOrder());
 
 		for(String v_time:toBeVisitedTime) {
 			str=v_time.split(",");
@@ -587,22 +565,16 @@ public class GraphSearchAlgorithm {
 			}
 
 			int second= CommonTools.TransferTime(ver_end_Time) - CommonTools.TransferTime(arrtime);
-//			int second= CommonTools.TransferTime(ver_end_Time) - CommonTools.TransferTime(end_time);
-			//System.out.println(SecondToTime(second));
 
 			if(second>=0&&second<minSecond) {
 				minSecond=second;
-				//System.out.println(SecondToTime(minSecond));
 				latestTime=end_time;
 				latestArrTime = arrtime;
 				latestTime1 = start_time;
-				//System.out.println(latestTime);;
 			}
 		}
 
-		//System.out.println(ver_start+","+ver_end+","+minSecond+","+latestTime);
 		allTime = latestTime+ ","+ latestArrTime+","+ latestTime1;
-		//System.out.println(allTime);
 		return allTime;
 	}
 }
