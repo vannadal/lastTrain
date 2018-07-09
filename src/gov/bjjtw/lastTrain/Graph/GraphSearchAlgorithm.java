@@ -7,13 +7,12 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 
-//http://www.jb51.net/article/64443.htm 
 public class GraphSearchAlgorithm {
 	private Set<String> visitedVertex;
 	public String date;
 	public String transPath;
 	public Set<String> UnVisitedVertex=new HashSet<String>();
-
+	String pingguoyuan_arrivetime ;
 	public boolean perform(Graph g, String sourceVertex,String dateString,String time,String end_Vertex,String stationnametoacccode, Boolean isReverse) {
 		if (null == visitedVertex) {
 			visitedVertex = new HashSet<>();
@@ -55,8 +54,17 @@ public class GraphSearchAlgorithm {
 
 	private boolean Dijkstra(Graph g,String sourceVertex,String dateString,String time,String end_Vertex,String transPath) {
 		try {
+			boolean air ;
+			ArrayList<String> airlines = new ArrayList<String>();
+			airlines.add("151020057");
+			airlines.add("151020059");
+			if (airlines.contains(sourceVertex)||airlines.contains(end_Vertex)) {
+				air = true;
+			}else {
+				air = false;
+			}
 			g.getReachable().clear();
-			if (!InitialMinTimeLink(g, sourceVertex, time)) {
+			if (!InitialMinTimeLink(g, sourceVertex, time,air)) {
 				return false;
 			}
 			String ver = sourceVertex;
@@ -66,9 +74,12 @@ public class GraphSearchAlgorithm {
 
 			UnVisitedVertex.remove(ver);
 			String ver_Time = time, ver_before = ver;
-
+            
 			while (!(FindLatestVertex(g, g.getMinTimeLink()).equals("null"))) {
 				ver = FindLatestVertex(g, g.getMinTimeLink());
+				if (ver.equals("151018273")) {
+					
+				}
 				g.addReachable(ver);
 				visitedVertex.add(ver);
 				List<String> toBeVisitedVertex = g.getAdj().get(ver);
@@ -79,8 +90,8 @@ public class GraphSearchAlgorithm {
 					}
 				}
 
-				String latest_time = Graph.UpperLimitTime;
-				String latest_Vertex = "";
+//				String latest_time = Graph.UpperLimitTime;
+//				String latest_Vertex = "";
 				ver_Time = g.getMinTimeLink().get(ver);
 
 				for (String ver_end : toBeVisitedVertex) {
@@ -96,12 +107,29 @@ public class GraphSearchAlgorithm {
 					boolean notTransStation = s1.equals(s2);
 
 					if (notTransStation) {
-						alltime = FindLatestTime(g, ver, ver_end, ver_Time, 0);
-						str2 = alltime.split(",");
+						if(air) {
+							alltime = FindLatestTime(g, ver, ver_end, ver_Time, 0);
+							str2 = alltime.split(",");
+							if (str2[0].equals("25:59:59")||str2[1].equals("25:59:59")||str2[2].equals("25:59:59")) {
+								continue;
+							}
+							
 						//str2[0] = departure time, str2[1]= arriving time
-						de_t = CommonTools.TransferTime(str2[0]);
-						de_t_s = CommonTools.TransferTime(str2[2]);
-						arr_t = CommonTools.TransferTime(str2[1]);
+							de_t = CommonTools.TransferTime(str2[0]);
+							de_t_s = CommonTools.TransferTime(str2[2]);
+							arr_t = CommonTools.TransferTime(str2[1]);
+						}else {
+							alltime = FindLatestTime_noair(g, ver, ver_end, ver_Time, 0);
+							str2 = alltime.split(",");
+							if (str2[0].equals("25:59:59")||str2[1].equals("25:59:59")||str2[2].equals("25:59:59")) {
+								continue;
+							}
+							
+						//str2[0] = departure time, str2[1]= arriving time
+							de_t = CommonTools.TransferTime(str2[0]);
+							de_t_s = CommonTools.TransferTime(str2[2]);
+							arr_t = CommonTools.TransferTime(str2[1]);
+						}
 					} else {
 						// bug: change first part to arriving time
 						de_t = CommonTools.TransferTime(ver_Time) + Integer.parseInt(g.getTransTime().get(ver + ver_end));
@@ -119,13 +147,6 @@ public class GraphSearchAlgorithm {
 							g.AddStack(ver, ver_end, CommonTools.SecondToTime(de_t), CommonTools.SecondToTime(arr_t), CommonTools.SecondToTime(de_t_s));
 						}
 					}
-				}
-
-				if (latest_time.equals(Graph.UpperLimitTime) == false) {
-					ver_before = ver;
-					ver = latest_Vertex;
-					ver_Time = latest_time;
-					UnVisitedVertex.remove(latest_Vertex);
 				}
 			}
 		} catch (Exception e) {
@@ -187,19 +208,22 @@ public class GraphSearchAlgorithm {
 						de_t_s =  CommonTools.TransferTime(str2[2]);
 		    		} else{
 						// bug: change first part to arriving time
+//		    			de_t_s = CommonTools.TransferTime(ver_Time);
+//						arr_t = de_t_s;
+//						de_t =  arr_t - Integer.parseInt(g.getTransTime().get(ver+ver_start));
 						de_t = CommonTools.TransferTime(ver_Time);
 						arr_t = de_t;
 						de_t_s =  de_t - Integer.parseInt(g.getTransTime().get(ver+ver_start));
 		    		}
 
 		    		if(g.getMinTimeLink().get(ver_start)==null) {
-		    			//g.getMinTimeLink().put(ver_start, CommonTools.SecondToTime(de_t));
+		    			
 						g.getMinTimeLink().put(ver_start, CommonTools.SecondToTime(de_t_s));
 		    			g.AddStack(ver_start, ver, CommonTools.SecondToTime(de_t), CommonTools.SecondToTime(arr_t), CommonTools.SecondToTime(de_t_s));
 		    		} else {
+		    			
 		    			int temp_t= CommonTools.TransferTime(g.getMinTimeLink().get(ver_start));
-		    			if(de_t<temp_t) {
-		    				//g.getMinTimeLink().put(ver_start, CommonTools.SecondToTime(de_t));
+		    			if(de_t<temp_t ) {
 							g.getMinTimeLink().put(ver_start, CommonTools.SecondToTime(de_t_s));
 		    				g.AddStack(ver_start,ver, CommonTools.SecondToTime(de_t), CommonTools.SecondToTime(arr_t), CommonTools.SecondToTime(de_t_s));
 		    			}
@@ -323,7 +347,7 @@ public class GraphSearchAlgorithm {
 		return true;
 	}
 
-	private boolean InitialMinTimeLink(Graph g,String vertex,String ver_time) {
+	private boolean InitialMinTimeLink(Graph g,String vertex,String ver_time,boolean air) {
 		List<String> toBeUpdatedVertex = g.getAdj().get(vertex);
 		g.getMinTimeLink().clear();
 		for(String adjVertex:toBeUpdatedVertex) {
@@ -335,23 +359,45 @@ public class GraphSearchAlgorithm {
 			int arr_t;
 			int de_t_s;
 			String str[];
-			if(g.getAccInLine().get(vertex).equals(g.getAccInLine().get(adjVertex))) {
-				alltime = FindLatestTime(g,vertex,adjVertex,ver_time,0);
-				if(alltime.equals("25:59:59")) {
-					return false;
-				}
-				str = alltime.split(",");
-				adj_time = CommonTools.TransferTime(str[0]);
+			if(air) {
+				if(g.getAccInLine().get(vertex).equals(g.getAccInLine().get(adjVertex))) {
+					alltime = FindLatestTime(g,vertex,adjVertex,ver_time,0);
+					if(alltime.equals("25:59:59")) {
+						return false;
+					}
+					str = alltime.split(",");
+					adj_time = CommonTools.TransferTime(str[0]);
 				  
-				de_t_s =  CommonTools.TransferTime(str[2]);
-				arr_t = CommonTools.TransferTime(str[1]);
-			} else {
-				adj_time= (CommonTools.TransferTime(ver_time)+Integer.parseInt(g.getTransTime().get(vertex+adjVertex)));
-				arr_t = adj_time;
-				de_t_s= CommonTools.TransferTime(ver_time);
+					de_t_s =  CommonTools.TransferTime(str[2]);
+					arr_t = CommonTools.TransferTime(str[1]);
+				} else {
+					adj_time= (CommonTools.TransferTime(ver_time)+Integer.parseInt(g.getTransTime().get(vertex+adjVertex)));
+					arr_t = adj_time;
+					de_t_s= CommonTools.TransferTime(ver_time);
+				}
+
+				g.getMinTimeLink().put(adjVertex, CommonTools.SecondToTime(adj_time));
+				g.AddStack(vertex, adjVertex, CommonTools.SecondToTime(adj_time), CommonTools.SecondToTime(arr_t), CommonTools.SecondToTime(de_t_s));
+			}else {
+				if(g.getAccInLine().get(vertex).equals(g.getAccInLine().get(adjVertex))) {
+					alltime = FindLatestTime_noair(g,vertex,adjVertex,ver_time,0);
+					if(alltime.equals("25:59:59")) {
+						return false;
+					}
+					str = alltime.split(",");
+					adj_time = CommonTools.TransferTime(str[0]);
+				  
+					de_t_s =  CommonTools.TransferTime(str[2]);
+					arr_t = CommonTools.TransferTime(str[1]);
+				} else {
+					adj_time= (CommonTools.TransferTime(ver_time)+Integer.parseInt(g.getTransTime().get(vertex+adjVertex)));
+					arr_t = adj_time;
+					de_t_s= CommonTools.TransferTime(ver_time);
+				}
+
+				g.getMinTimeLink().put(adjVertex, CommonTools.SecondToTime(adj_time));
+				g.AddStack(vertex, adjVertex, CommonTools.SecondToTime(adj_time), CommonTools.SecondToTime(arr_t), CommonTools.SecondToTime(de_t_s));
 			}
-			g.getMinTimeLink().put(adjVertex, CommonTools.SecondToTime(adj_time));
-			g.AddStack(vertex, adjVertex, CommonTools.SecondToTime(adj_time), CommonTools.SecondToTime(arr_t), CommonTools.SecondToTime(de_t_s));
 		}
 		return true;
 	}
@@ -382,7 +428,6 @@ public class GraphSearchAlgorithm {
 				arr_t = adj_time;
 				de_t_s = adj_time - Integer.parseInt(g.getTransTime().get(adjVertex + vertex));
 			}
-			//g.getMinTimeLink().put(adjVertex, CommonTools.SecondToTime(adj_time));
 			g.getMinTimeLink().put(adjVertex, CommonTools.SecondToTime(de_t_s));
 			g.AddStack(adjVertex, vertex, CommonTools.SecondToTime(adj_time), CommonTools.SecondToTime(arr_t), CommonTools.SecondToTime(de_t_s));
 		}
@@ -392,18 +437,65 @@ public class GraphSearchAlgorithm {
 
 	private String FindLatestTime(Graph g,String ver_start,String ver_end,String ver_start_Time,int isTransStation) {
 		List<String> toBeVisitedTime=new ArrayList<String>();
-		if(isWeekend(date)) {
-			if(g.getTimetable_weekend().get(ver_start+ver_end)==null) {
-				return Graph.UpperLimitTime;
+			if(isWeekend(date)) {
+				if(g.getTimetable_weekend().get(ver_start+ver_end)==null) {
+					return Graph.UpperLimitTime;
+				}
+				toBeVisitedTime = g.getTimetable_weekend().get(ver_start+ver_end);
+			} else{
+				if(g.getTimetable_weekday().get(ver_start+ver_end)==null) {
+					return Graph.UpperLimitTime;
+				}
+				toBeVisitedTime = g.getTimetable_weekday().get(ver_start+ver_end);
 			}
-			toBeVisitedTime = g.getTimetable_weekend().get(ver_start+ver_end);
-		} else{
-			if(g.getTimetable_weekday().get(ver_start+ver_end)==null) {
-				return Graph.UpperLimitTime;
+		int minSecond=1000000;
+		//departure time of end_station
+		String latestTime=Graph.UpperLimitTime;
+		//departure time of start_station
+		String latestTime1=Graph.UpperLimitTime;
+		String arrtime = Graph.UpperLimitTime;
+		String latestArrTime = Graph.UpperLimitTime;
+		String str[],start_time,end_time,allTime;
+		  
+		for(String v_time:toBeVisitedTime) {
+			str=v_time.split(",");
+			start_time=str[0];
+			if(isTransStation==1) {
+				// change route
+				end_time=str[2];
+			} else {
+				//no change, same route
+				end_time=str[1];
+				arrtime = str[2];
 			}
-			toBeVisitedTime = g.getTimetable_weekday().get(ver_start+ver_end);
-		}
+			int second= CommonTools.TransferTime(start_time) - CommonTools.TransferTime(ver_start_Time);
+			if(second>=0&&second<minSecond) {
+				minSecond=second;
+				latestTime=end_time;
+				latestArrTime = arrtime;
+				latestTime1 = start_time;
+				//System.out.println(latestTime);;
+			}
+		  }
 
+          //System.out.println(ver_start+","+ver_end+","+minSecond+","+latestTime);
+		  allTime = latestTime+ ","+ latestArrTime+","+ latestTime1;
+		  return allTime;
+	}
+
+	private String FindLatestTime_noair(Graph g,String ver_start,String ver_end,String ver_start_Time,int isTransStation) {
+		List<String> toBeVisitedTime=new ArrayList<String>();
+			if(isWeekend(date)) {
+				if(g.getnoair_Timetable_weekend().get(ver_start+ver_end)==null) {
+					return Graph.UpperLimitTime+ ","+Graph.UpperLimitTime+ ","+Graph.UpperLimitTime;
+				}
+				toBeVisitedTime = g.getnoair_Timetable_weekend().get(ver_start+ver_end);
+			} else{
+				if(g.getnoair_Timetable_weekday().get(ver_start+ver_end)==null) {
+					return Graph.UpperLimitTime+ ","+Graph.UpperLimitTime+ ","+Graph.UpperLimitTime;
+				}
+				toBeVisitedTime = g.getnoair_Timetable_weekday().get(ver_start+ver_end);
+			}
 		int minSecond=1000000;
 		//departure time of end_station
 		String latestTime=Graph.UpperLimitTime;
@@ -426,29 +518,24 @@ public class GraphSearchAlgorithm {
 			}
 
 			int second= CommonTools.TransferTime(start_time) - CommonTools.TransferTime(ver_start_Time);
-			//System.out.println(SecondToTime(second));
 
 			if(second>=0&&second<minSecond) {
 				minSecond=second;
-				//System.out.println(SecondToTime(minSecond));
 				latestTime=end_time;
 				latestArrTime = arrtime;
 				latestTime1 = start_time;
-				//System.out.println(latestTime);;
 			}
 		  }
 
-          //System.out.println(ver_start+","+ver_end+","+minSecond+","+latestTime);
 		  allTime = latestTime+ ","+ latestArrTime+","+ latestTime1;
-		  //System.out.println(allTime);
 		  return allTime;
 	}
-
+	
 	private String FindLatestTime3(Graph g,String ver_end,String ver_start,String ver_end_Time,int isTransStation) {
 		List<String> toBeVisitedTime=new ArrayList<String>();
 		if(isWeekend(date)) {
 			if(g.getTimetable_weekend().get(ver_start+ver_end)==null) {
-				return Graph.UpperLimitTime;
+				return Graph.UpperLimitTime ;
 			}
 			toBeVisitedTime = g.getTimetable_weekend().get(ver_start+ver_end);
 		} else{
@@ -467,7 +554,6 @@ public class GraphSearchAlgorithm {
 		String latestArrTime = Graph.UpperLimitTime;
 		String str[],start_time,end_time,allTime;
 
-		//toBeVisitedTime.sort(Comparator.naturalOrder());
 
 		for(String v_time:toBeVisitedTime) {
 			str=v_time.split(",");
@@ -481,22 +567,17 @@ public class GraphSearchAlgorithm {
 				arrtime = str[2];
 			}
 
-			int second= CommonTools.TransferTime(ver_end_Time) - CommonTools.TransferTime(end_time);
-			//System.out.println(SecondToTime(second));
+			int second= CommonTools.TransferTime(ver_end_Time) - CommonTools.TransferTime(arrtime);
 
 			if(second>=0&&second<minSecond) {
 				minSecond=second;
-				//System.out.println(SecondToTime(minSecond));
 				latestTime=end_time;
 				latestArrTime = arrtime;
 				latestTime1 = start_time;
-				//System.out.println(latestTime);;
 			}
 		}
 
-		//System.out.println(ver_start+","+ver_end+","+minSecond+","+latestTime);
 		allTime = latestTime+ ","+ latestArrTime+","+ latestTime1;
-		//System.out.println(allTime);
 		return allTime;
 	}
 }

@@ -24,6 +24,8 @@ public final class Graph implements Serializable{
 	private Map<String, List<String>> adj3 = new HashMap<>();
 	private Map<String, Integer> stationdistance =new HashMap<>();
 	private Map<String, List<String>> timetable_weekday = new HashMap<>();
+	private Map<String, List<String>> timetable_noair_weekday = new HashMap<>();
+	private Map<String, List<String>> timetable_noair_weekend = new HashMap<>();
 	private Map<String, List<String>> timetable_weekend = new HashMap<>();
 	private Set<String> UnVisitedVertex=new HashSet<String>();
 	private HashMap<String, String> station_geo = new HashMap<String, String>();
@@ -180,6 +182,18 @@ public final class Graph implements Serializable{
 		}
 		timetable_weekday.get(acccode).add(departureTime1+","+departureTime2+","+arrivingTime);
 	}
+	public void Add_weeekday_noair_timetable(String acccode,String departureTime1,String departureTime2,String arrivingTime) {
+		if(timetable_noair_weekday.get(acccode)==null) {
+			timetable_noair_weekday.put(acccode, new ArrayList<String>());
+		}
+		timetable_noair_weekday.get(acccode).add(departureTime1+","+departureTime2+","+arrivingTime);
+	}
+	public void Add_weeekend_noair_timetable(String acccode,String departureTime1,String departureTime2,String arrivingTime) {
+		if(timetable_noair_weekend.get(acccode)==null) {
+			timetable_noair_weekend.put(acccode, new ArrayList<String>());
+		}
+		timetable_noair_weekend.get(acccode).add(departureTime1+","+departureTime2+","+arrivingTime);
+	}
 
 	public void Add_stationdistance(String acccode,int distance) {
 		if(stationdistance.get(acccode)==null) {
@@ -290,6 +304,12 @@ public final class Graph implements Serializable{
 	public Map<String, List<String>> getTimetable_weekend() {
 		    return timetable_weekend;
 		  }
+	public Map<String, List<String>> getnoair_Timetable_weekend() {
+	    return timetable_noair_weekend;
+	  }
+	public Map<String, List<String>> getnoair_Timetable_weekday() {
+	    return timetable_noair_weekday;
+	  }
 	public Map<String, Integer> getStationdistance() {
 		return stationdistance;
 	}
