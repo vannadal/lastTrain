@@ -131,19 +131,22 @@ public class GraphSearchAlgorithm {
 							arr_t = CommonTools.TransferTime(str2[1]);
 						}
 					} else {
+						String ver_Time2 = g.getMinTimeLink2().get(ver);
 						// bug: change first part to arriving time
-						de_t = CommonTools.TransferTime(ver_Time) + Integer.parseInt(g.getTransTime().get(ver + ver_end));
+						de_t = CommonTools.TransferTime(ver_Time2) + Integer.parseInt(g.getTransTime().get(ver + ver_end));
 						arr_t = de_t;
-						de_t_s = CommonTools.TransferTime(ver_Time);
+						de_t_s = CommonTools.TransferTime(ver_Time2);
 					}
 
 					if (g.getMinTimeLink().get(ver_end) == null) {
 						g.getMinTimeLink().put(ver_end, CommonTools.SecondToTime(de_t));
+						g.getMinTimeLink2().put(ver_end, CommonTools.SecondToTime(arr_t));
 						g.AddStack(ver, ver_end, CommonTools.SecondToTime(de_t), CommonTools.SecondToTime(arr_t), CommonTools.SecondToTime(de_t_s));
 					} else {
 						int temp_t = CommonTools.TransferTime(g.getMinTimeLink().get(ver_end));
 						if (de_t < temp_t) {
 							g.getMinTimeLink().put(ver_end, CommonTools.SecondToTime(de_t));
+							g.getMinTimeLink2().put(ver_end, CommonTools.SecondToTime(arr_t));
 							g.AddStack(ver, ver_end, CommonTools.SecondToTime(de_t), CommonTools.SecondToTime(arr_t), CommonTools.SecondToTime(de_t_s));
 						}
 					}
@@ -219,12 +222,14 @@ public class GraphSearchAlgorithm {
 		    		if(g.getMinTimeLink().get(ver_start)==null) {
 		    			
 						g.getMinTimeLink().put(ver_start, CommonTools.SecondToTime(de_t_s));
+						g.getMinTimeLink2().put(ver_start, CommonTools.SecondToTime(arr_t));
 		    			g.AddStack(ver_start, ver, CommonTools.SecondToTime(de_t), CommonTools.SecondToTime(arr_t), CommonTools.SecondToTime(de_t_s));
 		    		} else {
 		    			
 		    			int temp_t= CommonTools.TransferTime(g.getMinTimeLink().get(ver_start));
 		    			if(de_t<temp_t ) {
 							g.getMinTimeLink().put(ver_start, CommonTools.SecondToTime(de_t_s));
+							g.getMinTimeLink2().put(ver_start, CommonTools.SecondToTime(arr_t));
 		    				g.AddStack(ver_start,ver, CommonTools.SecondToTime(de_t), CommonTools.SecondToTime(arr_t), CommonTools.SecondToTime(de_t_s));
 		    			}
 		    		}
@@ -255,8 +260,8 @@ public class GraphSearchAlgorithm {
 		    	}
 		    	int ver_dist=g.getMinDisLink().get(ver);
 		    	for(String ver_end : toBeVisitedVertex) {
-		    	   int trans_dist=g.getStationdistance().get(ver+ver_end);
-		    	   if(g.getMinDisLink().get(ver_end)==null) {
+		    		int	trans_dist=g.getStationdistance().get(ver+ver_end);
+		    		if(g.getMinDisLink().get(ver_end)==null) {
 		    			g.getMinDisLink().put(ver_end,ver_dist+trans_dist);
 		    			g.AddStack2(ver, ver_end,ver_dist+trans_dist);
 		    		} else {
@@ -354,6 +359,9 @@ public class GraphSearchAlgorithm {
 			if(g.getMinTimeLink().get(adjVertex)==null) {
 				g.getMinTimeLink().put(adjVertex,new String());
 			}
+			if(g.getMinTimeLink2().get(adjVertex)==null) {
+				g.getMinTimeLink2().put(adjVertex,new String());
+			}
 			String alltime;
 			int adj_time;
 			int arr_t;
@@ -377,6 +385,7 @@ public class GraphSearchAlgorithm {
 				}
 
 				g.getMinTimeLink().put(adjVertex, CommonTools.SecondToTime(adj_time));
+				g.getMinTimeLink2().put(adjVertex, CommonTools.SecondToTime(arr_t));
 				g.AddStack(vertex, adjVertex, CommonTools.SecondToTime(adj_time), CommonTools.SecondToTime(arr_t), CommonTools.SecondToTime(de_t_s));
 			}else {
 				if(g.getAccInLine().get(vertex).equals(g.getAccInLine().get(adjVertex))) {
@@ -396,6 +405,7 @@ public class GraphSearchAlgorithm {
 				}
 
 				g.getMinTimeLink().put(adjVertex, CommonTools.SecondToTime(adj_time));
+				g.getMinTimeLink2().put(adjVertex, CommonTools.SecondToTime(arr_t));
 				g.AddStack(vertex, adjVertex, CommonTools.SecondToTime(adj_time), CommonTools.SecondToTime(arr_t), CommonTools.SecondToTime(de_t_s));
 			}
 		}
@@ -408,6 +418,9 @@ public class GraphSearchAlgorithm {
 		for (String adjVertex : toBeUpdatedVertex) {
 			if (g.getMinTimeLink().get(adjVertex) == null) {
 				g.getMinTimeLink().put(adjVertex, new String());
+			}
+			if (g.getMinTimeLink2().get(adjVertex) == null) {
+				g.getMinTimeLink2().put(adjVertex, new String());
 			}
 			String alltime;
 			int adj_time = 0;
@@ -429,6 +442,7 @@ public class GraphSearchAlgorithm {
 				de_t_s = adj_time - Integer.parseInt(g.getTransTime().get(adjVertex + vertex));
 			}
 			g.getMinTimeLink().put(adjVertex, CommonTools.SecondToTime(de_t_s));
+			g.getMinTimeLink2().put(adjVertex, CommonTools.SecondToTime(arr_t));
 			g.AddStack(adjVertex, vertex, CommonTools.SecondToTime(adj_time), CommonTools.SecondToTime(arr_t), CommonTools.SecondToTime(de_t_s));
 		}
 
