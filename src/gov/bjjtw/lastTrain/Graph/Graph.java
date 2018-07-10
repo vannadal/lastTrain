@@ -10,6 +10,7 @@ public final class Graph implements Serializable{
 	private String endVertex;
 	private String distance;
 	private Map<String,String> minTimeLink=new HashMap<>();
+	private Map<String,String> minTimeLink2=new HashMap<>();
 	private Map<String,Integer> minDisLink=new HashMap<>();
 	private Map<String,String> transTime=new HashMap<>();
 	private Map<String, String> accInLine=new HashMap<>();
@@ -206,9 +207,15 @@ public final class Graph implements Serializable{
 	  {
 		  UnVisitedVertex.add(str);
 	  }
+
 	public void cleanMinTimeLink(){
 		minTimeLink.clear();
 	}
+
+	public void cleanMinTimeLink2(){
+		minTimeLink2.clear();
+	}
+
 	public void cleanMinDisLink(){
 		minDisLink.clear();
 	}
@@ -293,6 +300,11 @@ public final class Graph implements Serializable{
 	public Map<String, String> getMinTimeLink() {
 		    return minTimeLink;
 	}
+
+	public Map<String, String> getMinTimeLink2() {
+		return minTimeLink2;
+	}
+
 	public Map<String, Integer> getMinDisLink() {
 		return minDisLink;
 	}
