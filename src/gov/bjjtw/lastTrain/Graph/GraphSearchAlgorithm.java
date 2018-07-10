@@ -260,10 +260,10 @@ public class GraphSearchAlgorithm {
 		    	}
 		    	int ver_dist=g.getMinDisLink().get(ver);
 		    	for(String ver_end : toBeVisitedVertex) {
-					int	trans_dist=g.getStationdistance().get(ver+ver_end);
-		    	    if(g.getMinDisLink().get(ver_end)==null) {
-		    	    	g.getMinDisLink().put(ver_end,ver_dist+trans_dist);
-		    	    	g.AddStack2(ver, ver_end,ver_dist+trans_dist);
+		    		int	trans_dist=g.getStationdistance().get(ver+ver_end);
+		    		if(g.getMinDisLink().get(ver_end)==null) {
+		    			g.getMinDisLink().put(ver_end,ver_dist+trans_dist);
+		    			g.AddStack2(ver, ver_end,ver_dist+trans_dist);
 		    		} else {
 		    			int temp_t=g.getMinDisLink().get(ver_end);
 		    			if(ver_dist+trans_dist<temp_t) {
