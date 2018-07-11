@@ -9,19 +9,21 @@ public final class Graph implements Serializable{
 	private String firstTime,date;
 	private String endVertex;
 	private String distance;
-	private Map<String,String> minTimeLink=new HashMap<>();
-	private Map<String,String> minTimeLink2=new HashMap<>();
+    private Map<String,Double> minScoreLink=new HashMap<>();
+    private Map<String,String> minTimeLink=new HashMap<>();
 	private Map<String,Integer> minDisLink=new HashMap<>();
 	private Map<String,String> transTime=new HashMap<>();
 	private Map<String, String> accInLine=new HashMap<>();
 	//private Map<String, String> acctoName=new HashMap<>();
 	private Map<String, String> WalkTimeString=new HashMap<>();
 	private Stack<String> stack=new Stack<>();
+	private Stack<String> Score_stack=new Stack<>();
 	private Stack<String> stackPath=new Stack<>();
 	private Stack<String> stack2=new Stack<>();
 	private Stack<String> stackPath2=new Stack<>();
 	private Stack<String> stack3=new Stack<>();
 	private Map<String, List<String>> adj = new HashMap<>();
+	private Stack<String> stack4=new Stack<>();
 	private Map<String, List<String>> adj3 = new HashMap<>();
 	private Map<String, Integer> stationdistance =new HashMap<>();
 	private Map<String, List<String>> timetable_weekday = new HashMap<>();
@@ -31,6 +33,8 @@ public final class Graph implements Serializable{
 	private Set<String> UnVisitedVertex=new HashSet<String>();
 	private HashMap<String, String> station_geo = new HashMap<String, String>();
 	private LinkedList<String> reachableSt = new LinkedList<String>();
+	private Double score;
+	private LinkedList<String> transferStations ;
 	private int inc_sec;
 	  
 	private boolean isWeekend;
@@ -40,6 +44,9 @@ public final class Graph implements Serializable{
 	public void addGeoPosition(String acccode, String geoposition){
 		station_geo.put(acccode,geoposition);
 	}
+
+
+
 
 	public Float [] getGeoPosition(String accode){
 		Float[] positionfloat = new Float[2];
@@ -128,6 +135,9 @@ public final class Graph implements Serializable{
 	public void AddStack(String fromvertex,String toVertex,String time,String arrtime,String time_start) {
 		stack.push(fromvertex+","+toVertex+","+time+","+arrtime+","+time_start);
 	}
+	public void AddScore_Stack(String fromvertex,String toVertex,String time,String arrtime,String time_start) {
+		Score_stack.push(fromvertex+","+toVertex+","+time+","+arrtime+","+time_start);
+	}
 
 	public void AddStackPath(String str) {
 		  stackPath.push(str);
@@ -148,7 +158,10 @@ public final class Graph implements Serializable{
 	  {
 		  return stack;
 	  }
-
+public Stack<String> getScore_Stack()
+	  {
+		  return Score_stack;
+	  }
 	public Stack<String> getPathStack()
 	  {
 		  return stackPath;
@@ -165,6 +178,15 @@ public final class Graph implements Serializable{
 		stack3.clear();
 		for(String s:stack){
 			stack3.add(s);
+		}
+	}
+	public Stack<String> getStack4() {
+		return stack4;
+	}
+	public void setStack4(){
+		stack4.clear();
+		for(String s:Score_stack){
+			stack4.add(s);
 		}
 	}
 
@@ -207,15 +229,12 @@ public final class Graph implements Serializable{
 	  {
 		  UnVisitedVertex.add(str);
 	  }
-
 	public void cleanMinTimeLink(){
-		minTimeLink.clear();
+        minTimeLink.clear();
+    }
+    public void cleanMinScoreLink(){
+		minScoreLink.clear();
 	}
-
-	public void cleanMinTimeLink2(){
-		minTimeLink2.clear();
-	}
-
 	public void cleanMinDisLink(){
 		minDisLink.clear();
 	}
@@ -225,6 +244,9 @@ public final class Graph implements Serializable{
 	public void cleanStack(){
 		stack.clear();
 	}
+    public void cleanScore_Stack(){
+        Score_stack.clear();
+    }
 	public void cleanStackPath(){
 		stackPath.clear();
 	}
@@ -301,10 +323,9 @@ public final class Graph implements Serializable{
 		    return minTimeLink;
 	}
 
-	public Map<String, String> getMinTimeLink2() {
-		return minTimeLink2;
+	public Map<String, Double> getMinScoreLink() {
+		    return minScoreLink;
 	}
-
 	public Map<String, Integer> getMinDisLink() {
 		return minDisLink;
 	}
