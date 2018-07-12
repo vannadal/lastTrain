@@ -8,801 +8,711 @@ import java.util.*;
 
 
 public class GraphSearchAlgorithm {
-	private Set<String> visitedVertex;
-	public String date;
-	public String transPath;
-	public Set<String> unVisitedVertex =new HashSet<String>();
-	public static final int TRANSFERWEIGHT = 10000000;
+    private Set<String> visitedVertex;
+    public String date;
+    public String transPath;
+    public Set<String> unVisitedVertex =new HashSet<String>();
+    public static final int TRANSFERWEIGHT = 10000000;
 
-	public boolean perform(Graph g, String sourceVertex,String dateString,String time,String endVertex,String stationnametoacccode, Boolean isReverse) {
-		if (null == visitedVertex) {
-			visitedVertex = new HashSet<>();
-	    }
-	    date=dateString;
-	    transPath = stationnametoacccode;
-	    if (isReverse){
-			return dijkstra3(g,sourceVertex,dateString,time,endVertex,transPath);
-		}
-	    return dijkstra(g,sourceVertex,dateString,time,endVertex,transPath);
-	}
+    public boolean perform(Graph g, String sourceVertex,String dateString,String time,String endVertex,String stationnametoacccode, Boolean isReverse) {
+        if (null == visitedVertex) {
+            visitedVertex = new HashSet<>();
+        }
+        date=dateString;
+        transPath = stationnametoacccode;
+        if (isReverse){
+            return dijkstra3(g,sourceVertex,dateString,time,endVertex,false);
+        }
+        return dijkstra(g,sourceVertex,dateString,time,endVertex,transPath);
+    }
 
-	//基于分数
-	public boolean perform3(Graph g, String sourceVertex,String dateString,String time,String endVertex,String stationnametoacccode, Boolean isReverse) {
-		if (null == visitedVertex) {
-			visitedVertex = new HashSet<>();
-		}
+    //基于分数
+    public boolean perform3(Graph g, String sourceVertex,String dateString,String time,String endVertex,String stationnametoacccode, Boolean isReverse, Boolean isLessTrans) {
+        if (null == visitedVertex) {
+            visitedVertex = new HashSet<>();
+        }
 
-		date=dateString;
-		transPath = stationnametoacccode;
-		if (isReverse){
-			return dijkstra3(g,sourceVertex,dateString,time,endVertex,transPath);
-		}
-		return scoreDijkstra(g,sourceVertex,dateString,time,endVertex,transPath);
-	}
-
-	public boolean perform2(Graph g, String sourceVertex,String endVertex,String stationnametoacccode) {
-		if (null == visitedVertex) {
-	      visitedVertex = new HashSet<>();
-	    }
-	    transPath = stationnametoacccode;
-		return dijkstra2(g,sourceVertex,endVertex,transPath);
-	}
-	  
-	public boolean isWeekend(String dateString) {
-		try{
-			DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-			Date date = format.parse(dateString);
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(date);
-			if(cal.get(Calendar.DAY_OF_WEEK)==Calendar.SATURDAY||cal.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY) {
-				return true;
-			} else {
-				return false;
-			}
-					
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-			return false;
-		}
-	}
-
-	//基于最短时间
-	private boolean dijkstra(Graph g, String sourceVertex, String dateString, String time, String endVertex, String transPath) {
-		try {
-			boolean air ;
-			ArrayList<String> airlines = new ArrayList<String>();
-			airlines.add("151020057");
-			airlines.add("151020059");
-			if (airlines.contains(sourceVertex)||airlines.contains(endVertex)) {
-				air = true;
-			}else {
-				air = false;
-			}
-			g.getReachable().clear();
-			if (!initialMinTimeLink(g, sourceVertex, time,air)) {
-				return false;
-			}
-			String ver = sourceVertex;
-			visitedVertex.add(sourceVertex);
-
-			unVisitedVertex = g.getUnVisitedVertex();
-
-			unVisitedVertex.remove(ver);
-			String verTime = time, verBefore = ver;
-            
-			while (!("null".equals(findLatestVertex(g, g.getMinTimeLink())))) {
-				ver = findLatestVertex(g, g.getMinTimeLink());
-				if ("151018273".equals(ver)) {
-					
-				}
-				g.addReachable(ver);
-				visitedVertex.add(ver);
-				List<String> toBeVisitedVertex = g.getAdj().get(ver);
-
-				for (String v : visitedVertex) {
-					if (toBeVisitedVertex.contains(v)) {
-						toBeVisitedVertex.remove(v);
-					}
-				}
-
-//				String latest_time = Graph.UPPER_LIMIT_TIME;
-//				String latest_Vertex = "";
-				verTime = g.getMinTimeLink().get(ver);
-
-				for (String verEnd : toBeVisitedVertex) {
-					int deTime = 0;
-					//departure time of started station
-					int deTimeStart = 0;
-					int arrTime = 0;
-
-					String alltime;
-					String [] str2;
-					String s1 = g.getAccInLine().get(ver);
-					String s2 = g.getAccInLine().get(verEnd);
-					boolean notTransStation = s1.equals(s2);
-
-					if (notTransStation) {
-						if(air) {
-							alltime = findLatestTime(g, ver, verEnd, verTime, 0);
-							str2 = alltime.split(",");
-							if ("25:59:59".equals(str2[0])||"25:59:59".equals(str2[1])||"25:59:59".equals(str2[2])) {
-								continue;
-							}
-							
-						//str2[0] = departure time, str2[1]= arriving time
-							deTime = CommonTools.TransferTime(str2[0]);
-							deTimeStart = CommonTools.TransferTime(str2[2]);
-							arrTime = CommonTools.TransferTime(str2[1]);
-						}else {
-							alltime = findLatestTimeNoair(g, ver, verEnd, verTime, 0);
-							str2 = alltime.split(",");
-							if ("25:59:59".equals(str2[0])||"25:59:59".equals(str2[1])||"25:59:59".equals(str2[2])) {
-								continue;
-							}
-							
-						//str2[0] = departure time, str2[1]= arriving time
-							deTime = CommonTools.TransferTime(str2[0]);
-							deTimeStart = CommonTools.TransferTime(str2[2]);
-							arrTime = CommonTools.TransferTime(str2[1]);
-						}
-					} else {
-						String verTime2 = g.getMinTimeLink2().get(ver);
-						// bug: change first part to arriving time
-						deTime = CommonTools.TransferTime(verTime2) + Integer.parseInt(g.getTransTime().get(ver + verEnd));
-						arrTime = deTime;
-						deTimeStart = CommonTools.TransferTime(verTime2);
-					}
-
-					if (g.getMinTimeLink().get(verEnd) == null) {
-						g.getMinTimeLink().put(verEnd, CommonTools.SecondToTime(deTime));
-						g.getMinTimeLink2().put(verEnd, CommonTools.SecondToTime(arrTime));
-						g.addStack(ver, verEnd, CommonTools.SecondToTime(deTime), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
-					} else {
-						int tempTime = CommonTools.TransferTime(g.getMinTimeLink().get(verEnd));
-						if (deTime < tempTime) {
-							g.getMinTimeLink().put(verEnd, CommonTools.SecondToTime(deTime));
-							g.getMinTimeLink2().put(verEnd, CommonTools.SecondToTime(arrTime));
-							g.addStack(ver, verEnd, CommonTools.SecondToTime(deTime), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
-						}
-					}
-				}
-			}
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-		}
-		return true;
-	}
-
-	//最晚出发时间
-	private boolean dijkstra3(Graph g, String sourceVertex, String dateString, String time, String endVertex, String transPath) {
-		try {
-			g.getReachable().clear();
-			if(!initialMinTimeLink3(g,endVertex,time)) {
-				return false;
-			}
-		  	String ver=endVertex;
-		    visitedVertex.add(endVertex);
-
-		    unVisitedVertex =g.getUnVisitedVertex();
-
-		    unVisitedVertex.remove(ver);
-		    String verTime=null,verBefore=ver;
-		    
-		    while(!("null".equals(findLatestVertex3(g,g.getMinTimeLink())))) {
-		    	ver= findLatestVertex3(g,g.getMinTimeLink());
-		    	g.addReachable(ver);
-		    	visitedVertex.add(ver);
-		    	List<String> toBeVisitedVertex = g.getAdj3().get(ver);
-
-		    	for(String v:visitedVertex) {
-			    	if(toBeVisitedVertex.contains(v)) {
-			    		toBeVisitedVertex.remove(v);
-			    	}
-		    	}
-
-		    	verTime=g.getMinTimeLink().get(ver);
-          
-		    	for(String verStart : toBeVisitedVertex) {
-		    		int deTime=0;
-					//departure time of started station
-		    		int deTimeStart=0;
-		    		int arrTime=0;
-
-		    		String alltime;
-		    		String [] str2;
-		    		String s1=g.getAccInLine().get(ver);
-		    		String s2=g.getAccInLine().get(verStart);
-		    		boolean notTransStation=s1.equals(s2);
-		    		
-		    		if(notTransStation) {
-		    			alltime = findLatestTime3(g,ver,verStart,verTime,0);
-						if ("25:59:59".equals(alltime)) {
-							continue;
-						}
-		    			str2= alltime.split(",");
-						//str2[0] = departure time, str2[1]= arriving time
-		    			deTime = CommonTools.TransferTime(str2[0]);
-		    			arrTime = CommonTools.TransferTime(str2[1]);
-						deTimeStart =  CommonTools.TransferTime(str2[2]);
-		    		} else{
-						// bug: change first part to arriving time
-//		    			de_t_s = CommonTools.TransferTime(ver_Time);
-//						arr_t = de_t_s;
-//						de_t =  arr_t - Integer.parseInt(g.getTransTime().get(ver+ver_start));
-						deTime = CommonTools.TransferTime(verTime);
-						arrTime = deTime;
-						deTimeStart =  deTime - Integer.parseInt(g.getTransTime().get(ver+verStart));
-		    		}
-
-		    		if(g.getMinTimeLink().get(verStart)==null) {
-		    			
-						g.getMinTimeLink().put(verStart, CommonTools.SecondToTime(deTimeStart));
-						g.getMinTimeLink2().put(verStart, CommonTools.SecondToTime(arrTime));
-		    			g.addStack(verStart, ver, CommonTools.SecondToTime(deTime), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
-		    		} else {
-		    			
-		    			int tempTime= CommonTools.TransferTime(g.getMinTimeLink().get(verStart));
-		    			if(deTime<tempTime ) {
-							g.getMinTimeLink().put(verStart, CommonTools.SecondToTime(deTimeStart));
-							g.getMinTimeLink2().put(verStart, CommonTools.SecondToTime(arrTime));
-		    				g.addStack(verStart,ver, CommonTools.SecondToTime(deTime), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
-		    			}
-		    		}
-		    	}
-		    }
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-		}
-		return true;
-	  }
-
-	//基于最短距离
-	private boolean dijkstra2(Graph g, String sourceVertex, String endVertex, String transPath) {
-		try {
-			if(!initialMinDisLink(g,sourceVertex)) {
-				return false;
-			}
-		    visitedVertex.add(sourceVertex);
-		    while(!("null".equals(findLatestVertex2(g,g.getMinDisLink())))) {
-		    	String ver= findLatestVertex2(g,g.getMinDisLink());
-		    	g.addReachable(ver);
-		    	visitedVertex.add(ver);
-		    	List<String> toBeVisitedVertex = g.getAdj().get(ver);
-		    	for(String v:visitedVertex) {
-			    	if (toBeVisitedVertex.contains(v)) {
-			    		toBeVisitedVertex.remove(v);
-			    	}
-		    	}
-		    	int verDist=g.getMinDisLink().get(ver);
-		    	for(String verEnd : toBeVisitedVertex) {
-		    		int	transDist=g.getStationdistance().get(ver+verEnd);
-		    		if(g.getMinDisLink().get(verEnd)==null) {
-		    			g.getMinDisLink().put(verEnd,verDist+transDist);
-		    			g.addStack2(ver, verEnd,verDist+transDist);
-		    		} else {
-		    			int tempTime=g.getMinDisLink().get(verEnd);
-		    			if(verDist+transDist<tempTime) {
-		    				g.getMinDisLink().put(verEnd,verDist+transDist);
-		    				g.addStack2(ver,verEnd, verDist+transDist);
-		    			}
-		    		}
-		    	}
-		    }
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-		}
-		return true;
-	}
-
-	//基于分数（换乘次数越少，分数越大）
-	private boolean scoreDijkstra(Graph g,String sourceVertex,String dateString,String time,String endVertex,String transPath) {
-		try {
-			boolean air ;
-			ArrayList<String> airlines = new ArrayList<String>();
-			airlines.add("151020057");
-			airlines.add("151020059");
-			if (airlines.contains(sourceVertex)||airlines.contains(endVertex)) {
-				air = true;
-			}else {
-				air = false;
-			}
-			g.getReachable().clear();
-			if (!initialMinScoreLink(g, sourceVertex, time,air)) {
-				return false;
-			}
-			String ver = sourceVertex;
-			visitedVertex.add(sourceVertex);
-			unVisitedVertex = g.getUnVisitedVertex();
-			unVisitedVertex.remove(ver);
-			String verTime = time;
-			double verScore= 0.0;
-			while (!("null".equals(findLatestVertex4(g, g.getMinScoreLink())))) {
-				ver = findLatestVertex4(g, g.getMinScoreLink());
-				g.addReachable(ver);
-				visitedVertex.add(ver);
-				List<String> toBeVisitedVertex = g.getAdj().get(ver);
-				for (String v : visitedVertex) {
-					if (toBeVisitedVertex.contains(v)) {
-						toBeVisitedVertex.remove(v);
-					}
-				}
-				verTime = g.getMinTimeLink().get(ver);
-				verScore = g.getMinScoreLink().get(ver);
-				for (String verEnd : toBeVisitedVertex) {
-					int deTime= 0;
-					//departure time of started station
-					int deTimeStart = 0;
-					int arrTime = 0;
-					String alltime;
-					String [] str2;
-					String s1 = g.getAccInLine().get(ver);
-					String s2 = g.getAccInLine().get(verEnd);
-					boolean notTransStation = s1.equals(s2);
-					if (notTransStation) {
-						if(air) {
-							alltime = findLatestTime(g, ver, verEnd, verTime, 0);
-							str2 = alltime.split(",");
-							if ("25:59:59".equals(str2[0])||"25:59:59".equals(str2[1])||"25:59:59".equals(str2[2])) {
-								continue;
-							}
-							//str2[0] = next_departure time, str2[1]= arriving time
-							deTime = CommonTools.TransferTime(str2[0]);
-							deTimeStart = CommonTools.TransferTime(str2[2]);
-							arrTime = CommonTools.TransferTime(str2[1]);
-						}else {
-							alltime = findLatestTimeNoair(g, ver, verEnd, verTime, 0);
-							str2 = alltime.split(",");
-							if ("25:59:59".equals(str2[0])||"25:59:59".equals(str2[1])||"25:59:59".equals(str2[2])) {
-								continue;
-							}
-
-							//str2[0] = next_departure time, str2[1]= arriving time
-							deTime = CommonTools.TransferTime(str2[0]);
-							deTimeStart = CommonTools.TransferTime(str2[2]);
-							arrTime = CommonTools.TransferTime(str2[1]);
-						}
-					} else {
-						// bug: change first part to arriving time
-						deTime = CommonTools.TransferTime(verTime) + Integer.parseInt(g.getTransTime().get(ver + verEnd));
-						arrTime = deTime;
-						deTimeStart = CommonTools.TransferTime(verTime);
-						deTime+= TRANSFERWEIGHT;
-					}
-					if (g.getMinScoreLink().get(verEnd) == null) {
-						g.getMinScoreLink().put(verEnd, verScore+deTime+0.0);
-						if (deTime> TRANSFERWEIGHT){
-							g.getMinTimeLink().put(verEnd, CommonTools.SecondToTime(deTime- TRANSFERWEIGHT));
-							g.addScoreStack(ver, verEnd, CommonTools.SecondToTime(deTime- TRANSFERWEIGHT), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
-						}else{
-							g.getMinTimeLink().put(verEnd, CommonTools.SecondToTime(deTime));
-							g.addScoreStack(ver, verEnd, CommonTools.SecondToTime(deTime), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
-						}
-					} else {
-						double tempTime =g.getMinScoreLink().get(verEnd);
-						if (deTime < tempTime) {
-							g.getMinScoreLink().put(verEnd, verScore+deTime+0.0);
-							if (deTime> TRANSFERWEIGHT){
-								g.getMinTimeLink().put(verEnd, CommonTools.SecondToTime(deTime- TRANSFERWEIGHT));
-								g.addScoreStack(ver, verEnd, CommonTools.SecondToTime(deTime- TRANSFERWEIGHT), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
-							}else{
-								g.getMinTimeLink().put(verEnd, CommonTools.SecondToTime(deTime));
-								g.addScoreStack(ver, verEnd, CommonTools.SecondToTime(deTime), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
-							}
-						}
-					}
-				}
-			}
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-		}
-		return true;
-	}
+        date=dateString;
+        transPath = stationnametoacccode;
+        if (isReverse){
+            return dijkstra3(g,sourceVertex,dateString,time,endVertex,isLessTrans);
+        }
+        return scoreDijkstra(g,sourceVertex,dateString,time,endVertex,isLessTrans);
+    }
 
 
-	//时间最小
-	private String findLatestVertex(Graph g, Map<String,String> map) {
-		String vertex="null";
-		String minTime=Graph.UPPER_LIMIT_TIME;
-		for (Map.Entry<String, String> entry : map.entrySet()) {
-			if(!visitedVertex.contains(entry.getKey())) {
-				if(CommonTools.TransferTime(entry.getValue())- CommonTools.TransferTime(minTime)<0) {
-					vertex = entry.getKey();
-					minTime = entry.getValue();
-				}
-			}
-		}
-		if (!minTime.equals(Graph.UPPER_LIMIT_TIME)) {
-			return vertex;
-		}
-		return "null";
-	}
+    public boolean perform2(Graph g, String sourceVertex,String endVertex,String stationnametoacccode) {
+        if (null == visitedVertex) {
+            visitedVertex = new HashSet<>();
+        }
+        transPath = stationnametoacccode;
+        return dijkstra2(g,sourceVertex,endVertex,transPath);
+    }
 
-	//分数
-	private String findLatestVertex4(Graph g, Map<String,Double> map) {
-		String vertex="null";
-		Double minTime = TRANSFERWEIGHT *100+0.0;
-		for (Map.Entry<String, Double> entry : map.entrySet()) {
-			if(!visitedVertex.contains(entry.getKey())) {
-				if(entry.getValue() < minTime) {
-					vertex = entry.getKey();
-					minTime = entry.getValue();
-				}
-			}
-		}
-		if (minTime != TRANSFERWEIGHT *100+0.0) {
-				return vertex;
-		}
-		return "null";
-	}
+    public boolean isWeekend(String dateString) {
+        try{
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = format.parse(dateString);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            if(cal.get(Calendar.DAY_OF_WEEK)==Calendar.SATURDAY||cal.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY) {
+                return true;
+            } else {
+                return false;
+            }
 
-	//最晚出发时间
-	private String findLatestVertex3(Graph g, Map<String,String> map) {
-		String vertex="null";
-		String maxTime="01:00:00";
-		for (Map.Entry<String, String> entry : map.entrySet()) {
-			if(!visitedVertex.contains(entry.getKey())) {
-				int a1 = CommonTools.TransferTime(maxTime);
-				int a2 = CommonTools.TransferTime(entry.getValue());
-				if(CommonTools.TransferTime(entry.getValue())- CommonTools.TransferTime(maxTime)>0) {
-					vertex = entry.getKey();
-					maxTime = entry.getValue();
-				}
-			}
-		}
-		if (!maxTime.equals(Graph.UPPER_LIMIT_TIME)) {
-			return vertex;
-		}
-		return "null";
-	}
+        } catch (Exception e) {
+            // TODO: handle exception
+            e.printStackTrace();
+            return false;
+        }
+    }
 
-	//距离
-	private String findLatestVertex2(Graph g, Map<String,Integer> map) {
-		String vertex="null";
-		int mindis=Graph.UPPER_LIMIT_DIS;
-		for (Map.Entry<String, Integer> entry : map.entrySet()) {
-			if(!visitedVertex.contains(entry.getKey())) {
-				if(entry.getValue()-mindis<0) {
-					vertex=entry.getKey();
-					mindis=entry.getValue();
-				};
-			}
-		}
+    //基于最短时间
+    private boolean dijkstra(Graph g, String sourceVertex, String dateString, String time, String endVertex, String transPath) {
+        try {
+            ArrayList<String> airlines = new ArrayList<String>();
+            airlines.add("151020057");
+            airlines.add("151020059");
+            airlines.add("151020053");
+            airlines.add("151020055");
+            g.getReachable().clear();
+            if (!initialMinTimeLink(g, sourceVertex, time)) {
+                return false;
+            }
+            String ver = sourceVertex;
+            visitedVertex.add(sourceVertex);
+            unVisitedVertex = g.getUnVisitedVertex();
+            unVisitedVertex.remove(ver);
+            String verTime = time, verBefore = ver;
 
-		if(mindis!=Graph.UPPER_LIMIT_DIS) {
-			return vertex;
-		}
-		return "null";
-	}
+            while (!("null".equals(findLatestVertex(g, g.getMinTimeLink())))) {
+                ver = findLatestVertex(g, g.getMinTimeLink());
+                if ("151018273".equals(ver)) {
 
-	private boolean initialMinDisLink(Graph g, String vertex) {
-		List<String> toBeUpdatedVertex = g.getAdj().get(vertex);
-		g.getMinDisLink().clear();
-		for(String adjVertex:toBeUpdatedVertex) {
-			int distance=Graph.UPPER_LIMIT_DIS;
-			if(g.getStationdistance().get(vertex+adjVertex)==null) {
-				g.getMinDisLink().put(adjVertex,Graph.UPPER_LIMIT_DIS);
-			} else {
-				distance=g.getStationdistance().get(vertex+adjVertex);
-			  	g.getMinDisLink().put(adjVertex,distance);
-			}
-			g.addStack2(vertex, adjVertex, distance);
-		}
-		return true;
-	}
+                }
+                g.addReachable(ver);
+                visitedVertex.add(ver);
+                List<String> toBeVisitedVertex = g.getAdj().get(ver);
 
-	private boolean initialMinTimeLink(Graph g, String vertex, String verTime, boolean air) {
-		List<String> toBeUpdatedVertex = g.getAdj().get(vertex);
-		g.getMinTimeLink().clear();
-		for(String adjVertex:toBeUpdatedVertex) {
-			if(g.getMinTimeLink().get(adjVertex)==null) {
-				g.getMinTimeLink().put(adjVertex,new String());
-			}
-			if(g.getMinTimeLink2().get(adjVertex)==null) {
-				g.getMinTimeLink2().put(adjVertex,new String());
-			}
-			String alltime;
-			int adjTime;
-			int arrTime;
-			int deTimeStart;
-			String [] str;
-			if(air) {
-				if(g.getAccInLine().get(vertex).equals(g.getAccInLine().get(adjVertex))) {
-					alltime = findLatestTime(g,vertex,adjVertex,verTime,0);
-					if("25:59:59".equals(alltime)) {
-						return false;
-					}
-					str = alltime.split(",");
-					adjTime = CommonTools.TransferTime(str[0]);
-				  
-					deTimeStart =  CommonTools.TransferTime(str[2]);
-					arrTime = CommonTools.TransferTime(str[1]);
-				} else {
-					adjTime= (CommonTools.TransferTime(verTime)+Integer.parseInt(g.getTransTime().get(vertex+adjVertex)));
-					arrTime = adjTime;
-					deTimeStart= CommonTools.TransferTime(verTime);
-				}
+                for (String v : visitedVertex) {
+                    if (toBeVisitedVertex.contains(v)) {
+                        toBeVisitedVertex.remove(v);
+                    }
+                }
 
-				g.getMinTimeLink().put(adjVertex, CommonTools.SecondToTime(adjTime));
-				g.getMinTimeLink2().put(adjVertex, CommonTools.SecondToTime(arrTime));
-				g.addStack(vertex, adjVertex, CommonTools.SecondToTime(adjTime), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
-			}else {
-				if(g.getAccInLine().get(vertex).equals(g.getAccInLine().get(adjVertex))) {
-					alltime = findLatestTimeNoair(g,vertex,adjVertex,verTime,0);
-					if("25:59:59".equals(alltime)) {
-						return false;
-					}
-					str = alltime.split(",");
-					adjTime = CommonTools.TransferTime(str[0]);
-				  
-					deTimeStart =  CommonTools.TransferTime(str[2]);
-					arrTime = CommonTools.TransferTime(str[1]);
-				} else {
-					adjTime= (CommonTools.TransferTime(verTime)+Integer.parseInt(g.getTransTime().get(vertex+adjVertex)));
-					arrTime = adjTime;
-					deTimeStart= CommonTools.TransferTime(verTime);
-				}
+                verTime = g.getMinTimeLink().get(ver);
 
-				g.getMinTimeLink().put(adjVertex, CommonTools.SecondToTime(adjTime));
-				g.getMinTimeLink2().put(adjVertex, CommonTools.SecondToTime(arrTime));
-				g.addStack(vertex, adjVertex, CommonTools.SecondToTime(adjTime), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
-			}
-		}
-		return true;
-	}
+                for (String verEnd : toBeVisitedVertex) {
+                    int deTime = 0;
+                    int deTimeStart = 0;
+                    int arrTime = 0;
 
-	private boolean initialMinScoreLink(Graph g,String vertex,String verTime,boolean air) {
-		List<String> toBeUpdatedVertex = g.getAdj().get(vertex);
-		g.getMinTimeLink().clear();
-		for(String adjVertex:toBeUpdatedVertex) {
-			if(g.getMinTimeLink().get(adjVertex)==null) {
-				g.getMinTimeLink().put(adjVertex,new String());
-				g.getMinScoreLink().put(adjVertex,null);
-			}
-			String alltime;
-			int adjTime;
-			int arrTime;
-			int deTimeStart;
-			String [] str;
-			if(air) {
-				if(g.getAccInLine().get(vertex).equals(g.getAccInLine().get(adjVertex))) {
-					alltime = findLatestTime(g,vertex,adjVertex,verTime,0);
-					if("25:59:59".equals(alltime)) {
-						return false;
-					}
-					str = alltime.split(",");
-					adjTime = CommonTools.TransferTime(str[0]);
+                    String alltime;
+                    String [] str2;
+                    String s1 = g.getAccInLine().get(ver);
+                    String s2 = g.getAccInLine().get(verEnd);
+                    boolean notTransStation = s1.equals(s2);
 
-					deTimeStart =  CommonTools.TransferTime(str[2]);
-					arrTime = CommonTools.TransferTime(str[1]);
-					//记录评分
-					g.getMinScoreLink().put(adjVertex, adjTime+0.0);
-					g.addScoreStack(vertex, adjVertex, CommonTools.SecondToTime(adjTime), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
-				} else {
-					adjTime= (CommonTools.TransferTime(verTime)+Integer.parseInt(g.getTransTime().get(vertex+adjVertex)));
-					arrTime = adjTime;
-					deTimeStart= CommonTools.TransferTime(verTime);
-					//记录评分
-					g.getMinScoreLink().put(adjVertex, adjTime+ TRANSFERWEIGHT +0.0);
-					g.addScoreStack(vertex, adjVertex, CommonTools.SecondToTime(adjTime), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
-				}
-				g.getMinTimeLink().put(adjVertex, CommonTools.SecondToTime(adjTime));
-			}else {
-				if(g.getAccInLine().get(vertex).equals(g.getAccInLine().get(adjVertex))) {
-					alltime = findLatestTimeNoair(g,vertex,adjVertex,verTime,0);
-					if("25:59:59".equals(alltime)) {
-						return false;
-					}
-					str = alltime.split(",");
-					adjTime = CommonTools.TransferTime(str[0]);
-					deTimeStart =  CommonTools.TransferTime(str[2]);
-					arrTime = CommonTools.TransferTime(str[1]);
-					g.getMinScoreLink().put(adjVertex, adjTime+0.0);
-					g.addScoreStack(vertex, adjVertex, CommonTools.SecondToTime(adjTime), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
-				} else {
-					adjTime= (CommonTools.TransferTime(verTime)+Integer.parseInt(g.getTransTime().get(vertex+adjVertex)));
-					arrTime = adjTime;
-					deTimeStart= CommonTools.TransferTime(verTime);
-					g.getMinScoreLink().put(adjVertex, adjTime+ TRANSFERWEIGHT +0.0);
-					g.addScoreStack(vertex, adjVertex, CommonTools.SecondToTime(adjTime), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
-				}
-				g.getMinTimeLink().put(adjVertex, CommonTools.SecondToTime(adjTime));
-			}
-		}
-		return true;
-	}
+                    if (notTransStation) {
+                        alltime = findLatestTime(g, ver, verEnd, verTime, 0);
+                        str2 = alltime.split(",");
+                        if ("25:59:59".equals(str2[0])||"25:59:59".equals(str2[1])||"25:59:59".equals(str2[2])) {
+                            continue;
+                        }
+                        deTime = CommonTools.TransferTime(str2[0]);
+                        deTimeStart = CommonTools.TransferTime(str2[2]);
+                        arrTime = CommonTools.TransferTime(str2[1]);
+                    } else {
+                        String verTime2 = g.getMinTimeLink2().get(ver);
+                        // bug: change first part to arriving time
+                        deTime = CommonTools.TransferTime(verTime2) + Integer.parseInt(g.getTransTime().get(ver + verEnd));
+                        arrTime = deTime;
+                        deTimeStart = CommonTools.TransferTime(verTime2);
+                    }
 
-	//最晚出发时间
-	private boolean initialMinTimeLink3(Graph g, String vertex, String verTime) {
-		List<String> toBeUpdatedVertex = g.getAdj3().get(vertex);
-		g.getMinTimeLink().clear();
-		for (String adjVertex : toBeUpdatedVertex) {
-			if (g.getMinTimeLink().get(adjVertex) == null) {
-				g.getMinTimeLink().put(adjVertex, new String());
-			}
-			if (g.getMinTimeLink2().get(adjVertex) == null) {
-				g.getMinTimeLink2().put(adjVertex, new String());
-			}
-			String alltime;
-			int adjTime = 0;
-			int arrTime = 0;
-			int deTimeStart = 0;
-			String [] str;
-			if (g.getAccInLine().get(vertex).equals(g.getAccInLine().get(adjVertex))) {
-				alltime = findLatestTime3(g, vertex, adjVertex, verTime, 0);
-				if ("25:59:59".equals(alltime)) {
-					return false;
-				}
-				str = alltime.split(",");
-				adjTime = CommonTools.TransferTime(str[0]);
-				arrTime = CommonTools.TransferTime(str[1]);
-				deTimeStart = CommonTools.TransferTime(str[2]);
-			} else {
-				adjTime = CommonTools.TransferTime(verTime);
-				arrTime = adjTime;
-				deTimeStart = adjTime - Integer.parseInt(g.getTransTime().get(adjVertex + vertex));
-			}
-			g.getMinTimeLink().put(adjVertex, CommonTools.SecondToTime(deTimeStart));
-			g.getMinTimeLink2().put(adjVertex, CommonTools.SecondToTime(arrTime));
-			g.addStack(adjVertex, vertex, CommonTools.SecondToTime(adjTime), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
-		}
+                    if (g.getMinTimeLink().get(verEnd) == null) {
+                        g.getMinTimeLink().put(verEnd, CommonTools.SecondToTime(deTime));
+                        g.getMinTimeLink2().put(verEnd, CommonTools.SecondToTime(arrTime));
+                        g.addStack(ver, verEnd, CommonTools.SecondToTime(deTime), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
+                    } else {
+                        int tempTime = CommonTools.TransferTime(g.getMinTimeLink().get(verEnd));
+                        if (deTime < tempTime) {
+                            g.getMinTimeLink().put(verEnd, CommonTools.SecondToTime(deTime));
+                            g.getMinTimeLink2().put(verEnd, CommonTools.SecondToTime(arrTime));
+                            g.addStack(ver, verEnd, CommonTools.SecondToTime(deTime), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+            e.printStackTrace();
+        }
+        return true;
+    }
 
-		return true;
-	}
+    //最晚出发时间
+    private boolean dijkstra3(Graph g, String sourceVertex, String dateString, String time, String endVertex, Boolean isLessTrans) {
+        try {
+            g.getReachable().clear();
+            if(!initialMinTimeLink3(g,endVertex,time)) {
+                return false;
+            }
+            String ver=endVertex;
+            visitedVertex.add(endVertex);
 
-	private String findLatestTime(Graph g, String verStart, String verEnd, String verStartTime, int isTransStation) {
-		List<String> toBeVisitedTime=new ArrayList<String>();
-			if(isWeekend(date)) {
-				if(g.getTimetableWeekend().get(verStart+verEnd)==null) {
-					return Graph.UPPER_LIMIT_TIME;
-				}
-				toBeVisitedTime = g.getTimetableWeekend().get(verStart+verEnd);
-			} else{
-				if(g.getTimetableWeekday().get(verStart+verEnd)==null) {
-					return Graph.UPPER_LIMIT_TIME;
-				}
-				toBeVisitedTime = g.getTimetableWeekday().get(verStart+verEnd);
-			}
-		int minSecond=1000000;
-		//departure time of end_station
-		String latestTime=Graph.UPPER_LIMIT_TIME;
-		//departure time of start_station
-		String latestTime1=Graph.UPPER_LIMIT_TIME;
-		String arrtime = Graph.UPPER_LIMIT_TIME;
-		String latestArrTime = Graph.UPPER_LIMIT_TIME;
-		String [] str;
-		String startTime,endTime,allTime;
-		  
-		for(String vTime:toBeVisitedTime) {
-			str=vTime.split(",");
-			startTime=str[0];
-			if(isTransStation==1) {
-				// change route
-				endTime=str[2];
-			} else {
-				//no change, same route
-				endTime=str[1];
-				arrtime = str[2];
-			}
-			int second= CommonTools.TransferTime(startTime) - CommonTools.TransferTime(verStartTime);
-			if(second>=0&&second<minSecond) {
-				minSecond=second;
-				latestTime=endTime;
-				latestArrTime = arrtime;
-				latestTime1 = startTime;
-				//System.out.println(latestTime);;
-			}
-		  }
+            unVisitedVertex =g.getUnVisitedVertex();
 
-		  allTime = latestTime+ ","+ latestArrTime+","+ latestTime1;
-		  return allTime;
-	}
+            unVisitedVertex.remove(ver);
+            String verTime=null,verBefore=ver;
 
-	//查找不包含机场线的最近时间
-	private String findLatestTimeNoair(Graph g, String verStart, String verEnd, String verStartTime, int isTransStation) {
-		List<String> toBeVisitedTime=new ArrayList<String>();
-			if(isWeekend(date)) {
-				if(g.getNoairTimetableWeekend().get(verStart+verEnd)==null) {
-					return Graph.UPPER_LIMIT_TIME + ","+Graph.UPPER_LIMIT_TIME + ","+Graph.UPPER_LIMIT_TIME;
-				}
-				toBeVisitedTime = g.getNoairTimetableWeekend().get(verStart+verEnd);
-			} else{
-				if(g.getNoairTimetableWeekday().get(verStart+verEnd)==null) {
-					return Graph.UPPER_LIMIT_TIME + ","+Graph.UPPER_LIMIT_TIME + ","+Graph.UPPER_LIMIT_TIME;
-				}
-				toBeVisitedTime = g.getNoairTimetableWeekday().get(verStart+verEnd);
-			}
-		int minSecond=1000000;
-		//departure time of end_station
-		String latestTime=Graph.UPPER_LIMIT_TIME;
-		//departure time of start_station
-		String latestTime1=Graph.UPPER_LIMIT_TIME;
-		String arrtime = Graph.UPPER_LIMIT_TIME;
-		String latestArrTime = Graph.UPPER_LIMIT_TIME;
-		String [] str;
-		String startTime,endTime,allTime;
-		  
-		for(String vTime:toBeVisitedTime) {
-			str=vTime.split(",");
-			startTime=str[0];
-			if(isTransStation==1) {
-				// change route
-				endTime=str[2];
-			} else {
-				//no change, same route
-				endTime=str[1];
-				arrtime = str[2];
-			}
+            while(!("null".equals(findLatestVertex3(g,g.getMinTimeLink())))) {
+                ver= findLatestVertex3(g,g.getMinTimeLink());
+                g.addReachable(ver);
+                visitedVertex.add(ver);
+                List<String> toBeVisitedVertex = g.getAdj3().get(ver);
 
-			int second= CommonTools.TransferTime(startTime) - CommonTools.TransferTime(verStartTime);
+                for(String v:visitedVertex) {
+                    if(toBeVisitedVertex.contains(v)) {
+                        toBeVisitedVertex.remove(v);
+                    }
+                }
 
-			if(second>=0&&second<minSecond) {
-				minSecond=second;
-				latestTime=endTime;
-				latestArrTime = arrtime;
-				latestTime1 = startTime;
-			}
-		  }
+                verTime=g.getMinTimeLink().get(ver);
 
-		  allTime = latestTime+ ","+ latestArrTime+","+ latestTime1;
-		  return allTime;
-	}
+                for(String verStart : toBeVisitedVertex) {
+                    int deTime=0;
+                    //departure time of started station
+                    int deTimeStart=0;
+                    int arrTime=0;
 
-	//最晚出发时间的最近时间查找
-	private String findLatestTime3(Graph g, String verEnd, String verStart, String verEndTime, int isTransStation) {
-		List<String> toBeVisitedTime=new ArrayList<String>();
-		if(isWeekend(date)) {
-			if(g.getTimetableWeekend().get(verStart+verEnd)==null) {
-				return Graph.UPPER_LIMIT_TIME;
-			}
-			toBeVisitedTime = g.getTimetableWeekend().get(verStart+verEnd);
-		} else{
-			if(g.getTimetableWeekday().get(verStart+verEnd)==null) {
-				return Graph.UPPER_LIMIT_TIME;
-			}
-			toBeVisitedTime = g.getTimetableWeekday().get(verStart+verEnd);
-		}
+                    String alltime;
+                    String [] str2;
+                    String s1=g.getAccInLine().get(ver);
+                    String s2=g.getAccInLine().get(verStart);
+                    boolean notTransStation=s1.equals(s2);
 
-		int minSecond=1000000;
-		//departure time of end_station
-		String latestTime=Graph.UPPER_LIMIT_TIME;
-		//departure time of start_station
-		String latestTime1=Graph.UPPER_LIMIT_TIME;
-		String arrtime = Graph.UPPER_LIMIT_TIME;
-		String latestArrTime = Graph.UPPER_LIMIT_TIME;
-		String [] str;
-		String startTime,endTime,allTime;
+                    if(notTransStation) {
+                        alltime = findLatestTime3(g,ver,verStart,verTime,0);
+                        if ("25:59:59".equals(alltime)) {
+                            continue;
+                        }
+                        str2= alltime.split(",");
+                        deTime = CommonTools.TransferTime(str2[0]);
+                        arrTime = CommonTools.TransferTime(str2[1]);
+                        deTimeStart =  CommonTools.TransferTime(str2[2]);
+                    } else{
+                        deTime = CommonTools.TransferTime(verTime);
+                        arrTime = deTime;
+                        deTimeStart =  deTime - Integer.parseInt(g.getTransTime().get(ver+verStart));
+                    }
+
+                    if(g.getMinTimeLink().get(verStart)==null) {
+
+                        g.getMinTimeLink().put(verStart, CommonTools.SecondToTime(deTimeStart));
+                        g.getMinTimeLink2().put(verStart, CommonTools.SecondToTime(arrTime));
+                        g.addStack(verStart, ver, CommonTools.SecondToTime(deTime), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
+                    } else {
+
+                        int tempTime= CommonTools.TransferTime(g.getMinTimeLink().get(verStart));
+                        if(deTime<tempTime ) {
+                            g.getMinTimeLink().put(verStart, CommonTools.SecondToTime(deTimeStart));
+                            g.getMinTimeLink2().put(verStart, CommonTools.SecondToTime(arrTime));
+                            g.addStack(verStart,ver, CommonTools.SecondToTime(deTime), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    //基于最短距离
+    private boolean dijkstra2(Graph g, String sourceVertex, String endVertex, String transPath) {
+        try {
+            if(!initialMinDisLink(g,sourceVertex)) {
+                return false;
+            }
+            visitedVertex.add(sourceVertex);
+            while(!("null".equals(findLatestVertex2(g,g.getMinDisLink())))) {
+                String ver= findLatestVertex2(g,g.getMinDisLink());
+                g.addReachable(ver);
+                visitedVertex.add(ver);
+                List<String> toBeVisitedVertex = g.getAdj().get(ver);
+                for(String v:visitedVertex) {
+                    if (toBeVisitedVertex.contains(v)) {
+                        toBeVisitedVertex.remove(v);
+                    }
+                }
+                int verDist=g.getMinDisLink().get(ver);
+                for(String verEnd : toBeVisitedVertex) {
+                    int	transDist=g.getStationdistance().get(ver+verEnd);
+                    if(g.getMinDisLink().get(verEnd)==null) {
+                        g.getMinDisLink().put(verEnd,verDist+transDist);
+                        g.addStack2(ver, verEnd,verDist+transDist);
+                    } else {
+                        int tempTime=g.getMinDisLink().get(verEnd);
+                        if(verDist+transDist<tempTime) {
+                            g.getMinDisLink().put(verEnd,verDist+transDist);
+                            g.addStack2(ver,verEnd, verDist+transDist);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    //基于分数（换乘次数越少，分数越大）
+    private boolean scoreDijkstra(Graph g,String sourceVertex,String dateString,String time,String endVertex,Boolean isLessTrans) {
+        try {
+            ArrayList<String> airlines = new ArrayList<String>();
+            airlines.add("151020057");
+            airlines.add("151020059");
+            airlines.add("151020053");
+            airlines.add("151020055");
+            g.getReachable().clear();
+
+            if (isLessTrans){
+                if (!initialMinScoreLink(g, sourceVertex, time)) {
+                    return false;
+                }
+            } else {
+                if (!initialMinTimeLink(g, sourceVertex, time)) {
+                    return false;
+                }
+            }
+
+            String ver = sourceVertex;
+            visitedVertex.add(sourceVertex);
+            unVisitedVertex = g.getUnVisitedVertex();
+            unVisitedVertex.remove(ver);
+            String verTime = time;
+            String verBefore = ver;
+            Double verScore = 0.0;
+
+            if (isLessTrans){
+                ver = findLatestVertex4(g, g.getMinScoreLink());
+            } else {
+                ver = findLatestVertex(g, g.getMinTimeLink());
+            }
+
+            while (!("null".equals( ver ))) {
+                g.addReachable(ver);
+                visitedVertex.add(ver);
+                List<String> toBeVisitedVertex = g.getAdj().get(ver);
+
+                for (String v : visitedVertex) {
+                    if (toBeVisitedVertex.contains(v)) {
+                        toBeVisitedVertex.remove(v);
+                    }
+                }
+
+                verTime = g.getMinTimeLink().get(ver);
+                verScore = g.getMinScoreLink().get(ver);
+
+                for (String verEnd : toBeVisitedVertex) {
+                    int deTime= 0;
+                    int deTimeStart = 0;
+                    int arrTime = 0;
+                    String alltime;
+                    String [] str2;
+                    String s1 = g.getAccInLine().get(ver);
+                    String s2 = g.getAccInLine().get(verEnd);
+                    boolean notTransStation = s1.equals(s2);
+
+                    if (notTransStation) {
+                        alltime = findLatestTime(g, ver, verEnd, verTime, 0);
+                        str2 = alltime.split(",");
+                        if ("25:59:59".equals(str2[0]) || "25:59:59".equals(str2[1]) || "25:59:59".equals(str2[2])) {
+                            continue;
+                        }
+                        //str2[0] = next_departure time, str2[1]= arriving time
+                        deTime = CommonTools.TransferTime(str2[0]);
+                        deTimeStart = CommonTools.TransferTime(str2[2]);
+                        arrTime = CommonTools.TransferTime(str2[1]);
+                    } else {
+                        if (isLessTrans == false) {
+                            verTime = g.getMinTimeLink2().get(ver);
+                        }
+                        deTime = CommonTools.TransferTime(verTime) + Integer.parseInt(g.getTransTime().get(ver + verEnd));
+                        arrTime = deTime;
+                        deTimeStart = CommonTools.TransferTime(verTime);
+                        if (airlines.contains(ver) || airlines.contains(verEnd)) {
+                            deTime += TRANSFERWEIGHT * 5;
+                        } else if (isLessTrans == true) {
+                            deTime += TRANSFERWEIGHT;
+                        }
+                    }
+
+                    if (isLessTrans) {
+                        if (g.getMinScoreLink().get(verEnd) == null) {
+                            g.getMinScoreLink().put(verEnd, verScore+deTime+0.0);
+                            if (deTime> TRANSFERWEIGHT && deTime < TRANSFERWEIGHT*5){
+                                g.getMinTimeLink().put(verEnd, CommonTools.SecondToTime(deTime-TRANSFERWEIGHT));
+                                g.addScoreStack(ver, verEnd, CommonTools.SecondToTime(deTime-TRANSFERWEIGHT), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
+                            } else if (deTime > TRANSFERWEIGHT*5){
+                                g.getMinTimeLink().put(verEnd, CommonTools.SecondToTime(deTime-TRANSFERWEIGHT*5));
+                                g.addScoreStack(ver, verEnd, CommonTools.SecondToTime(deTime-TRANSFERWEIGHT*5), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
+                            } else{
+                                g.getMinTimeLink().put(verEnd, CommonTools.SecondToTime(deTime));
+                                g.addScoreStack(ver, verEnd, CommonTools.SecondToTime(deTime), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
+                            }
+                        } else {
+                            double tempTime =g.getMinScoreLink().get(verEnd);
+                            if (deTime < tempTime) {
+                                g.getMinScoreLink().put(verEnd, verScore+deTime+0.0);
+                                if (deTime> TRANSFERWEIGHT && deTime < TRANSFERWEIGHT*5){
+                                    g.getMinTimeLink().put(verEnd, CommonTools.SecondToTime(deTime- TRANSFERWEIGHT));
+                                    g.addScoreStack(ver, verEnd, CommonTools.SecondToTime(deTime- TRANSFERWEIGHT), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
+                                } else if (deTime > TRANSFERWEIGHT*5){
+                                    g.getMinTimeLink().put(verEnd, CommonTools.SecondToTime(deTime- TRANSFERWEIGHT*5));
+                                    g.addScoreStack(ver, verEnd, CommonTools.SecondToTime(deTime- TRANSFERWEIGHT*5), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
+                                } else {
+                                    g.getMinTimeLink().put(verEnd, CommonTools.SecondToTime(deTime));
+                                    g.addScoreStack(ver, verEnd, CommonTools.SecondToTime(deTime), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
+                                }
+                            }
+                        }
+                    } else {
+                        if (g.getMinTimeLink().get(verEnd) == null) {
+                            g.getMinTimeLink().put(verEnd, CommonTools.SecondToTime(deTime));
+                            g.getMinTimeLink2().put(verEnd, CommonTools.SecondToTime(arrTime));
+                            g.addScoreStack(ver, verEnd, CommonTools.SecondToTime(deTime), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
+                        } else {
+                            int tempTime = CommonTools.TransferTime(g.getMinTimeLink().get(verEnd));
+                            if (deTime < tempTime) {
+                                g.getMinTimeLink().put(verEnd, CommonTools.SecondToTime(deTime));
+                                g.getMinTimeLink2().put(verEnd, CommonTools.SecondToTime(arrTime));
+                                g.addScoreStack(ver, verEnd, CommonTools.SecondToTime(deTime), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
+                            }
+                        }
+                    }
+                }
+
+                if (isLessTrans){
+                    ver = findLatestVertex4(g, g.getMinScoreLink());
+                } else {
+                    ver = findLatestVertex(g, g.getMinTimeLink());
+                }
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+            e.printStackTrace();
+        }
+        return true;
+    }
 
 
-		for(String vTime:toBeVisitedTime) {
-			str=vTime.split(",");
-			startTime=str[0];
-			if(isTransStation==1) {
-				// change route
-				endTime=str[2];
-			} else {
-				//no change, same route
-				endTime=str[1];
-				arrtime = str[2];
-			}
+    //时间最小
+    private String findLatestVertex(Graph g, Map<String,String> map) {
+        String vertex="null";
+        String minTime=Graph.UPPER_LIMIT_TIME;
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            if(!visitedVertex.contains(entry.getKey())) {
+                if(CommonTools.TransferTime(entry.getValue())- CommonTools.TransferTime(minTime)<0) {
+                    vertex = entry.getKey();
+                    minTime = entry.getValue();
+                }
+            }
+        }
+        if (!minTime.equals(Graph.UPPER_LIMIT_TIME)) {
+            return vertex;
+        }
+        return "null";
+    }
 
-			int second= CommonTools.TransferTime(verEndTime) - CommonTools.TransferTime(arrtime);
+    //分数
+    private String findLatestVertex4(Graph g, Map<String,Double> map) {
+        String vertex="null";
+        Double minTime = TRANSFERWEIGHT*100+0.0;
+        for (Map.Entry<String, Double> entry : map.entrySet()) {
+            if(!visitedVertex.contains(entry.getKey())) {
+                if(entry.getValue() < minTime) {
+                    vertex = entry.getKey();
+                    minTime = entry.getValue();
+                }
+            }
+        }
+        if (minTime != TRANSFERWEIGHT*100+0.0) {
+            return vertex;
+        }
+        return "null";
+    }
 
-			if(second>=0&&second<minSecond) {
-				minSecond=second;
-				latestTime=endTime;
-				latestArrTime = arrtime;
-				latestTime1 = startTime;
-			}
-		}
+    //最晚出发时间
+    private String findLatestVertex3(Graph g, Map<String,String> map) {
+        String vertex="null";
+        String maxTime="01:00:00";
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            if(!visitedVertex.contains(entry.getKey())) {
+                int a1 = CommonTools.TransferTime(maxTime);
+                int a2 = CommonTools.TransferTime(entry.getValue());
+                if(CommonTools.TransferTime(entry.getValue())- CommonTools.TransferTime(maxTime)>0) {
+                    vertex = entry.getKey();
+                    maxTime = entry.getValue();
+                }
+            }
+        }
+        if (!maxTime.equals(Graph.UPPER_LIMIT_TIME)) {
+            return vertex;
+        }
+        return "null";
+    }
 
-		allTime = latestTime+ ","+ latestArrTime+","+ latestTime1;
-		return allTime;
-	}
+    //距离
+    private String findLatestVertex2(Graph g, Map<String,Integer> map) {
+        String vertex="null";
+        int mindis=Graph.UPPER_LIMIT_DIS;
+        for (Map.Entry<String, Integer> entry : map.entrySet()) {
+            if(!visitedVertex.contains(entry.getKey())) {
+                if(entry.getValue()-mindis<0) {
+                    vertex=entry.getKey();
+                    mindis=entry.getValue();
+                };
+            }
+        }
+
+        if(mindis!=Graph.UPPER_LIMIT_DIS) {
+            return vertex;
+        }
+        return "null";
+    }
+
+    private boolean initialMinDisLink(Graph g, String vertex) {
+        List<String> toBeUpdatedVertex = g.getAdj().get(vertex);
+        g.getMinDisLink().clear();
+        for(String adjVertex:toBeUpdatedVertex) {
+            int distance=Graph.UPPER_LIMIT_DIS;
+            if(g.getStationdistance().get(vertex+adjVertex)==null) {
+                g.getMinDisLink().put(adjVertex,Graph.UPPER_LIMIT_DIS);
+            } else {
+                distance=g.getStationdistance().get(vertex+adjVertex);
+                g.getMinDisLink().put(adjVertex,distance);
+            }
+            g.addStack2(vertex, adjVertex, distance);
+        }
+        return true;
+    }
+
+    private boolean initialMinTimeLink(Graph g, String vertex, String verTime) {
+        List<String> toBeUpdatedVertex = g.getAdj().get(vertex);
+        g.getMinTimeLink().clear();
+        for(String adjVertex:toBeUpdatedVertex) {
+            if(g.getMinTimeLink().get(adjVertex)==null) {
+                g.getMinTimeLink().put(adjVertex,new String());
+            }
+            if(g.getMinTimeLink2().get(adjVertex)==null) {
+                g.getMinTimeLink2().put(adjVertex,new String());
+            }
+            String alltime;
+            int adjTime;
+            int arrTime;
+            int deTimeStart;
+            String [] str;
+            if(g.getAccInLine().get(vertex).equals(g.getAccInLine().get(adjVertex))) {
+                alltime = findLatestTime(g,vertex,adjVertex,verTime,0);
+                if("25:59:59".equals(alltime)) {
+                    return false;
+                }
+                str = alltime.split(",");
+                adjTime = CommonTools.TransferTime(str[0]);
+
+                deTimeStart =  CommonTools.TransferTime(str[2]);
+                arrTime = CommonTools.TransferTime(str[1]);
+            } else {
+                adjTime= (CommonTools.TransferTime(verTime)+Integer.parseInt(g.getTransTime().get(vertex+adjVertex)));
+                arrTime = adjTime;
+                deTimeStart= CommonTools.TransferTime(verTime);
+            }
+            g.getMinTimeLink().put(adjVertex, CommonTools.SecondToTime(adjTime));
+            g.getMinTimeLink2().put(adjVertex, CommonTools.SecondToTime(arrTime));
+            g.addStack(vertex, adjVertex, CommonTools.SecondToTime(adjTime), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
+        }
+        return true;
+    }
+
+    private boolean initialMinScoreLink(Graph g,String vertex,String verTime) {
+        List<String> toBeUpdatedVertex = g.getAdj().get(vertex);
+        g.getMinTimeLink().clear();
+        for(String adjVertex:toBeUpdatedVertex) {
+            if(g.getMinTimeLink().get(adjVertex)==null) {
+                g.getMinTimeLink().put(adjVertex,new String());
+                g.getMinScoreLink().put(adjVertex,null);
+            }
+            String alltime;
+            int adjTime;
+            int arrTime;
+            int deTimeStart;
+            String [] str;
+            if(g.getAccInLine().get(vertex).equals(g.getAccInLine().get(adjVertex))) {
+                alltime = findLatestTime(g,vertex,adjVertex,verTime,0);
+                if("25:59:59".equals(alltime)) {
+                    return false;
+                }
+                str = alltime.split(",");
+                adjTime = CommonTools.TransferTime(str[0]);
+                deTimeStart =  CommonTools.TransferTime(str[2]);
+                arrTime = CommonTools.TransferTime(str[1]);
+                //记录评分
+                g.getMinScoreLink().put(adjVertex, adjTime+0.0);
+                g.addScoreStack(vertex, adjVertex, CommonTools.SecondToTime(adjTime), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
+            } else {
+                adjTime= (CommonTools.TransferTime(verTime)+Integer.parseInt(g.getTransTime().get(vertex+adjVertex)));
+                arrTime = adjTime;
+                deTimeStart= CommonTools.TransferTime(verTime);
+                //记录评分
+                g.getMinScoreLink().put(adjVertex, adjTime+ TRANSFERWEIGHT +0.0);
+                g.addScoreStack(vertex, adjVertex, CommonTools.SecondToTime(adjTime), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
+            }
+            g.getMinTimeLink().put(adjVertex, CommonTools.SecondToTime(adjTime));
+        }
+        return true;
+    }
+
+    //最晚出发时间
+    private boolean initialMinTimeLink3(Graph g, String vertex, String verTime) {
+        List<String> toBeUpdatedVertex = g.getAdj3().get(vertex);
+        g.getMinTimeLink().clear();
+        for (String adjVertex : toBeUpdatedVertex) {
+            if (g.getMinTimeLink().get(adjVertex) == null) {
+                g.getMinTimeLink().put(adjVertex, new String());
+            }
+            if (g.getMinTimeLink2().get(adjVertex) == null) {
+                g.getMinTimeLink2().put(adjVertex, new String());
+            }
+            String alltime;
+            int adjTime = 0;
+            int arrTime = 0;
+            int deTimeStart = 0;
+            String [] str;
+            if (g.getAccInLine().get(vertex).equals(g.getAccInLine().get(adjVertex))) {
+                alltime = findLatestTime3(g, vertex, adjVertex, verTime, 0);
+                if ("25:59:59".equals(alltime)) {
+                    return false;
+                }
+                str = alltime.split(",");
+                adjTime = CommonTools.TransferTime(str[0]);
+                arrTime = CommonTools.TransferTime(str[1]);
+                deTimeStart = CommonTools.TransferTime(str[2]);
+            } else {
+                adjTime = CommonTools.TransferTime(verTime);
+                arrTime = adjTime;
+                deTimeStart = adjTime - Integer.parseInt(g.getTransTime().get(adjVertex + vertex));
+            }
+            g.getMinTimeLink().put(adjVertex, CommonTools.SecondToTime(deTimeStart));
+            g.getMinTimeLink2().put(adjVertex, CommonTools.SecondToTime(arrTime));
+            g.addStack(adjVertex, vertex, CommonTools.SecondToTime(adjTime), CommonTools.SecondToTime(arrTime), CommonTools.SecondToTime(deTimeStart));
+        }
+
+        return true;
+    }
+
+    private String findLatestTime(Graph g, String verStart, String verEnd, String verStartTime, int isTransStation) {
+        List<String> toBeVisitedTime=new ArrayList<String>();
+        if(isWeekend(date)) {
+            if(g.getTimetableWeekend().get(verStart+verEnd)==null) {
+                return Graph.UPPER_LIMIT_TIME;
+            }
+            toBeVisitedTime = g.getTimetableWeekend().get(verStart+verEnd);
+        } else{
+            if(g.getTimetableWeekday().get(verStart+verEnd)==null) {
+                return Graph.UPPER_LIMIT_TIME;
+            }
+            toBeVisitedTime = g.getTimetableWeekday().get(verStart+verEnd);
+        }
+        int minSecond=1000000;
+        //departure time of end_station
+        String latestTime=Graph.UPPER_LIMIT_TIME;
+        //departure time of start_station
+        String latestTime1=Graph.UPPER_LIMIT_TIME;
+        String arrtime = Graph.UPPER_LIMIT_TIME;
+        String latestArrTime = Graph.UPPER_LIMIT_TIME;
+        String [] str;
+        String startTime,endTime,allTime;
+
+        for(String vTime:toBeVisitedTime) {
+            str=vTime.split(",");
+            startTime=str[0];
+            if(isTransStation==1) {
+                // change route
+                endTime=str[2];
+            } else {
+                //no change, same route
+                endTime=str[1];
+                arrtime = str[2];
+            }
+            int second= CommonTools.TransferTime(startTime) - CommonTools.TransferTime(verStartTime);
+            if(second>=0&&second<minSecond) {
+                minSecond=second;
+                latestTime=endTime;
+                latestArrTime = arrtime;
+                latestTime1 = startTime;
+                //System.out.println(latestTime);;
+            }
+        }
+
+        allTime = latestTime+ ","+ latestArrTime+","+ latestTime1;
+        return allTime;
+    }
+
+    //最晚出发时间的最近时间查找
+    private String findLatestTime3(Graph g, String verEnd, String verStart, String verEndTime, int isTransStation) {
+        List<String> toBeVisitedTime=new ArrayList<String>();
+        if(isWeekend(date)) {
+            if(g.getTimetableWeekend().get(verStart+verEnd)==null) {
+                return Graph.UPPER_LIMIT_TIME;
+            }
+            toBeVisitedTime = g.getTimetableWeekend().get(verStart+verEnd);
+        } else{
+            if(g.getTimetableWeekday().get(verStart+verEnd)==null) {
+                return Graph.UPPER_LIMIT_TIME;
+            }
+            toBeVisitedTime = g.getTimetableWeekday().get(verStart+verEnd);
+        }
+
+        int minSecond=1000000;
+        //departure time of end_station
+        String latestTime=Graph.UPPER_LIMIT_TIME;
+        //departure time of start_station
+        String latestTime1=Graph.UPPER_LIMIT_TIME;
+        String arrtime = Graph.UPPER_LIMIT_TIME;
+        String latestArrTime = Graph.UPPER_LIMIT_TIME;
+        String [] str;
+        String startTime,endTime,allTime;
+
+
+        for(String vTime:toBeVisitedTime) {
+            str=vTime.split(",");
+            startTime=str[0];
+            if(isTransStation==1) {
+                // change route
+                endTime=str[2];
+            } else {
+                //no change, same route
+                endTime=str[1];
+                arrtime = str[2];
+            }
+
+            int second= CommonTools.TransferTime(verEndTime) - CommonTools.TransferTime(arrtime);
+
+            if(second>=0&&second<minSecond) {
+                minSecond=second;
+                latestTime=endTime;
+                latestArrTime = arrtime;
+                latestTime1 = startTime;
+            }
+        }
+
+        allTime = latestTime+ ","+ latestArrTime+","+ latestTime1;
+        return allTime;
+    }
 }
-
 
