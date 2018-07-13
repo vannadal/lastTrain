@@ -451,7 +451,10 @@ public class mainClass {
             stack = graph.getStack();
         } else if (type == 3){
             graph.setStack4();
-            stack = graph.getStack4();
+            stack = graph.getStack();
+            for (String item : graph.getStack4()){
+                stack.push(item);
+            }
         }
 
         if (isReverse) {
@@ -612,7 +615,7 @@ public class mainClass {
                 }
             }
             if (minStation.equals(startvertex) == false){
-                return computeReachablePath3(startvertex,datestring,starttime,minStation,false,isLessTrans);
+                return computeReachablePath(startvertex,datestring,starttime,minStation,false,3);
             } else {
                 return reachableStation;
             }
@@ -701,68 +704,6 @@ public class mainClass {
                 content = graph.getPathStack().pop();
                 String str[] = content.split(",");
                 context = str[0] + "," + str[1] + "," + str[4] + "," + str[3] + "," + str[2];
-                if (str[2].equals(Graph.UPPER_LIMIT_TIME) == false) {
-                    hasValidStation = true;
-                }
-                path.add(context);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (hasValidStation == false) {
-            path.clear();
-        }
-        return path;
-    }
-
-    //基于分数
-    private static LinkedList<String> computeReachablePath3(String startvertex2, String datestring2, String starttime2, String minStation, boolean isReverse, boolean isLessTrans) {
-        String ver=minStation;
-        String content="";
-        Boolean hasValidStation = false;
-        LinkedList<String> path = new LinkedList<String>();
-
-        Stack<String> stack = null;
-
-        if (isLessTrans) {
-            graph.setStack3();
-            stack = graph.getStack3();
-        } else{
-            graph.setStack4();
-            stack = graph.getStack();
-            for (String item : graph.getStack4()){
-                stack.push(item);
-            }
-            //= graph.getStack4();
-
-        }
-
-
-        if (isReverse) {
-            ver=startvertex2;
-        }
-
-        while(!stack.empty()) {
-            content=stack.pop();
-            String [] str = content.split(",");
-            String station1 = str[1];
-            String station0 = str[0];
-            if (isReverse){
-                station1 = str[0];
-                station0 = str[1];
-            }
-            if(station1.equals(ver)) {
-                graph.addStackPath(content);
-                ver=station0;
-            }
-        }
-
-        try {
-            String context = "";
-            while(!graph.getPathStack().empty()) {
-                content=graph.getPathStack().pop();
-                String [] str = content.split(",");
-                context = str[0]+","+str[1]+","+str[4]+","+str[3]+","+str[2];
                 if (str[2].equals(Graph.UPPER_LIMIT_TIME) == false) {
                     hasValidStation = true;
                 }
@@ -891,7 +832,7 @@ public class mainClass {
         graph.initialSearchStartVertex(startVertex,dateString,startTime,endVertex);
         GraphSearchAlgorithm graphSearchAlgorithm =new GraphSearchAlgorithm();
         if(graphSearchAlgorithm.perform3(graph, startVertex, dateString, startTime, endVertex,stationnametoacccode, isReverse,isLessTrans)) {
-            return computeReachablePath3(startVertex,dateString,startTime,endVertex,isReverse,isLessTrans);
+            return computeReachablePath(startVertex,dateString,startTime,endVertex,isReverse,3);
         } else {
             return null;
         }
