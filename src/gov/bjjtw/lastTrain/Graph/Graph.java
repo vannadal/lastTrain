@@ -28,20 +28,16 @@ public final class Graph implements Serializable{
     private Map<String, List<String>> adj3 = new HashMap<>();
     private Map<String, Integer> stationdistance =new HashMap<>();
     private Map<String, List<String>> timetableWeekday = new HashMap<>();
-    private Map<String, List<String>> timetableNoAirWeekday = new HashMap<>();
-    private Map<String, List<String>> timetableNoAirWeekend = new HashMap<>();
     private Map<String, List<String>> timetableWeekend = new HashMap<>();
     private Set<String> unVisitedVertex =new HashSet<String>();
     private HashMap<String, String> stationGeo = new HashMap<String, String>();
     private LinkedList<String> reachableSt = new LinkedList<String>();
-    private Double score;
-    private LinkedList<String> transferStations;
-    private int incSec;
 
     private boolean isWeekend;
     public static final String UPPER_LIMIT_TIME ="25:59:59";
     public static final int UPPER_LIMIT_DIS = 10000000;
     public static final int GEO_STRING_LENGTH = 2;
+
     public void addGeoPosition(String acccode, String geoposition){
         stationGeo.put(acccode,geoposition);
     }
@@ -87,20 +83,11 @@ public final class Graph implements Serializable{
         firstTime=time;
         this.endVertex =endVertex;
         date=dateString;
-        //algorithm.perform(this, firstVertax,date,firstTime,endVertex);
     }
 
     public void initialSearchStartVertex2(String startVertex, String endVertex) {
         firstVertax=startVertex;
         this.endVertex =endVertex;
-        //algorithm.perform(this, firstVertax,date,firstTime,endVertex);
-      }
-
-    public void addsec(int sec) {
-          incSec = sec;
-      }
-    public int getsec() {
-          return incSec;
       }
 
     public void addEdge(String fromVertex, String toVertex) {
@@ -187,7 +174,7 @@ public final class Graph implements Serializable{
 
     public void setStack3(){
         stack3.clear();
-        for(String s:stack){
+        for(String s:scoreStack){
             stack3.add(s);
         }
     }
@@ -207,20 +194,6 @@ public final class Graph implements Serializable{
         timetableWeekday.get(acccode).add(departureTime1+","+departureTime2+","+arrivingTime);
     }
 
-    public void addWeekdayNoairTimetable(String acccode, String departureTime1, String departureTime2, String arrivingTime) {
-        if(timetableNoAirWeekday.get(acccode)==null) {
-            timetableNoAirWeekday.put(acccode, new ArrayList<String>());
-        }
-        timetableNoAirWeekday.get(acccode).add(departureTime1+","+departureTime2+","+arrivingTime);
-    }
-
-    public void addWeekendNoairTimetable(String acccode, String departureTime1, String departureTime2, String arrivingTime) {
-        if(timetableNoAirWeekend.get(acccode)==null) {
-            timetableNoAirWeekend.put(acccode, new ArrayList<String>());
-        }
-        timetableNoAirWeekend.get(acccode).add(departureTime1+","+departureTime2+","+arrivingTime);
-    }
-
     public void addStationDistance(String acccode, int distance) {
         if(stationdistance.get(acccode)==null) {
             stationdistance.put(acccode, 0);
@@ -228,8 +201,7 @@ public final class Graph implements Serializable{
         stationdistance.put(acccode,distance);
     }
 
-    public void addUnVisitedVertex(String str)
-      {
+    public void addUnVisitedVertex(String str) {
           unVisitedVertex.add(str);
       }
 
@@ -256,27 +228,35 @@ public final class Graph implements Serializable{
     public void cleanMinDisLink(){
         minDisLink.clear();
     }
+
     public void cleanWalkTimeString(){
         walkTimeString.clear();
     }
+
     public void cleanStack(){
         stack.clear();
     }
+
     public void cleanStackPath(){
         stackPath.clear();
     }
+
     public void cleanStack2(){
         stack2.clear();
     }
+
     public void cleanStack3(){
         stack3.clear();
     }
+
     public void cleanStackPath2(){
         stackPath2.clear();
     }
+
     public void cleanReachableSt(){
         reachableSt.clear();
     }
+
     public void resetParams(){
         firstTime = null;
         date = null;
@@ -285,12 +265,13 @@ public final class Graph implements Serializable{
     }
 
     public Set<String> getUnVisitedVertex() { return unVisitedVertex; }
+
     public void setUnVisitedVertex(Set<String> v) {
         unVisitedVertex = (Set<String>) CommonTools.DeepCopy(v);
     }
 
     public void addWeekendTimetable(String acccode, String departureTime1, String departureTime2, String arrivingTime) {
-          if(timetableWeekend.get(acccode)==null) {
+        if(timetableWeekend.get(acccode)==null) {
             timetableWeekend.put(acccode, new ArrayList<String>());
         }
         timetableWeekend.get(acccode).add(departureTime1+","+departureTime2+","+arrivingTime);
@@ -301,7 +282,7 @@ public final class Graph implements Serializable{
     }
 
     public void addVertex(String vertex) {
-          if (adj.get(vertex)==null) {
+        if (adj.get(vertex)==null) {
               adj.put(vertex, new ArrayList<>());
         }
         if (adj3.get(vertex)==null){
@@ -342,20 +323,15 @@ public final class Graph implements Serializable{
 
     public Map<String, List<String>> getTimetableWeekend() {
             return timetableWeekend;
-          }
-    public Map<String, List<String>> getNoairTimetableWeekend() {
-        return timetableNoAirWeekend;
-      }
-    public Map<String, List<String>> getNoairTimetableWeekday() {
-        return timetableNoAirWeekday;
-      }
+    }
+
     public Map<String, Integer> getStationdistance() {
         return stationdistance;
     }
 
     public Map<String, String> getTransTime() {
             return transTime;
-          }
+    }
 
     public Map<String, String> getAccInLine() { return accInLine; }
 
@@ -365,7 +341,7 @@ public final class Graph implements Serializable{
 
     public void setIsWeekend(boolean weekend){
           isWeekend=weekend;
-      }
+    }
 
     public int getWalkTime(String acccode){
         if(walkTimeString.get(acccode)!=null) {
@@ -376,7 +352,6 @@ public final class Graph implements Serializable{
     }
 
     public void addStack2(String vertex, String adjVertex, int distance2) {
-        // TODO Auto-generated method stub
         stack2.push(vertex+","+adjVertex+","+distance2);
     }
 
