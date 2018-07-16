@@ -42,7 +42,7 @@ public class mainClass {
     private static final double EPSILON = 1e-15;
 
     public enum Cate {
-        REACHABLE_PATH, REACHABLE_STATION, REACHABLE_REVERSE_PATH, REACHABLE_MINTRANSFER_PATH
+        REACHABLE_PATH, REACHABLE_STATION, REACHABLE_REVERSE_PATH, REACHABLE_MINTRANSFER_PATH, OTHER
     }
 
     public static void fit(){
@@ -509,8 +509,6 @@ public class mainClass {
         }
 
         LinkedList<String> output = new LinkedList<String>();
-        // 记录第一段到达最后一个可达车站的时间
-        //String arrivetime = "";
         //记录输出路径包含的站点acc
         LinkedList<String> simple = new LinkedList<String>();
         //记录输出路径包含的站点中文名
@@ -518,7 +516,6 @@ public class mainClass {
         if (result.size()>0) {
             for (String item : result) {
                 tmp = item.split(",");
-                //output.add(tmp[0] + "," + tmp[1]+"," +tmp[2] +","+tmp[3] +","+tmp[4] +",1");
                 String item1 = tmp[0];
                 if (item1.contains("_")){
                     item1 = item1.split("_")[0];
@@ -543,11 +540,9 @@ public class mainClass {
                 output.add(item1 + "," + tmp[3] + ",1");
             }
             startvertex = item1;
-            // arrivetime = tmp[3];
             simple.add(item1);
         } else {
             output.add(startvertex+","+starttime+",1");
-            // arrivetime = starttime;
             simple.add(startvertex);
         }
 
@@ -560,7 +555,7 @@ public class mainClass {
         //不可达的情况
         if (startvertex.equals(endvertex) == false){
             resetGraph();
-            LinkedList<String> unreachableResult = graphTraversal2(startvertex, endvertex,acccodeLatLng);
+            LinkedList<String> unreachableResult = graphTraversal(startvertex, endvertex, starttime, datestring, acccodeLatLng, false, false, Cate.OTHER);
             for (String item: unreachableResult){
                 String accname = item.split(",")[1];
                 if (accname.contains("_")){
@@ -575,21 +570,6 @@ public class mainClass {
         return output;
     }
 
-    public static LinkedList<String> getReachableStation(String datestring, String starttime, String startvertex){
-        return getReachable(datestring,starttime,startvertex,"151020057",Cate.REACHABLE_STATION);
-    }
-
-    public static LinkedList<String> getReachableStationLatestPath(String datestring, String endtime, String startvertex, String endvertex){
-        LinkedList<String> result = getReachable(datestring,endtime,startvertex,endvertex,Cate.REACHABLE_REVERSE_PATH);
-        if (result != null){
-            Collections.reverse(result);
-        } else {
-            result = new LinkedList<String>();
-        }
-        return result;
-    }
-
-
     private static double getGeoDistanceBetweenStations(String station1, String station2){
         Float [] lastStationPosition = graph.getGeoPosition(station1);
         Float [] destStationPosition = graph.getGeoPosition(station2);
@@ -599,8 +579,8 @@ public class mainClass {
         return -1.0;
     }
 
-    private static LinkedList<String> reachablePath(String startvertex, String endvertex, String starttime, String datestring, Boolean isLessTrans){
-        LinkedList<String> reachableStation = graphTraversal3(startvertex, endvertex, starttime, datestring, acccodeLatLng,false,isLessTrans);
+    private static LinkedList<String> reachablePath(String startvertex, String endvertex, String starttime, String datestring, Boolean isLessTrans,Cate type){
+        LinkedList<String> reachableStation = graphTraversal(startvertex, endvertex, starttime, datestring, acccodeLatLng,false,isLessTrans,type);
         if(reachableStation !=null && reachableStation.size()>0){
             return reachableStation;
         } else {
@@ -629,7 +609,7 @@ public class mainClass {
         LinkedList<String> reachableStation = new LinkedList<>();
         switch (type) {
             case REACHABLE_STATION:
-                reachableStation = graphTraversal(startvertex, endvertex, starttime, datestring, acccodeLatLng,false);
+                reachableStation = graphTraversal(startvertex, endvertex, starttime, datestring, acccodeLatLng,false, false, type);
                 LinkedList<String> stations = graph.getReachable();
                 if (reachableStation != null ) {
                     if (!S1Line.contains(startvertex) && graph.getMinTimeLink().get("151018273")!=null) {
@@ -657,16 +637,16 @@ public class mainClass {
                     return null;
                 }
             case REACHABLE_REVERSE_PATH:
-                reachableStation = graphTraversal(startvertex, endvertex, starttime, datestring, acccodeLatLng,true);
+                reachableStation = graphTraversal(startvertex, endvertex, starttime, datestring, acccodeLatLng,true, false, type);
                 if (reachableStation != null && reachableStation.size()>0) {
                     return reachableStation;
                 } else {
                     return null;
                 }
             case REACHABLE_MINTRANSFER_PATH:
-                return reachablePath(startvertex, endvertex, starttime, datestring, true);
+                return reachablePath(startvertex, endvertex, starttime, datestring, true, type);
             case REACHABLE_PATH:
-                return reachablePath(startvertex, endvertex, starttime, datestring, false);
+                return reachablePath(startvertex, endvertex, starttime, datestring, false, type);
             default:
                 return null;
         }
@@ -722,13 +702,6 @@ public class mainClass {
     public static void main(String[] args) throws IOException {
 
         fit();
-
-        /*
-        LinkedList<String> stations = mainClass.getReachableStation("2018-06-13","21:10:30","150995204");
-        for(String string : stations) {
-            System.out.println(string);
-        }
-        */
 
         //东直门 -> 三元桥
         LinkedList<String> path = mainClass.getReachablePath("2018-06-13","20:58:00","150995470","150997531",false);
@@ -803,50 +776,30 @@ public class mainClass {
     }
 
 
-    private static LinkedList<String> getReachableStation2(String startvertex, String endvertex) {
-        resetGraph();
-        String startVertex1 = startvertex;
-        String  endVertex1=endvertex;
-        LinkedList<String> reachableStation = graphTraversal2(startVertex1, endVertex1, acccodeLatLng);
-        if (reachableStation != null) {
-            return reachableStation;
-        } else {
-            return null;
-        }
-    }
-
-
-    //基于时间最短的遍历
-    private static LinkedList<String> graphTraversal(String startVertex, String endVertex, String startTime, String dateString, String stationnametoacccode, Boolean isReverse) {
+    private static LinkedList<String> graphTraversal(String startVertex, String endVertex, String startTime, String dateString, String stationnametoacccode, Boolean isReverse, Boolean isLessTrans, Cate type) {
         graph.initialSearchStartVertex(startVertex,dateString,startTime,endVertex);
         GraphSearchAlgorithm graphSearchAlgorithm =new GraphSearchAlgorithm();
-        if(graphSearchAlgorithm.perform(graph, startVertex, dateString, startTime, endVertex,stationnametoacccode, isReverse)) {
-            return computeReachablePath(startVertex,dateString,startTime,endVertex,isReverse,1);
+        int retId = 0;
+        //基于分数最小的遍历
+        if (Cate.REACHABLE_MINTRANSFER_PATH == type || Cate.REACHABLE_PATH == type) {
+            retId = 3;
+        } else if (Cate.REACHABLE_REVERSE_PATH == type || Cate.REACHABLE_STATION == type){
+            retId = 1;
         } else {
-            return null;
+            retId = 0;
         }
-    }
 
-    //基于分数最小的遍历
-    private static LinkedList<String> graphTraversal3(String startVertex, String endVertex, String startTime, String dateString, String stationnametoacccode, Boolean isReverse, Boolean isLessTrans) {
-        graph.initialSearchStartVertex(startVertex,dateString,startTime,endVertex);
-        GraphSearchAlgorithm graphSearchAlgorithm =new GraphSearchAlgorithm();
-        if(graphSearchAlgorithm.perform3(graph, startVertex, dateString, startTime, endVertex,stationnametoacccode, isReverse,isLessTrans)) {
-            return computeReachablePath(startVertex,dateString,startTime,endVertex,isReverse,3);
+        if (graphSearchAlgorithm.perform(graph, startVertex, dateString, startTime, endVertex,stationnametoacccode, isReverse,isLessTrans,retId)) {
+            if (retId > 0) {
+                return computeReachablePath(startVertex, dateString, startTime, endVertex, isReverse, retId);
+            } else {
+                return getShortPath(startVertex,endVertex);
+            }
         } else {
             return null;
         }
-    }
 
-    private static LinkedList<String> graphTraversal2(String startVertex, String endVertex, String stationnametoacccode) {
-        graph.initialSearchStartVertex2(startVertex,endVertex);
-        GraphSearchAlgorithm graphSearchAlgorithm =new GraphSearchAlgorithm();
-        if(graphSearchAlgorithm.perform2(graph, startVertex, endVertex,stationnametoacccode)) {
-            //将可达路径返回至sh输出
-            return getShortPath(startVertex,endVertex);
-        } else {
-            return null;
-        }
+
     }
 
     private static LinkedList<String> getShortPath(String startvertex, String endvertex) {

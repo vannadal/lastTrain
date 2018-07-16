@@ -85,11 +85,6 @@ public final class Graph implements Serializable{
         date=dateString;
     }
 
-    public void initialSearchStartVertex2(String startVertex, String endVertex) {
-        firstVertax=startVertex;
-        this.endVertex =endVertex;
-      }
-
     public void addEdge(String fromVertex, String toVertex) {
         if (firstVertax == null) {
             firstVertax = fromVertex;
