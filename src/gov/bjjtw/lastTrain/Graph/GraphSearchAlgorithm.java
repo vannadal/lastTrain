@@ -1,6 +1,7 @@
 package gov.bjjtw.lastTrain.Graph;
 
 import gov.bjjtw.lastTrain.CommonTools.CommonTools;
+import javafx.beans.binding.DoubleBinding;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -73,8 +74,8 @@ public class GraphSearchAlgorithm {
             unVisitedVertex.remove(ver);
             String verTime = time, verBefore = ver;
 
-            while (!("null".equals(findLatestVertex(g, g.getMinTimeLink())))) {
-                ver = findLatestVertex(g, g.getMinTimeLink());
+            while (!("null".equals(findLatestVertexMinTime(g, g.getMinTimeLink())))) {
+                ver = findLatestVertexMinTime(g, g.getMinTimeLink());
 
                 g.addReachable(ver);
                 visitedVertex.add(ver);
@@ -149,8 +150,8 @@ public class GraphSearchAlgorithm {
             unVisitedVertex.remove(ver);
             String verTime=null,verBefore=ver;
 
-            while(!("null".equals(findLatestVertex3(g,g.getMinTimeLink())))) {
-                ver= findLatestVertex3(g,g.getMinTimeLink());
+            while(!("null".equals(findLatestVertexLatestDepartTime(g,g.getMinTimeLink())))) {
+                ver= findLatestVertexLatestDepartTime(g,g.getMinTimeLink());
                 g.addReachable(ver);
                 visitedVertex.add(ver);
                 List<String> toBeVisitedVertex = g.getAdj3().get(ver);
@@ -219,8 +220,8 @@ public class GraphSearchAlgorithm {
                 return false;
             }
             visitedVertex.add(sourceVertex);
-            while(!("null".equals(findLatestVertex2(g,g.getMinDisLink())))) {
-                String ver= findLatestVertex2(g,g.getMinDisLink());
+            while(!("null".equals(findLatestVertexDistance(g,g.getMinDisLink())))) {
+                String ver= findLatestVertexDistance(g,g.getMinDisLink());
                 g.addReachable(ver);
                 visitedVertex.add(ver);
                 List<String> toBeVisitedVertex = g.getAdj().get(ver);
@@ -280,9 +281,9 @@ public class GraphSearchAlgorithm {
             Double verScore = 0.0;
 
             if (isLessTrans){
-                ver = findLatestVertex4(g, g.getMinScoreLink());
+                ver = findLatestVertexScore(g, g.getMinScoreLink());
             } else {
-                ver = findLatestVertex(g, g.getMinTimeLink());
+                ver = findLatestVertexMinTime(g, g.getMinTimeLink());
             }
 
             while (!("null".equals( ver ))) {
@@ -379,9 +380,9 @@ public class GraphSearchAlgorithm {
                 }
 
                 if (isLessTrans){
-                    ver = findLatestVertex4(g, g.getMinScoreLink());
+                    ver = findLatestVertexScore(g, g.getMinScoreLink());
                 } else {
-                    ver = findLatestVertex(g, g.getMinTimeLink());
+                    ver = findLatestVertexMinTime(g, g.getMinTimeLink());
                 }
             }
         } catch (Exception e) {
@@ -390,9 +391,8 @@ public class GraphSearchAlgorithm {
         return true;
     }
 
-
     //时间最小
-    private String findLatestVertex(Graph g, Map<String,String> map) {
+    private String findLatestVertexMinTime(Graph g, Map<String,String> map) {
         String vertex="null";
         String minTime=Graph.UPPER_LIMIT_TIME;
         for (Map.Entry<String, String> entry : map.entrySet()) {
@@ -410,7 +410,7 @@ public class GraphSearchAlgorithm {
     }
 
     //分数
-    private String findLatestVertex4(Graph g, Map<String,Double> map) {
+    private String findLatestVertexScore(Graph g, Map<String,Double> map) {
         String vertex="null";
         Double minTime = TRANSFERWEIGHT*100+0.0;
         for (Map.Entry<String, Double> entry : map.entrySet()) {
@@ -428,7 +428,7 @@ public class GraphSearchAlgorithm {
     }
 
     //最晚出发时间
-    private String findLatestVertex3(Graph g, Map<String,String> map) {
+    private String findLatestVertexLatestDepartTime(Graph g, Map<String,String> map) {
         String vertex="null";
         String maxTime="01:00:00";
         for (Map.Entry<String, String> entry : map.entrySet()) {
@@ -448,7 +448,7 @@ public class GraphSearchAlgorithm {
     }
 
     //距离
-    private String findLatestVertex2(Graph g, Map<String,Integer> map) {
+    private String findLatestVertexDistance(Graph g, Map<String,Integer> map) {
         String vertex="null";
         int mindis=Graph.UPPER_LIMIT_DIS;
         for (Map.Entry<String, Integer> entry : map.entrySet()) {
