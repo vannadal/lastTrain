@@ -5,57 +5,113 @@ import gov.bjjtw.lastTrain.CommonTools.CommonTools;
 import java.io.*;
 import java.util.*;
 
-public final class Graph implements Serializable{
-    private String firstVertax;
-    private String firstTime,date;
-    private String endVertex;
-    private String distance;
-    private Map<String,String> minTimeLink=new HashMap<>();
-    private Map<String,String> minTimeLink2=new HashMap<>();
-    private Map<String,Double> minScoreLink=new HashMap<>();
-    private Map<String,Integer> minDisLink=new HashMap<>();
-    private Map<String,String> transTime=new HashMap<>();
-    private Map<String, String> accInLine=new HashMap<>();
-    private Map<String, String> walkTimeString =new HashMap<>();
-    private Stack<String> stack=new Stack<>();
-    private Stack<String> scoreStack=new Stack<>();
-    private Stack<String> stackPath=new Stack<>();
-    private Stack<String> stack2=new Stack<>();
-    private Stack<String> stackPath2=new Stack<>();
-    private Stack<String> stack3=new Stack<>();
-    private Stack<String> stack4=new Stack<>();
-    private Map<String, List<String>> adj = new HashMap<>();
-    private Map<String, List<String>> adj3 = new HashMap<>();
-    private Map<String, Integer> stationdistance =new HashMap<>();
-    private Map<String, List<String>> timetableWeekday = new HashMap<>();
-    private Map<String, List<String>> timetableWeekend = new HashMap<>();
-    private Set<String> unVisitedVertex =new HashSet<String>();
-    private HashMap<String, String> stationGeo = new HashMap<String, String>();
-    private LinkedList<String> reachableSt = new LinkedList<String>();
+/**
+ * Graph{@link String}图模型数据结构
+ *
+ * <p> 末班车可达技术应用图模型的数据结构
+ * <a href="https://github.com/bjjtwxxzx/lastTrain">项目位置</a>
+ * 更全面的项目 {@code String} 信息.
+ *
+ * @author wuxinran@bjjtw.gov.cn
+ */
 
+public final class Graph implements Serializable{
+    /** 起始节点accCode*/
+    private String firstVertax;
+    /** 起始时间 日期*/
+    private String firstTime, date;
+    /** 终止节点accCode*/
+    private String endVertex;
+
+    /** accCode站最早到达时间映射关系（给定起始时间最早到达时间场景) */
+    private Map<String,String> minTimeLink=new HashMap<>();
+    /** accCode站最晚到达时间映射关系（给定到达时间最晚出发时间场景) */
+    private Map<String,String> minTimeLink2=new HashMap<>();
+    /** accCode站点最小累计分数映射关系（给定到达时间最早到达时间场景) */
+    private Map<String,Double> minScoreLink=new HashMap<>();
+    /** accCode站点最小距离分数映射关系（给定到达时间最早到达时间场景) */
+    private Map<String,Integer> minDisLink=new HashMap<>();
+
+    /** 时间优先的结果候选路线堆栈（给定起始时间最早到达时间场景) */
+    private Stack<String> stack=new Stack<>();
+    /** 分数优先的结果候选路线堆栈 */
+    private Stack<String> scoreStack=new Stack<>();
+    /** 结果路径节点堆栈（给定起始时间最早到达时间场景)  */
+    private Stack<String> stackPath=new Stack<>();
+    /** 时间优先的结果路径节点堆栈（给定到达时间最晚出发时间场景) */
+    private Stack<String> stack2=new Stack<>();
+    /** 结果路径节点堆栈（给定到达时间最晚出发时间场景) */
+    private Stack<String> stackPath2=new Stack<>();
+
+    /** 换乘站换乘时间映射关系 */
+    private Map<String,String> transTime=new HashMap<>();
+    /** 站点accCode和线路间映射关系 */
+    private Map<String, String> accInLine=new HashMap<>();
+    /** 站点accCode进站时间映射关系 */
+    private Map<String, String> walkTimeString =new HashMap<>();
+    /** 边关联关系映射（给定起始时间最早到达时间场景) */
+    private Map<String, List<String>> adj = new HashMap<>();
+    /** 边关联关系映射（给定到达时间最晚出发时间场景) */
+    private Map<String, List<String>> adj3 = new HashMap<>();
+    /** 车站间距映射关系表 */
+    private Map<String, Integer> stationDistance =new HashMap<>();
+    /** 工作日列车运行时间表 */
+    private Map<String, List<String>> timetableWeekday = new HashMap<>();
+    /** 休息日列车运行时间表 */
+    private Map<String, List<String>> timetableWeekend = new HashMap<>();
+    /** 未访问节点集合 */
+    private Set<String> unVisitedVertex =new HashSet<String>();
+    /** 车站经纬度映射关系 */
+    private HashMap<String, String> stationGeo = new HashMap<String, String>();
+    /** 可以到达车站accCode列表 */
+    private LinkedList<String> reachableSt = new LinkedList<String>();
+    /** 日期是否休息日 */
     private boolean isWeekend;
+    /** 时间上限常量 */
     public static final String UPPER_LIMIT_TIME ="25:59:59";
+    /** 距离上限常量 */
     public static final int UPPER_LIMIT_DIS = 10000000;
+    /** 经纬度元组长度常量 */
     public static final int GEO_STRING_LENGTH = 2;
 
-    public void addGeoPosition(String acccode, String geoposition){
-        stationGeo.put(acccode,geoposition);
+    /**
+     * addGeoPosition 增加accCode对应经纬度映射
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
+    public void addGeoPosition(String accCode, String geoPosition){
+        stationGeo.put(accCode,geoPosition);
     }
 
-    public Float [] getGeoPosition(String accode){
-        Float[] positionfloat = new Float[2];
-        positionfloat[0] = null;
-        positionfloat[1] = null;
-        if (stationGeo.containsKey(accode) == true) {
-            String[] positionstr = stationGeo.get(accode).split(",");
+    /**
+     * getGeoPosition 获取accCode对应经纬度
+     * @param accCode 查询accCode
+     * @return Float [] 经纬度坐标
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
+    public Float [] getGeoPosition(String accCode){
+        Float[] positionFloat = new Float[2];
+        positionFloat[0] = null;
+        positionFloat[1] = null;
+        if (stationGeo.containsKey(accCode) == true) {
+            String[] positionstr = stationGeo.get(accCode).split(",");
             if (positionstr.length == GEO_STRING_LENGTH) {
-                positionfloat[0] = Float.valueOf(positionstr[0]);
-                positionfloat[1] = Float.valueOf(positionstr[1]);
+                positionFloat[0] = Float.valueOf(positionstr[0]);
+                positionFloat[1] = Float.valueOf(positionstr[1]);
             }
         }
-        return positionfloat;
+        return positionFloat;
     }
 
+    /**
+     * setAdj 构建图模型边（给定起始时间最早到达时间场景)
+     * @param inputAdj accCode(Key)关联的accCode(Values)
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
     public void setAdj(Map<String,List<String>> inputAdj){
         adj =new HashMap<>();
         for(String k: inputAdj.keySet()){
@@ -67,6 +123,14 @@ public final class Graph implements Serializable{
         }
     }
 
+
+    /**
+     * setAdj 构建图模型边(给定到达时间最晚出发时间场景)
+     * @param inputAdj accCode(Key)关联的accCode(Values)
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
     public void setAdj3(Map<String,List<String>> inputAdj){
         adj3 =new HashMap<>();
         for(String k: inputAdj.keySet()){
@@ -78,13 +142,32 @@ public final class Graph implements Serializable{
         }
     }
 
-    public void initialSearchStartVertex(String startVertex, String dateString, String time, String endVertex) {
+
+    /**
+     * initialSearchStartVertex 初始化日期、起止节点及开始时间
+     * @param startVertex 起始节点
+     * @param dateString 日期
+     * @param startTime 起始时间
+     * @param endVertex 终止节点
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
+    public void initialSearchStartVertex(String startVertex, String dateString, String startTime, String endVertex) {
         firstVertax=startVertex;
-        firstTime=time;
-        this.endVertex =endVertex;
+        firstTime=startTime;
+        this.endVertex = endVertex;
         date=dateString;
     }
 
+    /**
+     * addEdge 增加边关联
+     * @param fromVertex 起始节点
+     * @param toVertex 终止节点
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
     public void addEdge(String fromVertex, String toVertex) {
         if (firstVertax == null) {
             firstVertax = fromVertex;
@@ -103,6 +186,14 @@ public final class Graph implements Serializable{
         }
     }
 
+    /**
+     * removeEdge 移除边关联
+     * @param fromVertex 起始节点
+     * @param toVertex 终止节点
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
     public void removeEdge(String fromVertex, String toVertex) {
         if(adj.get(fromVertex).contains(toVertex)) {
             adj.get(fromVertex).remove((toVertex));
@@ -112,170 +203,411 @@ public final class Graph implements Serializable{
         }
     }
 
-    public void addStack(String fromvertex, String toVertex, String time, String arrtime, String timeStart) {
-        stack.push(fromvertex+","+toVertex+","+time+","+arrtime+","+timeStart);
+    /**
+     * addStack 在时间优先的结果候选路线堆栈中增加节点
+     * @param fromVertex 起始节点
+     * @param toVertex 终止节点
+     * @param startTime 起始时间
+     * @param arrTime 到达时间
+     * @param timeStart 发车时间
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
+    public void addStack(String fromVertex, String toVertex, String startTime, String arrTime, String timeStart) {
+        stack.push(fromVertex+","+toVertex+","+startTime+","+arrTime+","+timeStart);
     }
 
-    public void addScoreStack(String fromvertex,String toVertex,String time,String arrtime,String timeStart) {
-        scoreStack.push(fromvertex+","+toVertex+","+time+","+arrtime+","+timeStart);
+    /**
+     * addScoreStack 在分数优先的结果候选路线堆栈中增加节点
+     * @param fromVertex 起始节点
+     * @param toVertex 终止节点
+     * @param time 起始时间
+     * @param arrTime 到达时间
+     * @param timeStart 发车时间
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
+    public void addScoreStack(String fromVertex,String toVertex,String time,String arrTime,String timeStart) {
+        scoreStack.push(fromVertex+","+toVertex+","+time+","+arrTime+","+timeStart);
     }
 
+    /**
+     * addStackPath 通过候选路线堆栈中增加结果路径节点
+     * @param str 路径节点信息
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
     public void addStackPath(String str) {
           stackPath.push(str);
-      }
-    public void addStackPath2(String str)
-      {
+    }
+
+    /**
+     * addStackPath2 通过候选路线堆栈中增加无时间约束路径节点
+     * @param str 路径节点信息
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
+    public void addStackPath2(String str) {
           stackPath2.push(str);
-      }
+    }
+
+    /**
+     * addReachable 增加可到达车站accCode
+     * @param station 车站accCode
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
     public void addReachable(String station) {
           reachableSt.add(station);
-      }
+    }
 
+    /**
+     * getReachable 获取可到达车站accCode列表
+     * @return LinkedList<String> 车站accCode列表
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
     public LinkedList<String> getReachable(){
           return reachableSt;
-      }
+    }
 
-    public Stack<String> getStack()
-      {
+    /**
+     * getStack 获取结果路径节点堆栈
+     * @return Stack<String> 结果路径节点栈
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
+    public Stack<String> getStack() {
           return stack;
-      }
+    }
 
+    /**
+     * getScoreStack 获取分数优先结果路径节点堆栈
+     * @return Stack<String> 结果路径节点栈
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
     public Stack<String> getScoreStack() {
         return scoreStack;
     }
-    public Stack<String> getStack4() {
-        return stack4;
-    }
 
-    public void setStack4(){
-        stack4.clear();
-        for(String s:scoreStack){
-            stack4.add(s);
-        }
-    }
-
-    public Stack<String> getPathStack()
-      {
+    /**
+     * getPathStack 获取候选路线堆栈中结果路径节点
+     * @return Stack<String> 结果路径节点栈
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
+    public Stack<String> getPathStack() {
           return stackPath;
-      }
-    public Stack<String> getStack2()
-    {
+    }
+
+    /**
+     * getStack2 获取逆向候选路线堆栈中结果路径节点
+     * @return Stack<String> 结果路径节点栈
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
+    public Stack<String> getStack2() {
           return stack2;
     }
 
-    public Stack<String> getStack3() {
-        return stack3;
+    /**
+     * addStack2 增加逆向候选路线堆栈中增加结果节点
+     * @param startVertex 前继节点accCode码
+     * @param endVertex 后续节点accCode码
+     * @param distance2 区间距离
+     */
+    public void addStack2(String startVertex, String endVertex, int distance2) {
+        stack2.push(startVertex+","+endVertex+","+distance2);
     }
 
-    public void setStack3(){
-        stack3.clear();
-        for(String s:scoreStack){
-            stack3.add(s);
-        }
-    }
-
+    /**
+     * getPathStack2 获取逆向候选路线堆栈中无时间约束路径节点
+     * @return Stack<String> 结果路径节点栈
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
     public Stack<String> getPathStack2() {
           return stackPath2;
     }
 
-    public void addTransTime(String verStart, String verEnd,String time) {
-        transTime.put(verStart+verEnd,time);
+    /**
+     * addTransTime 增加换乘时间
+     * @param verStart 起始节点
+     * @param verEnd 终止节点
+     * @param startTime 开始时间
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
+    public void addTransTime(String verStart, String verEnd,String startTime) {
+        transTime.put(verStart+verEnd,startTime);
     }
 
-    public void addWeekdayTimetable(String acccode, String departureTime1, String departureTime2, String arrivingTime) {
-        if(timetableWeekday.get(acccode)==null) {
-            timetableWeekday.put(acccode, new ArrayList<String>());
+    /**
+     * addWeekdayTimetable 增加工作日列车运行时间表条目
+     * @param accCode 车站accCode码
+     * @param departureTime1 起始时间
+     * @param departureTime2 出发时间
+     * @param arrivingTime 到达时间
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
+    public void addWeekdayTimetable(String accCode, String departureTime1, String departureTime2, String arrivingTime) {
+        if(timetableWeekday.get(accCode)==null) {
+            timetableWeekday.put(accCode, new ArrayList<String>());
         }
-        timetableWeekday.get(acccode).add(departureTime1+","+departureTime2+","+arrivingTime);
+        timetableWeekday.get(accCode).add(departureTime1+","+departureTime2+","+arrivingTime);
     }
 
-    public void addStationDistance(String acccode, int distance) {
-        if(stationdistance.get(acccode)==null) {
-            stationdistance.put(acccode, 0);
+    /**
+     * addWeekendTimetable 增加周末列车运行时间表条目
+     * @param accCode 车站accCode码
+     * @param departureTime1 起始时间
+     * @param departureTime2 出发时间
+     * @param arrivingTime 到达时间
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/20
+     */
+    public void addWeekendTimetable(String accCode, String departureTime1, String departureTime2, String arrivingTime) {
+        if(timetableWeekend.get(accCode)==null) {
+            timetableWeekend.put(accCode, new ArrayList<String>());
         }
-        stationdistance.put(acccode,distance);
+        timetableWeekend.get(accCode).add(departureTime1+","+departureTime2+","+arrivingTime);
     }
 
-    public void addUnVisitedVertex(String str) {
-          unVisitedVertex.add(str);
-      }
+    /**
+     * addStationDistance 增加相邻accCode距离
+     * @param accCode 相邻accCode码
+     * @param distance 距离(m)
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
+    public void addStationDistance(String accCode, int distance) {
+        if(stationDistance.get(accCode)==null) {
+            stationDistance.put(accCode, 0);
+        }
+        stationDistance.put(accCode,distance);
+    }
 
+    /**
+     * addUnVisitedVertex 增加算法未访问集合中节点accCode
+     * @param accCode accCode码
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
+    public void addUnVisitedVertex(String accCode) {
+          unVisitedVertex.add(accCode);
+    }
+
+    /**
+     * getUnVisitedVertex 获取未访问集合中节点accCode的集合
+     * @return Set<String> accCode码集合
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
+    public Set<String> getUnVisitedVertex() {
+        return unVisitedVertex;
+    }
+
+    /**
+     * setUnVisitedVertex 配置未访问集合中节点accCode的集合
+     * @param vertexSet 未访问节点accCode集合
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
+    public void setUnVisitedVertex(Set<String> vertexSet) {
+        unVisitedVertex = (Set<String>) CommonTools.DeepCopy(vertexSet);
+    }
+
+    /**
+     * cleanScoreStack 清空分数优先结果候选路线堆栈
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
+    public void cleanScoreStack(){
+        scoreStack.clear();
+    }
+    /**
+     * cleanMinDisLink 清空accCode站点最小距离分数映射关系（给定到达时间最早到达时间场景)
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
+    public void cleanMinDisLink(){
+        minDisLink.clear();
+    }
+    /**
+     * cleanMinTimeLink 清空accCode站最早到达时间映射关系（给定起始时间最早到达时间场景)
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/20
+     */
     public void cleanMinTimeLink(){
         minTimeLink.clear();
     }
 
+    /**
+     * cleanMinScoreLink 清空accCode站点最小累计分数映射关系（给定到达时间最早到达时间场景)
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/20
+     */
     public void cleanMinScoreLink(){
         minScoreLink.clear();
     }
 
+    /**
+     * cleanMinTimeLink2 清空accCode站最晚到达时间映射关系（给定到达时间最晚出发时间场景)
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/20
+     */
     public void cleanMinTimeLink2(){
         minTimeLink2.clear();
     }
 
-    public void cleanScoreStack(){
-        scoreStack.clear();
-    }
-
-    public Map<String, Double> getMinScoreLink() {
-        return minScoreLink;
-    }
-
-    public void cleanMinDisLink(){
-        minDisLink.clear();
-    }
-
+    /**
+     * cleanWalkTimeString 清空站点accCode进站时间映射关系
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/20
+     */
     public void cleanWalkTimeString(){
         walkTimeString.clear();
     }
 
+    /**
+     * getMinTimeLink 获取当前accCode站点最早到达时间映射关系（给定起始时间最早到达时间场景)
+     * @return Map<String, String> 最早到达映射关系
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
+    public Map<String, String> getMinTimeLink() {
+        return minTimeLink;
+    }
+
+    /**
+     * getMinTimeLink2 获取当前accCode站点最晚到达时间映射关系（给定到达时间最晚出发时间场景)
+     * @return Map<String, String> 最晚到达映射关系
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
+    public Map<String, String> getMinTimeLink2() {
+        return minTimeLink2;
+    }
+
+    /**
+     * getMinDisLink 获取当前accCode站点最小距离分数映射关系（给定到达时间最早到达时间场景)
+     * @return Map<String, Integer> 最小距离到达映射关系
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
+    public Map<String, Integer> getMinDisLink() {
+        return minDisLink;
+    }
+
+    /**
+     * getMinScoreLink 获取当前accCode站点最小累计分数映射关系（给定到达时间最早到达时间场景)
+     * @return Map<String, Double> 最小分数到达映射关系
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/20
+     */
+    public Map<String, Double> getMinScoreLink() {
+        return minScoreLink;
+    }
+
+    /**
+     * cleanStack 清空结果堆栈中路径节
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
     public void cleanStack(){
         stack.clear();
     }
 
+    /**
+     * cleanStackPath 清空候选路线堆栈中结果
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
     public void cleanStackPath(){
         stackPath.clear();
     }
 
+    /**
+     * cleanStackPath 清空逆向候选路线堆栈中结果
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
     public void cleanStack2(){
         stack2.clear();
     }
 
-    public void cleanStack3(){
-        stack3.clear();
-    }
-
+    /**
+     * cleanStackPath2 清空候选路线堆栈中无时间约束路径节点
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
     public void cleanStackPath2(){
         stackPath2.clear();
     }
 
+    /**
+     * cleanReachableSt 清空可到达站集合
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/20
+     */
     public void cleanReachableSt(){
         reachableSt.clear();
     }
 
+    /**
+     * resetParams 重置参数
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/20
+     */
     public void resetParams(){
         firstTime = null;
         date = null;
         endVertex = null;
-        distance = null;
     }
 
-    public Set<String> getUnVisitedVertex() { return unVisitedVertex; }
-
-    public void setUnVisitedVertex(Set<String> v) {
-        unVisitedVertex = (Set<String>) CommonTools.DeepCopy(v);
-    }
-
-    public void addWeekendTimetable(String acccode, String departureTime1, String departureTime2, String arrivingTime) {
-        if(timetableWeekend.get(acccode)==null) {
-            timetableWeekend.put(acccode, new ArrayList<String>());
-        }
-        timetableWeekend.get(acccode).add(departureTime1+","+departureTime2+","+arrivingTime);
-    }
-
+    /**
+     * addAccInLine 增加accCode站归属线路映射关系
+     * @param accCode accCode码
+     * @param line 列车对应线路
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/20
+     */
     public void addAccInLine(String accCode, String line) {
         accInLine.put(accCode,line);
     }
 
+    /**
+     * addVertex 初始化accCode节点关联关系
+     * @param vertex 站点accCode
+     * @return void
+     * @authorr wuxinran@bjjtw.gov.cn
+     * @date 2018/7/20
+     */
     public void addVertex(String vertex) {
         if (adj.get(vertex)==null) {
               adj.put(vertex, new ArrayList<>());
@@ -285,69 +617,113 @@ public final class Graph implements Serializable{
         }
     }
 
+    /**
+     * getAdj 获取图模型边关系
+     * @return Map<String, List<String>> 节点accCode关联边集合映射
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
     public Map<String, List<String>> getAdj() {
         return adj;
     }
 
+    /**
+     * getAdj3 获取图模型边关系(给定到达时间最晚出发时间场景)
+     * @return Map<String, List<String>> 节点accCode关联边集合映射
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
+     */
     public Map<String, List<String>> getAdj3() {
         return adj3;
     }
 
-    public void addWalkTime(String acccode, String time) {
-        if (walkTimeString.get(acccode)==null) {
-            walkTimeString.put(acccode, new String());
-        }
-        walkTimeString.put(acccode,time);
-    }
-
-    public Map<String, String> getMinTimeLink() {
-            return minTimeLink;
-    }
-
-    public Map<String, String> getMinTimeLink2() {
-        return minTimeLink2;
-    }
-
-    public Map<String, Integer> getMinDisLink() {
-        return minDisLink;
-    }
-
+    /**
+     * getTimetableWeekday 获取工作日列车运行时间表 (车站accCode组合, 3列时间为记录的时间表序列)
+     * @return Map<String, List<String>> 工作日列车运行时间表映射关系
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/20
+     */
     public Map<String, List<String>> getTimetableWeekday() {
             return timetableWeekday;
     }
 
+    /**
+     * getTimetableWeekend 获取休息日列车运行时间表 (车站accCode组合, 3列时间为记录的时间表序列)
+     * @return Map<String, List<String>> 休息日列车运行时间表映射关系
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/20
+     */
     public Map<String, List<String>> getTimetableWeekend() {
             return timetableWeekend;
     }
 
-    public Map<String, Integer> getStationdistance() {
-        return stationdistance;
+    /**
+     * getStationDistance 获取相邻站距离映射(车站accCode组合, 距离间隔)
+     * @return Map<String, Interger> 车站间距映射关系
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/20
+     */
+    public Map<String, Integer> getStationDistance() {
+        return stationDistance;
     }
 
+    /**
+     * getTransTime 获取换乘站换乘时间(车站accCode组合, 时间间隔))
+     * @return Map<String, String> 车站见换乘时间映射官谢
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/20
+     */
     public Map<String, String> getTransTime() {
             return transTime;
     }
 
+    /**
+     * getAccInLine 获取列车行驶停站顺序表中记录
+     * @return Map<String, String> 车站accCode和线路映射集合
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/20
+     */
     public Map<String, String> getAccInLine() { return accInLine; }
 
-    public boolean getIsWeekend(){
-      return isWeekend;
-    }
-
+    /**
+     * setIsWeekend 设置当前日期是否为周末
+     * @param weekend 是否周末 true/false
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/20
+     */
     public void setIsWeekend(boolean weekend){
           isWeekend=weekend;
     }
 
-    public int getWalkTime(String acccode){
-        if(walkTimeString.get(acccode)!=null) {
-            return Integer.parseInt(walkTimeString.get(acccode));
+    /**
+     * getWalkTime 获取accCode站进站时间
+     * @param accCode 站点accCode
+     * @return int 进站用时
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/20
+     */
+    public int getWalkTime(String accCode){
+        if(walkTimeString.get(accCode)!=null) {
+            return Integer.parseInt(walkTimeString.get(accCode));
         } else {
             return 0;
         }
     }
 
-    public void addStack2(String vertex, String adjVertex, int distance2) {
-        stack2.push(vertex+","+adjVertex+","+distance2);
+    /**
+     * addWalkTime 增加accCode进站时间映射关系
+     * @param accCode
+     * @param time
+     * @return void
+     * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/20
+     */
+    public void addWalkTime(String accCode, String time) {
+        if (walkTimeString.get(accCode)==null) {
+            walkTimeString.put(accCode, new String());
+        }
+        walkTimeString.put(accCode,time);
     }
 
 }
