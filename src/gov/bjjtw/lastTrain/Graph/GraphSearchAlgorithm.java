@@ -1,13 +1,18 @@
 package gov.bjjtw.lastTrain.Graph;
 
 import gov.bjjtw.lastTrain.CommonTools.CommonTools;
-import javafx.beans.binding.DoubleBinding;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
-
+/**
+ * Graph{@link String}图模型算法
+ *
+ * <p> 末班车可达技术应用图模型的算法
+ * <a href="https://github.com/bjjtwxxzx/lastTrain">项目位置</a>
+ * 更全面的项目 {@code String} 信息.
+ *
+ * @author wuxinran@bjjtw.gov.cn
+ */
 public class GraphSearchAlgorithm {
     private Set<String> visitedVertex;
     public String date;
@@ -16,12 +21,12 @@ public class GraphSearchAlgorithm {
     public static final int TRANSFERWEIGHT = 10000000;
 
 
-    public boolean perform(Graph g, String sourceVertex,String dateString,String time,String endVertex,String stationnametoacccode, Boolean isReverse, Boolean isLessTrans, int type) {
+    public boolean perform(Graph g, String sourceVertex,String dateString,String time,String endVertex,String stationNameToAccCode, Boolean isReverse, Boolean isLessTrans, int type) {
         if (null == visitedVertex) {
             visitedVertex = new HashSet<>();
         }
         date=dateString;
-        transPath = stationnametoacccode;
+        transPath = stationNameToAccCode;
         if (isReverse){
             // 不包含少换乘优先的分支
             return dijkstra3(g,sourceVertex,dateString,time,endVertex,isLessTrans);
@@ -38,23 +43,7 @@ public class GraphSearchAlgorithm {
         return dijkstra2(g,sourceVertex,endVertex,transPath);
     }
 
-    public boolean isWeekend(String dateString) {
-        try{
-            DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-            Date date = format.parse(dateString);
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(date);
-            if(cal.get(Calendar.DAY_OF_WEEK)==Calendar.SATURDAY||cal.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY) {
-                return true;
-            } else {
-                return false;
-            }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
 
     //基于最短时间
     private boolean dijkstra(Graph g, String sourceVertex, String dateString, String time, String endVertex, String transPath) {
@@ -232,7 +221,7 @@ public class GraphSearchAlgorithm {
                 }
                 int verDist=g.getMinDisLink().get(ver);
                 for(String verEnd : toBeVisitedVertex) {
-                    int	transDist=g.getStationdistance().get(ver+verEnd);
+                    int	transDist=g.getStationDistance().get(ver+verEnd);
                     if(g.getMinDisLink().get(verEnd)==null) {
                         g.getMinDisLink().put(verEnd,verDist+transDist);
                         g.addStack2(ver, verEnd,verDist+transDist);
@@ -246,7 +235,6 @@ public class GraphSearchAlgorithm {
                 }
             }
         } catch (Exception e) {
-            // TODO: handle exception
             e.printStackTrace();
         }
         return true;
@@ -482,10 +470,10 @@ public class GraphSearchAlgorithm {
             // 按距离算
             if (type == 2) {
                 int distance=Graph.UPPER_LIMIT_DIS;
-                if(g.getStationdistance().get(vertex+adjVertex)==null) {
+                if(g.getStationDistance().get(vertex+adjVertex)==null) {
                     g.getMinDisLink().put(adjVertex,Graph.UPPER_LIMIT_DIS);
                 } else {
-                    distance=g.getStationdistance().get(vertex+adjVertex);
+                    distance=g.getStationDistance().get(vertex+adjVertex);
                     g.getMinDisLink().put(adjVertex,distance);
                 }
                 g.addStack2(vertex, adjVertex, distance);
@@ -558,7 +546,7 @@ public class GraphSearchAlgorithm {
     private String findLatestTime(Graph g, String verStart, String verEnd, String verStartTime, int isTransStation, int type) {
         List<String> toBeVisitedTime=new ArrayList<String>();
         int second = 0;
-        if(isWeekend(date)) {
+        if(CommonTools.isWeekend(date)) {
             if(g.getTimetableWeekend().get(verStart+verEnd)==null) {
                 return Graph.UPPER_LIMIT_TIME;
             }

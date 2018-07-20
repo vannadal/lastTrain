@@ -23,6 +23,8 @@ import java.io.FileInputStream;
  *
  * <p> 当前类通过Java核心{@link String}和{@link StringBuilder}类，
  * 以图模型算法为基础，实现一系列末班车可达场景的应用，并提供相关功能接口。
+ *
+ * @author wuxinran@bjjtw.gov.cn
  */
 
 public class mainClass {
@@ -125,10 +127,10 @@ public class mainClass {
         graph.setUnVisitedVertex(unVisitedVertex);
         graph.cleanMinDisLink();
         graph.cleanMinTimeLink();
+        graph.cleanMinTimeLink2();
         graph.cleanMinScoreLink();
         graph.cleanReachableSt();
         graph.cleanWalkTimeString();
-        graph.cleanStack3();
         graph.cleanStack();
         graph.cleanScoreStack();
         graph.cleanStack2();
@@ -212,18 +214,18 @@ public class mainClass {
         emptyGraph.removeEdge("150996997","151019045");
         emptyGraph.removeEdge("151019045","150996997");
 
-        emptyGraph.getStationdistance().put("151019045_151019043151019043",emptyGraph.getStationdistance().get("151019045151019043"));
-        emptyGraph.getStationdistance().put("151019045_151019047151019047",emptyGraph.getStationdistance().get("151019045151019047"));
-        emptyGraph.getStationdistance().put("151019043151019045_151019043",emptyGraph.getStationdistance().get("151019043151019045"));
-        emptyGraph.getStationdistance().put("151019047151019045_151019047",emptyGraph.getStationdistance().get("151019047151019045"));
+        emptyGraph.getStationDistance().put("151019045_151019043151019043",emptyGraph.getStationDistance().get("151019045151019043"));
+        emptyGraph.getStationDistance().put("151019045_151019047151019047",emptyGraph.getStationDistance().get("151019045151019047"));
+        emptyGraph.getStationDistance().put("151019043151019045_151019043",emptyGraph.getStationDistance().get("151019043151019045"));
+        emptyGraph.getStationDistance().put("151019047151019045_151019047",emptyGraph.getStationDistance().get("151019047151019045"));
 
-        emptyGraph.getStationdistance().put("150996997151019045_151019047",emptyGraph.getStationdistance().get("150996997151019045"));
-        emptyGraph.getStationdistance().put("150996997151019045_151019043",emptyGraph.getStationdistance().get("150996997151019045"));
-        emptyGraph.getStationdistance().put("151019045_151019043150996997",emptyGraph.getStationdistance().get("151019045150996997"));
-        emptyGraph.getStationdistance().put("151019045_151019047150996997",emptyGraph.getStationdistance().get("151019045150996997"));
+        emptyGraph.getStationDistance().put("150996997151019045_151019047",emptyGraph.getStationDistance().get("150996997151019045"));
+        emptyGraph.getStationDistance().put("150996997151019045_151019043",emptyGraph.getStationDistance().get("150996997151019045"));
+        emptyGraph.getStationDistance().put("151019045_151019043150996997",emptyGraph.getStationDistance().get("151019045150996997"));
+        emptyGraph.getStationDistance().put("151019045_151019047150996997",emptyGraph.getStationDistance().get("151019045150996997"));
 
-        emptyGraph.getStationdistance().remove("151019045150996997");
-        emptyGraph.getStationdistance().remove("150996997151019045");
+        emptyGraph.getStationDistance().remove("151019045150996997");
+        emptyGraph.getStationDistance().remove("150996997151019045");
 
         Float [] tmp = emptyGraph.getGeoPosition("150996997");
         String tmpStr = tmp[0].toString()+","+tmp[1].toString();
@@ -592,12 +594,10 @@ public class mainClass {
         Stack<String> stack = null;
 
         if (type == 1) {
-            graph.setStack3();
             stack = graph.getStack();
         } else if (type == 3){
-            graph.setStack4();
             stack = graph.getStack();
-            for (String item : graph.getStack4()){
+            for (String item : graph.getScoreStack()){
                 stack.push(item);
             }
         } else {
