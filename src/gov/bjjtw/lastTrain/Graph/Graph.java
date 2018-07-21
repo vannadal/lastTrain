@@ -426,7 +426,7 @@ public final class Graph implements Serializable{
      * @date 2018/7/17
      */
     public void setUnVisitedVertex(Set<String> vertexSet) {
-        unVisitedVertex = (Set<String>) CommonTools.DeepCopy(vertexSet);
+        unVisitedVertex = (Set<String>) CommonTools.deepCopy(vertexSet);
     }
 
     /**
@@ -458,7 +458,7 @@ public final class Graph implements Serializable{
     }
 
     /**
-     * cleanMinScoreLink 清空accCode站点最小累计分数映射关系（给定到达时间最早到达时间场景)
+     * cleanMinScoreLink 清空accCode站点最小累计分数映射关系
      * @return void
      * @author wuxinran@bjjtw.gov.cn
      * @date 2018/7/20
@@ -488,7 +488,7 @@ public final class Graph implements Serializable{
     }
 
     /**
-     * getMinTimeLink 获取当前accCode站点最早到达时间映射关系（给定起始时间最早到达时间场景)
+     * getMinTimeLink 获取当前accCode站点最早到达时间映射关系(给定起始时间最早到达时间场景)
      * @return Map<String, String> 最早到达映射关系
      * @author wuxinran@bjjtw.gov.cn
      * @date 2018/7/17
@@ -498,7 +498,7 @@ public final class Graph implements Serializable{
     }
 
     /**
-     * getMinTimeLink2 获取当前accCode站点最晚到达时间映射关系（给定到达时间最晚出发时间场景)
+     * getMinTimeLink2 获取当前accCode站点最晚到达时间映射关系(给定到达时间最晚出发时间场景)
      * @return Map<String, String> 最晚到达映射关系
      * @author wuxinran@bjjtw.gov.cn
      * @date 2018/7/17
@@ -508,7 +508,7 @@ public final class Graph implements Serializable{
     }
 
     /**
-     * getMinDisLink 获取当前accCode站点最小距离分数映射关系（给定到达时间最早到达时间场景)
+     * getMinDisLink 获取当前accCode站点最小距离分数映射关系
      * @return Map<String, Integer> 最小距离到达映射关系
      * @author wuxinran@bjjtw.gov.cn
      * @date 2018/7/17
@@ -518,7 +518,7 @@ public final class Graph implements Serializable{
     }
 
     /**
-     * getMinScoreLink 获取当前accCode站点最小累计分数映射关系（给定到达时间最早到达时间场景)
+     * getMinScoreLink 获取当前accCode站点最小累计分数映射关系(给定起始时间最早到达时间场景)
      * @return Map<String, Double> 最小分数到达映射关系
      * @author wuxinran@bjjtw.gov.cn
      * @date 2018/7/20

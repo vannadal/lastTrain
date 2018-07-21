@@ -260,7 +260,7 @@ public class mainClass {
      */
     private static Graph loadGraphResource(boolean isResource) {
         Graph emptyGraph = new Graph();
-        int startTimeToSec= CommonTools.TransferTime(loadTimetableTime);
+        int startTimeToSec= CommonTools.transferTime(loadTimetableTime);
         //将所有站点以及与其邻接的边添加到图中（不包括同站换乘点）
         addAllVertexAndEdge( emptyGraph,acccodeInLine,isResource);
         //同一站点的不同编码acc添加到图中
@@ -501,7 +501,7 @@ public class mainClass {
                 boolean judge1 =  "151020057".equals(str[0]) || "151020059".equals(str[0]);
                 boolean judge2 =  "151020055".equals(str[1]) || "151020057".equals(str[1]) || "151020059".equals(str[1]);
                 //每次加载列车运行时刻表时，只加载计算时间之后的数据
-                if (startTimeToSec <= CommonTools.TransferTime(str[2])) {
+                if (startTimeToSec <= CommonTools.transferTime(str[2])) {
                     g.addWeekdayTimetable(acccode1, str[2], str[3], str[5]);
                 }
             }
@@ -522,7 +522,7 @@ public class mainClass {
                 boolean judge1 =  "151020057".equals(str[0]) || "151020059".equals(str[0]);
                 boolean judge2 =  "151020057".equals(str[1]) || "151020059".equals(str[1]);
                 //每次加载列车运行时刻表时，只加载计算时间之后的数据
-                if (startTimeToSec <= CommonTools.TransferTime(str[2])) {
+                if (startTimeToSec <= CommonTools.transferTime(str[2])) {
                     g.addWeekendTimetable(acccode1, str[2], str[3], str[5]);
                 }
             }
@@ -709,7 +709,7 @@ public class mainClass {
         //不可达的情况
         if (startVertex.equals(endVertex) == false){
             resetGraph();
-            LinkedList<String> unreachableResult = graphTraversal(startVertex, endVertex, startTimeStr, dateStr, acccodeLatLng, false, false, Cate.OTHER);
+            LinkedList<String> unreachableResult = graphTraversal(startVertex, endVertex, startTimeStr, dateStr, false, false, Cate.OTHER);
             for (String item: unreachableResult){
                 String accname = item.split(",")[1];
                 if (accname.contains("_")){
@@ -769,7 +769,7 @@ public class mainClass {
         Float [] lastStationPosition = graph.getGeoPosition(stationACC1);
         Float [] destStationPosition = graph.getGeoPosition(stationACC2);
         if (lastStationPosition[0] - 0.0 > EPSILON && lastStationPosition[1] - 0.0 > EPSILON && destStationPosition[0] - 0.0 > EPSILON && destStationPosition[1] - 0.0 > EPSILON){
-            return CommonTools.SimpleDist(lastStationPosition[1],lastStationPosition[0],destStationPosition[1],destStationPosition[0]);
+            return CommonTools.simpleDist(lastStationPosition[1],lastStationPosition[0],destStationPosition[1],destStationPosition[0]);
         }
         return -1.0;
     }
@@ -787,7 +787,7 @@ public class mainClass {
      * @date 2018/7/17
      */
     private static LinkedList<String> reachablePath(String startVertex, String endVertex, String startTimeStr, String dateStr, Boolean isLessTrans,Cate type){
-        LinkedList<String> reachableStation = graphTraversal(startVertex, endVertex, startTimeStr, dateStr, acccodeLatLng,false,isLessTrans,type);
+        LinkedList<String> reachableStation = graphTraversal(startVertex, endVertex, startTimeStr, dateStr,false,isLessTrans,type);
         if(reachableStation !=null && reachableStation.size()>0){
             return reachableStation;
         } else {
@@ -827,22 +827,22 @@ public class mainClass {
         LinkedList<String> reachableStation = new LinkedList<>();
         switch (type) {
             case REACHABLE_STATION:
-                reachableStation = graphTraversal(startVertex, endVertex, startTimeStr, dateStr, acccodeLatLng,false, false, type);
+                reachableStation = graphTraversal(startVertex, endVertex, startTimeStr, dateStr, false, false, type);
                 LinkedList<String> stations = graph.getReachable();
                 if (reachableStation != null ) {
                     if (!S1Line.contains(startVertex) && graph.getMinTimeLink().get("151018273")!=null) {
-                        int jinanqiaoArrTime= CommonTools.TransferTime(graph.getMinTimeLink().get("151018273"));
+                        int jinanqiaoArrTime= CommonTools.transferTime(graph.getMinTimeLink().get("151018273"));
                         //比较到达金安桥的时间是否小于金安桥末班车的时间
-                        int timeDifference = jinanqiaoArrTime - CommonTools.TransferTime("21:07:00");
+                        int timeDifference = jinanqiaoArrTime - CommonTools.transferTime("21:07:00");
                         if (timeDifference>0) {
                             stations.remove("151018273");
                             return stations;
                         }
                         return stations;
                     }else if(S1Line.contains(startVertex) && graph.getMinTimeLink().get("150995203")!=null){
-                        int jinanqiaoArrTime = CommonTools.TransferTime(graph.getMinTimeLink().get("150995203"));
+                        int jinanqiaoArrTime = CommonTools.transferTime(graph.getMinTimeLink().get("150995203"));
                         //比较到达苹果园的时间是否小于苹果园末班车的时间
-                        int timeDifference = jinanqiaoArrTime - CommonTools.TransferTime("23:30:00");
+                        int timeDifference = jinanqiaoArrTime - CommonTools.transferTime("23:30:00");
                         if (timeDifference>0) {
                             stations.remove("150995203");
                             return stations;
@@ -855,7 +855,7 @@ public class mainClass {
                     return null;
                 }
             case REACHABLE_REVERSE_PATH:
-                reachableStation = graphTraversal(startVertex, endVertex, startTimeStr, dateStr, acccodeLatLng,true, false, type);
+                reachableStation = graphTraversal(startVertex, endVertex, startTimeStr, dateStr,true, false, type);
                 if (reachableStation != null && reachableStation.size()>0) {
                     return reachableStation;
                 } else {
@@ -897,7 +897,6 @@ public class mainClass {
      * @param endVertex 终止节点ACC码
      * @param startTimeStr 起始时间字符串
      * @param dateStr 日期字符串
-     * @param stationNameToAccCodeFilename 站名到ACC码映射关系文件位置
      * @param isReverse 是否从终点逆向查询起始点最晚出发时间
      * @param isLessTrans 是否按最少换乘优先寻路(否则按最早到达优先)
      * @param type 获取路径类型
@@ -905,7 +904,7 @@ public class mainClass {
      * @author wuxinran@bjjtw.gov.cn
      * @date 2018/7/17
      */
-    private static LinkedList<String> graphTraversal(String startVertex, String endVertex, String startTimeStr, String dateStr, String stationNameToAccCodeFilename, Boolean isReverse, Boolean isLessTrans, Cate type) {
+    private static LinkedList<String> graphTraversal(String startVertex, String endVertex, String startTimeStr, String dateStr, Boolean isReverse, Boolean isLessTrans, Cate type) {
         graph.initialSearchStartVertex(startVertex,dateStr,startTimeStr,endVertex);
         GraphSearchAlgorithm graphSearchAlgorithm =new GraphSearchAlgorithm();
         int retId = 0;
@@ -918,7 +917,7 @@ public class mainClass {
             retId = 0;
         }
 
-        if (graphSearchAlgorithm.perform(graph, startVertex, dateStr, startTimeStr, endVertex,stationNameToAccCodeFilename, isReverse,isLessTrans,retId)) {
+        if (graphSearchAlgorithm.perform(graph, startVertex, dateStr, startTimeStr, endVertex, isReverse,isLessTrans,retId)) {
             if (retId > 0) {
                 return computeReachablePath(startVertex, endVertex, isReverse, retId);
             } else {
