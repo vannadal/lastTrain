@@ -665,8 +665,7 @@ public class mainClass {
         LinkedList<String> output = new LinkedList<String>();
         //记录输出路径包含的站点acc
         LinkedList<String> simple = new LinkedList<String>();
-        //记录输出路径包含的站点中文名
-        LinkedList<String> simplenames = new LinkedList<String>();
+
         if (result.size()>0) {
             for (String item : result) {
                 tmp = item.split(",");
@@ -700,12 +699,6 @@ public class mainClass {
             simple.add(startVertex);
         }
 
-        for(String s: simple) {
-            if (!simplenames.contains(map.get(s))) {
-                simplenames.add(map.get(s));
-            }
-        }
-
         //不可达的情况
         if (startVertex.equals(endVertex) == false){
             resetGraph();
@@ -715,7 +708,7 @@ public class mainClass {
                 if (accname.contains("_")){
                     accname = accname.split("_")[0];
                 }
-                if (!simplenames.contains(map.get(accname))) {
+                if (!simple.contains(accname)) {
                     output.add(accname+",,0");
                 }
             }
