@@ -29,7 +29,6 @@ public class CommonTools {
      * @param timeStr 时间文本
      * @return int 整数型时间
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/21
      */
     public static int transferTime(String timeStr) {
     	String str[]=timeStr.split(":");
@@ -47,7 +46,6 @@ public class CommonTools {
      * @param second 整数型时间
      * @return String 时间文本
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/21
      */
     public static String secondToTime(int second) {
         int h=second/3600;
@@ -77,7 +75,6 @@ public class CommonTools {
      * @param orig 原对象
      * @return Object 复制对象
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/21
      */
     public static Object deepCopy(Object orig) {
         Object obj = null;
@@ -103,14 +100,13 @@ public class CommonTools {
 
     /**
      * simpleDist 简化经纬度距离计算
-     * @link https://tech.meituan.com/lucene_distance.html
+     * https://tech.meituan.com/lucene_distance.html
      * @param lat1 纬度1
      * @param lng1 经度1
      * @param lat2 纬度2
      * @param lng2 经度2
      * @return double 两点欧式距离
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/21
      */
     public static double simpleDist(double lat1, double lng1, double lat2, double lng2) {
         // 经度差值
@@ -132,7 +128,6 @@ public class CommonTools {
      * @param dateString 日期文本格式
      * @return boolean 是否周末
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/21
      */
     public static boolean isWeekend(String dateString) {
         try{
