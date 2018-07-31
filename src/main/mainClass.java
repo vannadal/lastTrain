@@ -88,7 +88,9 @@ public class mainClass {
 
     /**
      * fit 初始化模型 (图模型，全局变量)
+     * @return void
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
      */
     public static void fit(){
         initConf("",true);
@@ -115,7 +117,9 @@ public class mainClass {
 
     /**
      * resetGraph 恢复graph到初始状态.
+     * @return void
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
      */
     private static void resetGraph(){
         graph.setAdj(adj);
@@ -139,9 +143,11 @@ public class mainClass {
      * initConf 通过配置文件初始化全局变量
      * @param filename 配置文件名
      * @param isResource 是否直接从资源目录获取
+     * @return void
      * @exception IOException 读取文件异常
      * @exception NullPointerException 读取键值异常
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
      */
     private static void initConf(String filename,Boolean isResource) {
         FileInputStream inStream = null;
@@ -188,7 +194,9 @@ public class mainClass {
     /**
      * specialStation 修改特殊构造站台图模型： 替换岛式站台到侧式站台, 上下行换乘步行时间存在差异
      * @param emptyGraph 图模型对象
+     * @return void
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
      */
     private static void specialStation(Graph emptyGraph) {
         // 朱辛庄换乘站不同路径建模
@@ -248,6 +256,7 @@ public class mainClass {
      * @param isResource 是否直接从资源目录获取
      * @return Graph 加载资源后的图模型对象
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
      */
     private static Graph loadGraphResource(boolean isResource) {
         Graph emptyGraph = new Graph();
@@ -272,6 +281,7 @@ public class mainClass {
      * @return Map<String, String> 加载过的AccCode和中文站名映射关系
      * @exception Exception 文件操作异常
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
      */
     private static Map<String , String> loadAcc(String stationLatLngFilename, boolean isResource) {
         Map<String,String> map = new HashMap<String,String>();
@@ -301,8 +311,10 @@ public class mainClass {
      * @param g 图模型对象
      * @param entertimeFilename 进站步行时间文件位置
      * @param isResource 是否直接从资源目录获取
+     * @return void
      * @exception Exception 文件操作异常
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
      */
     private static void addStationWalkingTime(Graph g, String entertimeFilename, boolean isResource) {
         try {
@@ -334,8 +346,10 @@ public class mainClass {
      * @param g 图模型对象
      * @param stationLatLngFilename 车站位置资源文件位置
      * @param isResource 是否直接从资源目录获取
+     * @return void
      * @exception Exception 文件操作异常
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
      */
     private static void initialUnVisitedVertexList(Graph g, String stationLatLngFilename, boolean isResource) {
         try {
@@ -363,8 +377,10 @@ public class mainClass {
      * @param g 图模型对象
      * @param accCodeInLineFilename 列车行驶停站顺序列表文件位置
      * @param isResource 是否直接从资源目录获取
+     * @return void
      * @exception Exception 文件操作异常
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
      */
     private static void addAllVertexAndEdge(Graph g, String accCodeInLineFilename, boolean isResource) {
         String temp1 = "", line = "", acccode = "";
@@ -414,8 +430,10 @@ public class mainClass {
      * @param g 图模型对象
      * @param acccodeLatLngFilename accCode对应经纬度文件位置
      * @param isResource 是否直接从资源目录获取
+     * @return void
      * @exception IOException 文件操作异常
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
      */
     private static void loadStationGeoPosition(Graph g, String acccodeLatLngFilename, Boolean isResource) {
         String temp1 = null;
@@ -447,8 +465,10 @@ public class mainClass {
      * @param acccodeInLineFilename 列车行驶停站顺序列表文件位置
      * @param startTimeToSec 配置中的系统起始时间
      * @param isResource 是否直接从资源目录获取
+     * @return void
      * @exception Exception 文件操作异常
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
      */
     private static void readTimeTable(Graph g, String stationDistanceFilename, String timetableWeekdayFilename, String timetableWeekendFilename, String acccodeInLineFilename, int startTimeToSec, boolean isResource) {
         try {
@@ -523,8 +543,10 @@ public class mainClass {
      * @param g 图模型对象
      * @param sameTransStationAdjDist 换乘站信息：距离/换乘时间文件位置
      * @param isResource 是否直接从资源目录获取
+     * @return void
      * @exception Exception 文件操作异常
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
      */
     private static void addSameTransferVertexAndEdge(Graph g, String sameTransStationAdjDist, boolean isResource) {
         String temp1 = "";
@@ -562,18 +584,23 @@ public class mainClass {
      * @param type 1(获取无约束寻路结果) / 3(获取有目标的寻路结果) / 其他返回空
      * @return LinkedList<String> 查询结果列表
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
      */
     private static LinkedList<String> computeReachablePath(String startvertex, String endvertex, Boolean isReverse, int type) {
         String ver=endvertex;
         String content="";
         Boolean hasValidStation = false;
         LinkedList<String> path = new LinkedList<String>();
-        Stack<String> stack = null;
+        Stack<String> stack = new Stack<String>();
 
         if (type == 1) {
-            stack = graph.getStack();
+            for (String item : graph.getStack()){
+                stack.push(item);
+            }
         } else if (type == 3){
-            stack = graph.getStack();
+            for (String item : graph.getStack()){
+                stack.push(item);
+            }
             for (String item : graph.getScoreStack()){
                 stack.push(item);
             }
@@ -618,15 +645,16 @@ public class mainClass {
 
     /**
      * getReachablePath
-     * 输出对应的最早到达路径
+     * <p> 输出对应的最早到达路径</br>
      * 输出在某时刻（datestring+starttime）从startvert站点出发,到endvertex站点的路径，包括车站ACC码,发车时间(最后一个可达车站，时间为到达时间)，是否可达标识（0,1表示），返回LinkedList。
      * @param dateStr 日期字符串
      * @param startTimeStr 时间字符串
      * @param startVertex 起始节点ACC码
      * @param endVertex 终止节点ACC码
      * @param isMinTransfer 是否按最少换乘优先寻路(否则按最早到达优先)
-     * @return 查询结果对应方案明细列表
+     * @return LinkedList<String> 查询结果对应方案明细列表
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
      */
     public static LinkedList<String> getReachablePath(String dateStr, String startTimeStr, String startVertex, String endVertex,boolean isMinTransfer) {
         String [] tmp;
@@ -698,21 +726,23 @@ public class mainClass {
      * @param dateStr 日期字符串
      * @param startTimeStr 时间字符串
      * @param startVertex 起始节点
-     * @return 可达车站ACC码集合
+     * @return LinkedList<String> 可达车站ACC码集合
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
      */
     public static LinkedList<String> getReachableStation(String dateStr, String startTimeStr, String startVertex){
         return getReachable(dateStr,startTimeStr,startVertex,"",Cate.REACHABLE_STATION);
     }
 
-     /**
+    /**
      * getReachableStationLatestPath 输出给定参数下到达终点，起点的最晚出发时间对应方案。
      * @param dateStr 日期字符串
      * @param endTimeStr 到达终止节点,时间字符串
      * @param startVertex 起始节点ACC码
      * @param endVertex 终止节点ACC码
-     * @return 查询结果对应方案明细列表
+     * @return LinkedList<String> 查询结果对应方案明细列表
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
      */
     public static LinkedList<String> getReachableStationLatestPath(String dateStr, String endTimeStr, String startVertex, String endVertex){
         LinkedList<String> result = getReachable(dateStr,endTimeStr,startVertex,endVertex,Cate.REACHABLE_REVERSE_PATH);
@@ -730,6 +760,7 @@ public class mainClass {
      * @param stationACC2 站点2的ACC码
      * @return double 距离(米)
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
      */
     private static double getGeoDistanceBetweenStations(String stationACC1, String stationACC2){
         Float [] lastStationPosition = graph.getGeoPosition(stationACC1);
@@ -750,6 +781,7 @@ public class mainClass {
      * @param type REACHABLE_MINTRANSFER_PATH最少换乘优先，REACHABLE_PATH最早到达优先
      * @return LinkedList<String> 查询结果对应方案明细列表
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
      */
     private static LinkedList<String> reachablePath(String startVertex, String endVertex, String startTimeStr, String dateStr, Boolean isLessTrans,Cate type){
         LinkedList<String> reachableStation = graphTraversal(startVertex, endVertex, startTimeStr, dateStr,false,isLessTrans,type);
@@ -783,6 +815,7 @@ public class mainClass {
      * @param type 获取路径类型
      * @return 查询结果对应方案明细列表
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
      */
     private static LinkedList<String> getReachable(String dateStr, String startTimeStr, String startVertex, String endVertex, Cate type) {
         resetGraph();
@@ -838,6 +871,7 @@ public class mainClass {
      * getAccCodeSet 获取全部ACC码的集合
      * @return ACC码集合
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
      */
     public static Set<String> getAccCodeSet(){
         return graph.getAccInLine().keySet();
@@ -847,6 +881,7 @@ public class mainClass {
      * getAccCodeMap 获取ACC码到文本的映射集
      * @return ACC码映射关系
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
      *
      */
     public static Map<String, String> getAccCodeMap(){
@@ -864,6 +899,7 @@ public class mainClass {
      * @param type 获取路径类型
      * @return 查询结果对应方案明细列表
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
      */
     private static LinkedList<String> graphTraversal(String startVertex, String endVertex, String startTimeStr, String dateStr, Boolean isReverse, Boolean isLessTrans, Cate type) {
         graph.initialSearchStartVertex(startVertex,dateStr,startTimeStr,endVertex);
@@ -894,6 +930,7 @@ public class mainClass {
      * @param endVertex 目的地ACC码
      * @return 无约束最短路径
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/17
      */
     private static LinkedList<String> getShortPath(String endVertex) {
         String ver=endVertex;

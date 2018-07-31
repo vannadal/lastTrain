@@ -30,13 +30,15 @@ public class testMain {
         mainClass.fit();
         Map<String,String> map = mainClass.getAccCodeMap();
 
-        LinkedList<String> path = mainClass.getReachablePath("2018-06-13","22:38:00","150998817","150996009",false);
+        LinkedList<String> path = mainClass.getReachablePath("2018-06-13","22:48:00","150998817","150996009",false);
         for(String string : path) {
             String [] line = string.split(",");
             String name = map.get(line[0]);
             System.out.println(line[0]+","+line[1]+","+line[2]+","+name);
         }
         System.out.println("");
+
+
         path = mainClass.getReachablePath("2018-06-13","22:20:00","150998817","150997277",false);
         for(String string : path) {
             String [] line = string.split(",");
@@ -50,6 +52,7 @@ public class testMain {
             String name = map.get(line[0]);
             System.out.println(line[0]+","+line[1]+","+line[2]+","+name);
         }
+        System.out.println("");
 
         //东直门 -> 三元桥
         path = mainClass.getReachablePath("2018-06-13","20:58:00","150995470","150997531",false);
@@ -149,6 +152,7 @@ public class testMain {
         }
         outputTestResult("ReachablePathTest",testing);
 
+        testing = new ArrayList<Long>();
         //本循环为测试车站代码
         for(String ac: mainClass.getAccCodeSet()){
             long time=System.currentTimeMillis();
@@ -163,5 +167,4 @@ public class testMain {
         }
         outputTestResult("ReachableStationLatestPathTestOUT",testing);
     }
-
 }

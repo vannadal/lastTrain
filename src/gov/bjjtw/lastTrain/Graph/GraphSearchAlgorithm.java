@@ -35,6 +35,7 @@ public class GraphSearchAlgorithm {
      * @param type 1=基于距离优先可达模式, 3=基于分数优先可达模式, 2=最远可达模式
      * @return boolean 是否可以找到一条通路
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/21
      */
     public boolean perform(Graph g, String sourceVertex,String dateString,String timeStr,String endVertex, Boolean isReverse, Boolean isLessTrans, int type) {
         if (null == visitedVertex) {
@@ -64,6 +65,7 @@ public class GraphSearchAlgorithm {
      * @param timeStr 出发时间字符串
      * @return boolean 是否找到一条通路
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/21
      */
     private boolean dijkstra(Graph g, String sourceVertex, String timeStr) {
         try {
@@ -153,6 +155,7 @@ public class GraphSearchAlgorithm {
      * @param isLessTrans 是否少换乘模式(未实现)
      * @return boolean 是否找到一条通路
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/21
      */
     //最晚出发时间
     private boolean dijkstra3(Graph g, String timeStr, String endVertex, Boolean isLessTrans) {
@@ -236,6 +239,7 @@ public class GraphSearchAlgorithm {
      * @param sourceVertex 出发地AccCode
      * @return boolean 是否找到一条通路
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/21
      */
     //基于最短距离
     private boolean dijkstra2(Graph g, String sourceVertex) {
@@ -283,6 +287,7 @@ public class GraphSearchAlgorithm {
      * @param isLessTrans 是否少换乘模式
      * @return boolean 是否找到一条通路
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/21
      */
     //基于分数（换乘次数越少，分数越大）
     private boolean scoreDijkstra(Graph g,String sourceVertex,String timeStr,Boolean isLessTrans) {
@@ -428,6 +433,7 @@ public class GraphSearchAlgorithm {
      * @param map 候选节点集合对应时间
      * @return String 集合中最小时间节点
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/21
      */
     //时间最小
     private String findLatestVertexMinTime(Map<String,String> map) {
@@ -452,6 +458,7 @@ public class GraphSearchAlgorithm {
      * @param map 候选节点集合对应分数
      * @return String 集合中最小分数节点
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/21
      */
     //分数
     private String findLatestVertexScore(Map<String,Double> map) {
@@ -476,6 +483,7 @@ public class GraphSearchAlgorithm {
      * @param map 候选节点集合对应时间
      * @return String 集合中最晚时间节点
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/21
      */
     //最晚出发时间
     private String findLatestVertexLatestDepartTime(Map<String,String> map) {
@@ -503,6 +511,7 @@ public class GraphSearchAlgorithm {
      * @param map 候选节点集合对应的距离
      * @return String 集合中最短距离节点
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/21
      */
     //距离
     private String findLatestVertexDistance(Map<String,Integer> map) {
@@ -531,6 +540,7 @@ public class GraphSearchAlgorithm {
      * @param type 1.分数早到达 2.最短距离 3.最晚出发 4.分数少换乘
      * @return 是否成功初始化
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/21
      */
     private boolean initialMinTimeLink(Graph g, String vertex, String verTime, int type) {
         List<String> toBeUpdatedVertex = null;
@@ -632,6 +642,7 @@ public class GraphSearchAlgorithm {
      * @param type 1.给定起始时间最早到达时间场景 3.给定到达时间最晚出发时间场景
      * @return 最早时间字符串
      * @author wuxinran@bjjtw.gov.cn
+     * @date 2018/7/21
      */
     private String findLatestTime(Graph g, String verStart, String verEnd, String verStartTime, int isTransStation, int type) {
         List<String> toBeVisitedTime=new ArrayList<String>();
@@ -685,4 +696,3 @@ public class GraphSearchAlgorithm {
     }
 
 }
-
