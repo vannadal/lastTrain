@@ -125,8 +125,8 @@ public class DivideTimeTable {
 			  for (int  i = 0; i < len - 1; i++) {
 			        minIndex = i;               
 			        for (int j = i + 1; j < len; j++) {
-			        	int time2 = CommonTools.TransferTime(sorted_result.get(j).split(",")[1]);
-			        	int time1 = CommonTools.TransferTime(sorted_result.get(minIndex).split(",")[1]);
+			        	int time2 = CommonTools.transferTime(sorted_result.get(j).split(",")[1]);
+			        	int time1 = CommonTools.transferTime(sorted_result.get(minIndex).split(",")[1]);
 			            if (time2 < time1) {     
 			                minIndex = j;        
 			            }
@@ -153,8 +153,8 @@ public class DivideTimeTable {
 			  for (int  i = 0; i < len - 1; i++) {
 			        minIndex = i;               
 			        for (int j = i + 1; j < len; j++) {
-			        	int time1 = CommonTools.TransferTime(sorted_result2.get(j).split(",")[1]);
-			        	int time2 = CommonTools.TransferTime(sorted_result2.get(minIndex).split(",")[1]);
+			        	int time1 = CommonTools.transferTime(sorted_result2.get(j).split(",")[1]);
+			        	int time2 = CommonTools.transferTime(sorted_result2.get(minIndex).split(",")[1]);
 			            if (time1 < time2) {     
 			                minIndex = j;        
 			            }

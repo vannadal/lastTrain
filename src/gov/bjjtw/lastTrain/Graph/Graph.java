@@ -76,9 +76,9 @@ public final class Graph implements Serializable{
 
     /**
      * addGeoPosition 增加accCode对应经纬度映射
-     * @return void
+     * @param accCode accCode码
+     * @param geoPosition 经纬度位置字符串
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public void addGeoPosition(String accCode, String geoPosition){
         stationGeo.put(accCode,geoPosition);
@@ -89,7 +89,6 @@ public final class Graph implements Serializable{
      * @param accCode 查询accCode
      * @return Float [] 经纬度坐标
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public Float [] getGeoPosition(String accCode){
         Float[] positionFloat = new Float[2];
@@ -108,9 +107,7 @@ public final class Graph implements Serializable{
     /**
      * setAdj 构建图模型边（给定起始时间最早到达时间场景)
      * @param inputAdj accCode(Key)关联的accCode(Values)
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public void setAdj(Map<String,List<String>> inputAdj){
         adj =new HashMap<>();
@@ -127,9 +124,7 @@ public final class Graph implements Serializable{
     /**
      * setAdj 构建图模型边(给定到达时间最晚出发时间场景)
      * @param inputAdj accCode(Key)关联的accCode(Values)
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public void setAdj3(Map<String,List<String>> inputAdj){
         adj3 =new HashMap<>();
@@ -149,9 +144,7 @@ public final class Graph implements Serializable{
      * @param dateString 日期
      * @param startTime 起始时间
      * @param endVertex 终止节点
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public void initialSearchStartVertex(String startVertex, String dateString, String startTime, String endVertex) {
         firstVertax=startVertex;
@@ -164,9 +157,7 @@ public final class Graph implements Serializable{
      * addEdge 增加边关联
      * @param fromVertex 起始节点
      * @param toVertex 终止节点
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public void addEdge(String fromVertex, String toVertex) {
         if (firstVertax == null) {
@@ -190,9 +181,7 @@ public final class Graph implements Serializable{
      * removeEdge 移除边关联
      * @param fromVertex 起始节点
      * @param toVertex 终止节点
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public void removeEdge(String fromVertex, String toVertex) {
         if(adj.get(fromVertex).contains(toVertex)) {
@@ -210,9 +199,7 @@ public final class Graph implements Serializable{
      * @param startTime 起始时间
      * @param arrTime 到达时间
      * @param timeStart 发车时间
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public void addStack(String fromVertex, String toVertex, String startTime, String arrTime, String timeStart) {
         stack.push(fromVertex+","+toVertex+","+startTime+","+arrTime+","+timeStart);
@@ -225,9 +212,7 @@ public final class Graph implements Serializable{
      * @param time 起始时间
      * @param arrTime 到达时间
      * @param timeStart 发车时间
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public void addScoreStack(String fromVertex,String toVertex,String time,String arrTime,String timeStart) {
         scoreStack.push(fromVertex+","+toVertex+","+time+","+arrTime+","+timeStart);
@@ -236,9 +221,7 @@ public final class Graph implements Serializable{
     /**
      * addStackPath 通过候选路线堆栈中增加结果路径节点
      * @param str 路径节点信息
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public void addStackPath(String str) {
           stackPath.push(str);
@@ -247,9 +230,7 @@ public final class Graph implements Serializable{
     /**
      * addStackPath2 通过候选路线堆栈中增加无时间约束路径节点
      * @param str 路径节点信息
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public void addStackPath2(String str) {
           stackPath2.push(str);
@@ -258,9 +239,7 @@ public final class Graph implements Serializable{
     /**
      * addReachable 增加可到达车站accCode
      * @param station 车站accCode
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public void addReachable(String station) {
           reachableSt.add(station);
@@ -268,9 +247,8 @@ public final class Graph implements Serializable{
 
     /**
      * getReachable 获取可到达车站accCode列表
-     * @return LinkedList<String> 车站accCode列表
+     * @return 车站accCode列表
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public LinkedList<String> getReachable(){
           return reachableSt;
@@ -278,9 +256,8 @@ public final class Graph implements Serializable{
 
     /**
      * getStack 获取结果路径节点堆栈
-     * @return Stack<String> 结果路径节点栈
+     * @return 结果路径节点栈
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public Stack<String> getStack() {
           return stack;
@@ -288,9 +265,8 @@ public final class Graph implements Serializable{
 
     /**
      * getScoreStack 获取分数优先结果路径节点堆栈
-     * @return Stack<String> 结果路径节点栈
+     * @return 结果路径节点栈
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public Stack<String> getScoreStack() {
         return scoreStack;
@@ -298,9 +274,8 @@ public final class Graph implements Serializable{
 
     /**
      * getPathStack 获取候选路线堆栈中结果路径节点
-     * @return Stack<String> 结果路径节点栈
+     * @return 结果路径节点栈
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public Stack<String> getPathStack() {
           return stackPath;
@@ -308,9 +283,8 @@ public final class Graph implements Serializable{
 
     /**
      * getStack2 获取逆向候选路线堆栈中结果路径节点
-     * @return Stack<String> 结果路径节点栈
+     * @return 结果路径节点栈
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public Stack<String> getStack2() {
           return stack2;
@@ -321,6 +295,7 @@ public final class Graph implements Serializable{
      * @param startVertex 前继节点accCode码
      * @param endVertex 后续节点accCode码
      * @param distance2 区间距离
+     * @author wuxinran@bjjtw.gov.cn
      */
     public void addStack2(String startVertex, String endVertex, int distance2) {
         stack2.push(startVertex+","+endVertex+","+distance2);
@@ -328,9 +303,8 @@ public final class Graph implements Serializable{
 
     /**
      * getPathStack2 获取逆向候选路线堆栈中无时间约束路径节点
-     * @return Stack<String> 结果路径节点栈
+     * @return 结果路径节点栈
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public Stack<String> getPathStack2() {
           return stackPath2;
@@ -342,7 +316,6 @@ public final class Graph implements Serializable{
      * @param verEnd 终止节点
      * @param startTime 开始时间
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public void addTransTime(String verStart, String verEnd,String startTime) {
         transTime.put(verStart+verEnd,startTime);
@@ -354,9 +327,7 @@ public final class Graph implements Serializable{
      * @param departureTime1 起始时间
      * @param departureTime2 出发时间
      * @param arrivingTime 到达时间
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public void addWeekdayTimetable(String accCode, String departureTime1, String departureTime2, String arrivingTime) {
         if(timetableWeekday.get(accCode)==null) {
@@ -371,9 +342,7 @@ public final class Graph implements Serializable{
      * @param departureTime1 起始时间
      * @param departureTime2 出发时间
      * @param arrivingTime 到达时间
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/20
      */
     public void addWeekendTimetable(String accCode, String departureTime1, String departureTime2, String arrivingTime) {
         if(timetableWeekend.get(accCode)==null) {
@@ -386,9 +355,7 @@ public final class Graph implements Serializable{
      * addStationDistance 增加相邻accCode距离
      * @param accCode 相邻accCode码
      * @param distance 距离(m)
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public void addStationDistance(String accCode, int distance) {
         if(stationDistance.get(accCode)==null) {
@@ -400,9 +367,7 @@ public final class Graph implements Serializable{
     /**
      * addUnVisitedVertex 增加算法未访问集合中节点accCode
      * @param accCode accCode码
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public void addUnVisitedVertex(String accCode) {
           unVisitedVertex.add(accCode);
@@ -410,9 +375,8 @@ public final class Graph implements Serializable{
 
     /**
      * getUnVisitedVertex 获取未访问集合中节点accCode的集合
-     * @return Set<String> accCode码集合
+     * @return accCode码集合
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public Set<String> getUnVisitedVertex() {
         return unVisitedVertex;
@@ -421,9 +385,7 @@ public final class Graph implements Serializable{
     /**
      * setUnVisitedVertex 配置未访问集合中节点accCode的集合
      * @param vertexSet 未访问节点accCode集合
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public void setUnVisitedVertex(Set<String> vertexSet) {
         unVisitedVertex = (Set<String>) CommonTools.deepCopy(vertexSet);
@@ -431,27 +393,21 @@ public final class Graph implements Serializable{
 
     /**
      * cleanScoreStack 清空分数优先结果候选路线堆栈
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public void cleanScoreStack(){
         scoreStack.clear();
     }
     /**
      * cleanMinDisLink 清空accCode站点最小距离分数映射关系（给定到达时间最早到达时间场景)
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public void cleanMinDisLink(){
         minDisLink.clear();
     }
     /**
      * cleanMinTimeLink 清空accCode站最早到达时间映射关系（给定起始时间最早到达时间场景)
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/20
      */
     public void cleanMinTimeLink(){
         minTimeLink.clear();
@@ -459,9 +415,7 @@ public final class Graph implements Serializable{
 
     /**
      * cleanMinScoreLink 清空accCode站点最小累计分数映射关系
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/20
      */
     public void cleanMinScoreLink(){
         minScoreLink.clear();
@@ -469,9 +423,7 @@ public final class Graph implements Serializable{
 
     /**
      * cleanMinTimeLink2 清空accCode站最晚到达时间映射关系（给定到达时间最晚出发时间场景)
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/20
      */
     public void cleanMinTimeLink2(){
         minTimeLink2.clear();
@@ -479,9 +431,7 @@ public final class Graph implements Serializable{
 
     /**
      * cleanWalkTimeString 清空站点accCode进站时间映射关系
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/20
      */
     public void cleanWalkTimeString(){
         walkTimeString.clear();
@@ -489,9 +439,8 @@ public final class Graph implements Serializable{
 
     /**
      * getMinTimeLink 获取当前accCode站点最早到达时间映射关系(给定起始时间最早到达时间场景)
-     * @return Map<String, String> 最早到达映射关系
+     * @return 最早到达映射关系
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public Map<String, String> getMinTimeLink() {
         return minTimeLink;
@@ -499,9 +448,8 @@ public final class Graph implements Serializable{
 
     /**
      * getMinTimeLink2 获取当前accCode站点最晚到达时间映射关系(给定到达时间最晚出发时间场景)
-     * @return Map<String, String> 最晚到达映射关系
+     * @return 最晚到达映射关系
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public Map<String, String> getMinTimeLink2() {
         return minTimeLink2;
@@ -509,9 +457,8 @@ public final class Graph implements Serializable{
 
     /**
      * getMinDisLink 获取当前accCode站点最小距离分数映射关系
-     * @return Map<String, Integer> 最小距离到达映射关系
+     * @return 最小距离到达映射关系
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public Map<String, Integer> getMinDisLink() {
         return minDisLink;
@@ -519,9 +466,8 @@ public final class Graph implements Serializable{
 
     /**
      * getMinScoreLink 获取当前accCode站点最小累计分数映射关系(给定起始时间最早到达时间场景)
-     * @return Map<String, Double> 最小分数到达映射关系
+     * @return 最小分数到达映射关系
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/20
      */
     public Map<String, Double> getMinScoreLink() {
         return minScoreLink;
@@ -529,9 +475,7 @@ public final class Graph implements Serializable{
 
     /**
      * cleanStack 清空结果堆栈中路径节
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public void cleanStack(){
         stack.clear();
@@ -539,9 +483,7 @@ public final class Graph implements Serializable{
 
     /**
      * cleanStackPath 清空候选路线堆栈中结果
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public void cleanStackPath(){
         stackPath.clear();
@@ -549,9 +491,7 @@ public final class Graph implements Serializable{
 
     /**
      * cleanStackPath 清空逆向候选路线堆栈中结果
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public void cleanStack2(){
         stack2.clear();
@@ -559,9 +499,7 @@ public final class Graph implements Serializable{
 
     /**
      * cleanStackPath2 清空候选路线堆栈中无时间约束路径节点
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public void cleanStackPath2(){
         stackPath2.clear();
@@ -569,9 +507,7 @@ public final class Graph implements Serializable{
 
     /**
      * cleanReachableSt 清空可到达站集合
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/20
      */
     public void cleanReachableSt(){
         reachableSt.clear();
@@ -579,9 +515,7 @@ public final class Graph implements Serializable{
 
     /**
      * resetParams 重置参数
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/20
      */
     public void resetParams(){
         firstTime = null;
@@ -593,9 +527,7 @@ public final class Graph implements Serializable{
      * addAccInLine 增加accCode站归属线路映射关系
      * @param accCode accCode码
      * @param line 列车对应线路
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/20
      */
     public void addAccInLine(String accCode, String line) {
         accInLine.put(accCode,line);
@@ -604,9 +536,7 @@ public final class Graph implements Serializable{
     /**
      * addVertex 初始化accCode节点关联关系
      * @param vertex 站点accCode
-     * @return void
-     * @authorr wuxinran@bjjtw.gov.cn
-     * @date 2018/7/20
+     * @author wuxinran@bjjtw.gov.cn
      */
     public void addVertex(String vertex) {
         if (adj.get(vertex)==null) {
@@ -619,9 +549,8 @@ public final class Graph implements Serializable{
 
     /**
      * getAdj 获取图模型边关系
-     * @return Map<String, List<String>> 节点accCode关联边集合映射
+     * @return 节点accCode关联边集合映射
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public Map<String, List<String>> getAdj() {
         return adj;
@@ -629,9 +558,8 @@ public final class Graph implements Serializable{
 
     /**
      * getAdj3 获取图模型边关系(给定到达时间最晚出发时间场景)
-     * @return Map<String, List<String>> 节点accCode关联边集合映射
+     * @return 节点accCode关联边集合映射
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/17
      */
     public Map<String, List<String>> getAdj3() {
         return adj3;
@@ -639,9 +567,8 @@ public final class Graph implements Serializable{
 
     /**
      * getTimetableWeekday 获取工作日列车运行时间表 (车站accCode组合, 3列时间为记录的时间表序列)
-     * @return Map<String, List<String>> 工作日列车运行时间表映射关系
+     * @return 工作日列车运行时间表映射关系
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/20
      */
     public Map<String, List<String>> getTimetableWeekday() {
             return timetableWeekday;
@@ -649,9 +576,8 @@ public final class Graph implements Serializable{
 
     /**
      * getTimetableWeekend 获取休息日列车运行时间表 (车站accCode组合, 3列时间为记录的时间表序列)
-     * @return Map<String, List<String>> 休息日列车运行时间表映射关系
+     * @return 休息日列车运行时间表映射关系
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/20
      */
     public Map<String, List<String>> getTimetableWeekend() {
             return timetableWeekend;
@@ -659,19 +585,17 @@ public final class Graph implements Serializable{
 
     /**
      * getStationDistance 获取相邻站距离映射(车站accCode组合, 距离间隔)
-     * @return Map<String, Interger> 车站间距映射关系
+     * @return 车站间距映射关系
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/20
      */
     public Map<String, Integer> getStationDistance() {
         return stationDistance;
     }
 
     /**
-     * getTransTime 获取换乘站换乘时间(车站accCode组合, 时间间隔))
-     * @return Map<String, String> 车站见换乘时间映射官谢
+     * getTransTime 获取换乘站换乘时间——车站accCode组合, 时间间隔
+     * @return 车站见换乘时间映射官谢
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/20
      */
     public Map<String, String> getTransTime() {
             return transTime;
@@ -679,18 +603,15 @@ public final class Graph implements Serializable{
 
     /**
      * getAccInLine 获取列车行驶停站顺序表中记录
-     * @return Map<String, String> 车站accCode和线路映射集合
+     * @return 车站accCode和线路映射集合
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/20
      */
     public Map<String, String> getAccInLine() { return accInLine; }
 
     /**
      * setIsWeekend 设置当前日期是否为周末
      * @param weekend 是否周末 true/false
-     * @return void
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/20
      */
     public void setIsWeekend(boolean weekend){
           isWeekend=weekend;
@@ -701,7 +622,6 @@ public final class Graph implements Serializable{
      * @param accCode 站点accCode
      * @return int 进站用时
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/20
      */
     public int getWalkTime(String accCode){
         if(walkTimeString.get(accCode)!=null) {
@@ -713,11 +633,9 @@ public final class Graph implements Serializable{
 
     /**
      * addWalkTime 增加accCode进站时间映射关系
-     * @param accCode
-     * @param time
-     * @return void
+     * @param accCode 站点accCode
+     * @param time 进站用时
      * @author wuxinran@bjjtw.gov.cn
-     * @date 2018/7/20
      */
     public void addWalkTime(String accCode, String time) {
         if (walkTimeString.get(accCode)==null) {

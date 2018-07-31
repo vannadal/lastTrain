@@ -3,35 +3,19 @@ package gov.bjjtw.lastTrain.CommonTools;
 import java.io.OutputStream;
 import java.io.InputStream;
 
-/**
- * ByteArrayOutputStream implementation that doesn't synchronize methods
- * and doesn't copy the data on toByteArray().
- */
 public class FastByteArrayOutputStream extends OutputStream {
-    /**
-     * Buffer and size
-     */
     protected byte[] buf = null;
     protected int size = 0;
 
-    /**
-     * Constructs a stream with buffer capacity size 5K
-     */
     public FastByteArrayOutputStream() {
         this(5 * 1024);
     }
 
-    /**
-     * Constructs a stream with the given initial size
-     */
     public FastByteArrayOutputStream(int initSize) {
         this.size = 0;
         this.buf = new byte[initSize];
     }
 
-    /**
-     * Ensures that we have a large enough buffer for the given size.
-     */
     private void verifyBufferSize(int sz) {
         if (sz > buf.length) {
             byte[] old = buf;
@@ -45,11 +29,6 @@ public class FastByteArrayOutputStream extends OutputStream {
         return size;
     }
 
-    /**
-     * Returns the byte array containing the written data. Note that this
-     * array will almost always be larger than the amount of data actually
-     * written.
-     */
     public byte[] getByteArray() {
         return buf;
     }
@@ -75,9 +54,6 @@ public class FastByteArrayOutputStream extends OutputStream {
         size = 0;
     }
 
-    /**
-     * Returns a ByteArrayInputStream for reading back the written data
-     */
     public InputStream getInputStream() {
         return new FastByteArrayInputStream(buf, size);
     }

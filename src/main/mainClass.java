@@ -591,12 +591,16 @@ public class mainClass {
         String content="";
         Boolean hasValidStation = false;
         LinkedList<String> path = new LinkedList<String>();
-        Stack<String> stack = null;
+        Stack<String> stack = new Stack<String>();
 
         if (type == 1) {
-            stack = graph.getStack();
+            for (String item : graph.getStack()){
+                stack.push(item);
+            }
         } else if (type == 3){
-            stack = graph.getStack();
+            for (String item : graph.getStack()){
+                stack.push(item);
+            }
             for (String item : graph.getScoreStack()){
                 stack.push(item);
             }
@@ -730,7 +734,7 @@ public class mainClass {
         return getReachable(dateStr,startTimeStr,startVertex,"",Cate.REACHABLE_STATION);
     }
 
-     /**
+    /**
      * getReachableStationLatestPath 输出给定参数下到达终点，起点的最晚出发时间对应方案。
      * @param dateStr 日期字符串
      * @param endTimeStr 到达终止节点,时间字符串
