@@ -38,7 +38,6 @@ public class testMain {
         }
         System.out.println("");
 
-
         path = mainClass.getReachablePath("2018-06-13","22:20:00","150998817","150997277",false);
         for(String string : path) {
             String [] line = string.split(",");
@@ -46,6 +45,7 @@ public class testMain {
             System.out.println(line[0]+","+line[1]+","+line[2]+","+name);
         }
         System.out.println("");
+
         path = mainClass.getReachablePath("2018-06-13","23:05:00","150998817","150995989",false);
         for(String string : path) {
             String [] line = string.split(",");
