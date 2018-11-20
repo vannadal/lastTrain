@@ -262,7 +262,6 @@ public class GraphSearchAlgorithm {
                 }
                 int verDist=g.getMinDisLink().get(ver);
                 for(String verEnd : toBeVisitedVertex) {
-                    //System.out.println(ver+verEnd);
                     int transDist = 0;
                     if (g.getStationDistance().containsKey(ver+verEnd) == false) {
                         continue;
