@@ -123,7 +123,6 @@ public class mainClass {
      */
     private static void resetGraph(){
         graph.setAdj(adj);
-        //System.out.println( graph.getAdj().get("B00001007"));
         graph.setAdj3(adj);
         graph.setUnVisitedVertex(unVisitedVertex);
         graph.cleanMinDisLink();

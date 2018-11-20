@@ -114,7 +114,7 @@ public class testMain {
         }
         System.out.println("");
         */
-        /*
+
         path = mainClass.getReachablePath("2018-06-13","23:36:00","150996525","150997535",false);
         for(String string : path) {
             String [] line = string.split(",");
@@ -197,7 +197,7 @@ public class testMain {
             String name = map.get(line[0]);
             System.out.println(line[0]+","+line[1]+","+line[2]+","+name);
         }
-        */
+
         // 平西府 -> 望和桥东
         path = mainClass.getReachablePath("2018-06-13","20:00:00","150997001","B00101975",false);
         for(String string : path) {
