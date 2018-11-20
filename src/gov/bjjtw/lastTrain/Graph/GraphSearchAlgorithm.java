@@ -255,10 +255,6 @@ public class GraphSearchAlgorithm {
                 g.addReachable(ver);
                 visitedVertex.add(ver);
                 List<String> toBeVisitedVertex = g.getAdj().get(ver);
-                /*if (ver.equals("B00000002")){
-                    System.out.println(ver);
-                    System.out.println(toBeVisitedVertex);
-                }*/
                 for(String v:visitedVertex) {
                     if (toBeVisitedVertex.contains(v)) {
                         toBeVisitedVertex.remove(v);
