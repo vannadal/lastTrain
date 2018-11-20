@@ -199,6 +199,8 @@ public class GraphSearchAlgorithm {
                     if(notTransStation) {
                         alltime = findLatestTime(g,ver,verStart,verTime,0,3);
                         if ("25:59:59".equals(alltime)) {
+                            g.getMinTimeLink().remove(verStart);
+                            g.getMinTimeLink2().remove(verStart);
                             continue;
                         }
                         str2= alltime.split(",");
@@ -260,7 +262,12 @@ public class GraphSearchAlgorithm {
                 }
                 int verDist=g.getMinDisLink().get(ver);
                 for(String verEnd : toBeVisitedVertex) {
-                    int	transDist=g.getStationDistance().get(ver+verEnd);
+                    int transDist = 0;
+                    if (g.getStationDistance().containsKey(ver+verEnd) == false) {
+                        continue;
+                    } else {
+                        transDist = g.getStationDistance().get(ver + verEnd);
+                    }
                     if(g.getMinDisLink().get(verEnd)==null) {
                         g.getMinDisLink().put(verEnd,verDist+transDist);
                         g.addStack2(ver, verEnd,verDist+transDist);
@@ -593,7 +600,9 @@ public class GraphSearchAlgorithm {
                         alltime = findLatestTime(g, vertex, adjVertex, verTime, 0, type);
                     }
                     if ("25:59:59".equals(alltime)) {
-                        return false;
+                        g.getMinTimeLink().remove(adjVertex);
+                        g.getMinTimeLink2().remove(adjVertex);
+                        continue;
                     }
                     str = alltime.split(",");
                     adjTime = CommonTools.transferTime(str[0]);

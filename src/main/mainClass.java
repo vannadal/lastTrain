@@ -658,7 +658,7 @@ public class mainClass {
      */
     public static LinkedList<String> getReachablePath(String dateStr, String startTimeStr, String startVertex, String endVertex,boolean isMinTransfer) {
         String [] tmp;
-        LinkedList<String> result ;
+        LinkedList<String> result;
 
         if (isMinTransfer){
             result = getReachable(dateStr,startTimeStr,startVertex,endVertex,Cate.REACHABLE_MINTRANSFER_PATH);
@@ -670,7 +670,7 @@ public class mainClass {
         //记录输出路径包含的站点acc
         LinkedList<String> simple = new LinkedList<String>();
 
-        if (result.size()>0) {
+        if (result != null && result.size()>0) {
             for (String item : result) {
                 tmp = item.split(",");
                 String item1 = tmp[0];
