@@ -473,7 +473,7 @@ public class GraphSearchAlgorithm {
         Double minTime = TRANSFERWEIGHT*100+0.0;
         for (Map.Entry<String, Double> entry : map.entrySet()) {
             if(!visitedVertex.contains(entry.getKey())) {
-                if(entry.getValue() < minTime) {
+                if(entry.getValue() != null && entry.getValue() < minTime) {
                     vertex = entry.getKey();
                     minTime = entry.getValue();
                 }
