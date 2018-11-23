@@ -27,3 +27,8 @@
 - Ref3. [Efficient Index Structures for Reachability and Shortest Path](https://repository.ntu.edu.sg/bitstream/10356/68898/1/Sibo_WANG_thesis_final.pdf)
 
 - Ref4. [Efficient Top-k Shortest-Path Distance Queries on Large Networks by Pruned Landmark Labeling](https://pdfs.semanticscholar.org/efe1/937ea1716eae9eb3500c51a9354980234839.pdf)
+
+Resource
+-------
+
+[download latest resource](https://pan.baidu.com/s/1BP-BgMvcrw-X-4GloU5HNQ)
