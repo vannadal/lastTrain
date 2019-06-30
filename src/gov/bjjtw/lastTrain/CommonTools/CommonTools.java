@@ -90,12 +90,13 @@ public class CommonTools {
     public static boolean isWeekend(String dateString) {
         try{
         	ArrayList<String> holidays = new ArrayList<String>();
-        	holidays.add("2018-09-24");
-        	holidays.add("2018-10-01");
-        	holidays.add("2018-10-02");
-        	holidays.add("2018-10-03");
-        	holidays.add("2018-10-04");
-        	holidays.add("2018-10-05");
+        	holidays.add("2019-10-01");
+        	holidays.add("2019-10-02");
+        	holidays.add("2019-10-03");
+        	holidays.add("2019-10-04");
+        	holidays.add("2019-10-05");
+          holidays.add("2019-10-06");
+          holidays.add("2019-10-07");//update onece a year
             DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             Date date = format.parse(dateString);
             Calendar cal = Calendar.getInstance();
